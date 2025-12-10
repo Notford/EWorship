@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Songs - WorshipFlow</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Open+Sans:wght@400;600&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        :root {
+            --primary: #4a6fa5; --primary-dark: #385d8a; --secondary: #6d9dc5;
+            --accent: #ff6b6b; --light: #f8f9fa; --dark: #343a40; --gray: #6c757d;
+            --light-gray: #e9ecef; --shadow: 0 4px 6px rgba(0,0,0,0.1);
+            --shadow-lg: 0 10px 25px rgba(0,0,0,0.1); --radius: 8px;
+            --transition: all 0.3s ease;
+        }
+        body { font-family: 'Open Sans', sans-serif; line-height: 1.6; color: var(--dark); background: var(--light); }
+        h1,h2,h3,h4,h5,h6 { font-family: 'Poppins', sans-serif; font-weight: 600; line-height: 1.3; }
+        a { text-decoration: none; color: inherit; }
+        
+        /* Navigation */
+        .navbar { background: white; box-shadow: var(--shadow); position: sticky; top: 0; z-index: 1000; }
+        .nav-container { max-width: 1200px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center; padding: 1rem 2rem; }
+        .logo { display: flex; align-items: center; gap: 10px; font-size: 1.5rem; font-weight: 700; color: var(--primary); }
+        .logo i { font-size: 1.8rem; }
+        .nav-menu { display: flex; list-style: none; gap: 2rem; align-items: center; }
+        .nav-menu a { color: var(--dark); font-weight: 500; padding: 0.5rem 1rem; border-radius: var(--radius); transition: var(--transition); display: flex; align-items: center; gap: 8px; }
+        .nav-menu a:hover { color: var(--primary); background: var(--light-gray); }
+        .nav-menu a.active { color: var(--primary); background: rgba(74, 111, 165, 0.1); }
+        .btn-login { background: var(--primary); color: white !important; padding: 0.5rem 1.5rem !important; }
+        .btn-login:hover { background: var(--primary-dark) !important; }
+        .hamburger { display: none; flex-direction: column; gap: 4px; cursor: pointer; }
+        .hamburger span { width: 25px; height: 3px; background: var(--dark); border-radius: 2px; transition: var(--transition); }
+        
+        /* Songs Page Specific */
+        .songs-container { max-width: 1200px; margin: 2rem auto; padding: 0 2rem; }
+        .page-header { margin-bottom: 2rem; }
+        .page-header h1 { font-size: 2.5rem; margin-bottom: 0.5rem; }
+        
+        .search-bar { background: white; padding: 1rem; border-radius: var(--radius); box-shadow: var(--shadow); margin-bottom: 2rem; display: flex; gap: 10px; }
+        .search-bar input { flex: 1; padding: 0.8rem; border: 1px solid var(--light-gray); border-radius: var(--radius); font-size: 1rem; }
+        .search-bar button { background: var(--primary); color: white; border: none; padding: 0 1.5rem; border-radius: var(--radius); cursor: pointer; }
+        
+        .songs-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 1.5rem; }
+        .song-card { background: white; border-radius: var(--radius); padding: 1.5rem; box-shadow: var(--shadow); transition: var(--transition); }
+        .song-card:hover { transform: translateY(-3px); box-shadow: var(--shadow-lg); }
+        .song-title { font-size: 1.3rem; margin-bottom: 0.5rem; color: var(--primary); }
+        .song-artist { color: var(--gray); margin-bottom: 1rem; }
+        .song-key { background: var(--light-gray); padding: 0.3rem 0.8rem; border-radius: 20px; font-size: 0.9rem; display: inline-block; margin-bottom: 1rem; }
+        .song-actions { display: flex; gap: 10px; margin-top: 1rem; }
+        .action-btn { padding: 0.5rem 1rem; border-radius: var(--radius); border: none; cursor: pointer; transition: var(--transition); display: flex; align-items: center; gap: 5px; }
+        .action-btn.primary { background: var(--primary); color: white; }
+        .action-btn.secondary { background: var(--light-gray); color: var(--dark); }
+        
+        /* Footer */
+        .footer { background: var(--dark); color: white; padding-top: 3rem; margin-top: 3rem; }
+        .footer-content { max-width: 1200px; margin: 0 auto; padding: 0 2rem 3rem; display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 3rem; }
+        .footer-section .logo { color: white; margin-bottom: 1rem; }
+        .social-icons { display: flex; gap: 1rem; }
+        .social-icons a { width: 40px; height: 40px; background: rgba(255,255,255,0.1); border-radius: 50%; display: flex; align-items: center; justify-content: center; transition: var(--transition); }
+        .social-icons a:hover { background: var(--primary); transform: translateY(-3px); }
+        .footer-bottom { border-top: 1px solid rgba(255,255,255,0.1); padding: 1.5rem 0; text-align: center; color: rgba(255,255,255,0.6); }
+        
+        /* Responsive */
+        @media (max-width: 768px) {
+            .nav-menu { position: fixed; left: -100%; top: 70px; flex-direction: column; background: white; width: 100%; text-align: center; transition: 0.3s; box-shadow: var(--shadow); padding: 2rem 0; gap: 0; }
+            .nav-menu.active { left: 0; }
+            .nav-menu li { width: 100%; }
+            .nav-menu a { padding: 1rem; justify-content: center; }
+            .hamburger { display: flex; }
+            .songs-grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="logo">
+                <i class="fas fa-church"></i>
+                <span>WorshipFlow</span>
+            </div>
+            <ul class="nav-menu">
+                <li><a href="index.html"><i class="fas fa-home"></i> Home</a></li>
+                <li><a href="live.html"><i class="fas fa-broadcast-tower"></i> Live Stream</a></li>
+                <li><a href="songs.html" class="active"><i class="fas fa-music"></i> Songs</a></li>
+                <li><a href="bible.html"><i class="fas fa-bible"></i> Bible</a></li>
+                <li><a href="events.html"><i class="fas fa-calendar-alt"></i> Events</a></li>
+                <li><a href="dashboard.html" class="btn-login"><i class="fas fa-user"></i> Dashboard</a></li>
+            </ul>
+            <div class="hamburger">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Songs Content -->
+    <div class="songs-container">
+        <div class="page-header">
+            <h1><i class="fas fa-music"></i> Worship Songs Library</h1>
+            <p>Browse and manage your worship songs collection</p>
+        </div>
+        
+        <div class="search-bar">
+            <input type="text" id="searchInput" placeholder="Search songs by title, artist, or lyrics...">
+            <button id="searchBtn"><i class="fas fa-search"></i></button>
+        </div>
+        
+        <div class="songs-grid">
+            <!-- Song 1 -->
+            <div class="song-card">
+                <h3 class="song-title">Amazing Grace</h3>
+                <p class="song-artist">Traditional</p>
+                <span class="song-key">Key: G</span>
+                <p>Amazing grace, how sweet the sound, that saved a wretch like me...</p>
+                <div class="song-actions">
+                    <button class="action-btn primary"><i class="fas fa-play"></i> Play</button>
+                    <button class="action-btn secondary"><i class="fas fa-eye"></i> View Lyrics</button>
+                </div>
+            </div>
+            
+            <!-- Song 2 -->
+            <div class="song-card">
+                <h3 class="song-title">How Great Is Our God</h3>
+                <p class="song-artist">Chris Tomlin</p>
+                <span class="song-key">Key: D</span>
+                <p>The splendor of the King, clothed in majesty, let all the earth rejoice...</p>
+                <div class="song-actions">
+                    <button class="action-btn primary"><i class="fas fa-play"></i> Play</button>
+                    <button class="action-btn secondary"><i class="fas fa-eye"></i> View Lyrics</button>
+                </div>
+            </div>
+            
+            <!-- Song 3 -->
+            <div class="song-card">
+                <h3 class="song-title">Oceans (Where Feet May Fail)</h3>
+                <p class="song-artist">Hillsong UNITED</p>
+                <span class="song-key">Key: E</span>
+                <p>You call me out upon the waters, the great unknown where feet may fail...</p>
+                <div class="song-actions">
+                    <button class="action-btn primary"><i class="fas fa-play"></i> Play</button>
+                    <button class="action-btn secondary"><i class="fas fa-eye"></i> View Lyrics</button>
+                </div>
+            </div>
+            
+            <!-- Song 4 -->
+            <div class="song-card">
+                <h3 class="song-title">What A Beautiful Name</h3>
+                <p class="song-artist">Hillsong Worship</p>
+                <span class="song-key">Key: A</span>
+                <p>You were the Word at the beginning, one with God the Lord Most High...</p>
+                <div class="song-actions">
+                    <button class="action-btn primary"><i class="fas fa-play"></i> Play</button>
+                    <button class="action-btn secondary"><i class="fas fa-eye"></i> View Lyrics</button>
+                </div>
+            </div>
+            
+            <!-- Song 5 -->
+            <div class="song-card">
+                <h3 class="song-title">Good Good Father</h3>
+                <p class="song-artist">Chris Tomlin</p>
+                <span class="song-key">Key: C</span>
+                <p>I've heard a thousand stories of what they think You're like...</p>
+                <div class="song-actions">
+                    <button class="action-btn primary"><i class="fas fa-play"></i> Play</button>
+                    <button class="action-btn secondary"><i class="fas fa-eye"></i> View Lyrics</button>
+                </div>
+            </div>
+            
+            <!-- Song 6 -->
+            <div class="song-card">
+                <h3 class="song-title">Build My Life</h3>
+                <p class="song-artist">Pat Barrett</p>
+                <span class="song-key">Key: G</span>
+                <p>Worthy of every song we could ever sing, worthy of all the praise we could ever bring...</p>
+                <div class="song-actions">
+                    <button class="action-btn primary"><i class="fas fa-play"></i> Play</button>
+                    <button class="action-btn secondary"><i class="fas fa-eye"></i> View Lyrics</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-content">
+            <div class="footer-section">
+                <div class="logo">
+                    <i class="fas fa-church"></i>
+                    <span>WorshipFlow</span>
+                </div>
+                <p>Professional worship software for modern churches.</p>
+                <div class="social-icons">
+                    <a href="#"><i class="fab fa-facebook"></i></a>
+                    <a href="#"><i class="fab fa-youtube"></i></a>
+                    <a href="#"><i class="fab fa-twitter"></i></a>
+                    <a href="#"><i class="fab fa-instagram"></i></a>
+                </div>
+            </div>
+            
+            <div class="footer-section">
+                <h4>Quick Links</h4>
+                <ul>
+                    <li><a href="index.html">Home</a></li>
+                    <li><a href="live.html">Live Stream</a></li>
+                    <li><a href="songs.html">Songs</a></li>
+                    <li><a href="bible.html">Bible</a></li>
+                </ul>
+            </div>
+            
+            <div class="footer-section">
+                <h4>Resources</h4>
+                <ul>
+                    <li><a href="#">Documentation</a></li>
+                    <li><a href="#">Support</a></li>
+                    <li><a href="#">Privacy Policy</a></li>
+                    <li><a href="#">Terms of Service</a></li>
+                </ul>
+            </div>
+            
+            <div class="footer-section">
+                <h4>Contact</h4>
+                <p><i class="fas fa-envelope"></i> support@worshipflow.com</p>
+                <p><i class="fas fa-phone"></i> (555) 123-4567</p>
+            </div>
+        </div>
+        
+        <div class="footer-bottom">
+            <p>&copy; 2024 WorshipFlow. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script>
+        // Mobile Navigation
+        const hamburger = document.querySelector('.hamburger');
+        const navMenu = document.querySelector('.nav-menu');
+        
+        if (hamburger) {
+            hamburger.addEventListener('click', () => {
+                hamburger.classList.toggle('active');
+                navMenu.classList.toggle('active');
+            });
+            
+            document.querySelectorAll('.nav-menu a').forEach(link => {
+                link.addEventListener('click', () => {
+                    hamburger.classList.remove('active');
+                    navMenu.classList.remove('active');
+                });
+            });
+        }
+        
+        // Search Functionality
+        const searchInput = document.getElementById('searchInput');
+        const songCards = document.querySelectorAll('.song-card');
+        
+        if (searchInput) {
+            searchInput.addEventListener('input', (e) => {
+                const searchTerm = e.target.value.toLowerCase();
+                
+                songCards.forEach(card => {
+                    const title = card.querySelector('.song-title').textContent.toLowerCase();
+                    const artist = card.querySelector('.song-artist').textContent.toLowerCase();
+                    const content = card.querySelector('p').textContent.toLowerCase();
+                    
+                    if (title.includes(searchTerm) || artist.includes(searchTerm) || content.includes(searchTerm)) {
+                        card.style.display = 'block';
+                    } else {
+                        card.style.display = 'none';
+                    }
+                });
+            });
+        }
+        
+        // Song actions
+        document.querySelectorAll('.action-btn.primary').forEach(btn => {
+            btn.addEventListener('click', function() {
+                const songTitle = this.closest('.song-card').querySelector('.song-title').textContent;
+                alert(`Now playing: ${songTitle}`);
+            });
+        });
+        
+        document.querySelectorAll('.action-btn.secondary').forEach(btn => {
+            btn.addEventListener('click', function() {
+                const songTitle = this.closest('.song-card').querySelector('.song-title').textContent;
+                alert(`Opening lyrics for: ${songTitle}\n\nIn a full implementation, this would open a modal with complete lyrics.`);
+            });
+        });
+        
+        // Update current page active status
+        document.addEventListener('DOMContentLoaded', () => {
+            const navLinks = document.querySelectorAll('.nav-menu a');
+            navLinks.forEach(link => {
+                if (link.getAttribute('href') === 'songs.html') {
+                    link.classList.add('active');
+                } else {
+                    link.classList.remove('active');
+                }
+            });
+        });
+    </script>
+</body>
+</html>
