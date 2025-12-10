@@ -3,107 +3,101 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>WorshipFlow - Worship Software</title>
+    <title>WorshipFlow - Professional Worship Software</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Open+Sans:wght@400;600&display=swap" rel="stylesheet">
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
         :root {
-            --primary: #4a6fa5; --primary-dark: #385d8a; --secondary: #6d9dc5;
-            --accent: #ff6b6b; --light: #f8f9fa; --dark: #343a40; --gray: #6c757d;
-            --light-gray: #e9ecef; --shadow: 0 4px 6px rgba(0,0,0,0.1);
-            --shadow-lg: 0 10px 25px rgba(0,0,0,0.1); --radius: 8px;
+            --primary: #4361ee; --primary-dark: #3a56d4; --secondary: #4895ef;
+            --accent: #f72585; --light: #f8f9fa; --dark: #212529; --gray: #6c757d;
+            --light-gray: #e9ecef; --success: #4cc9f0; --warning: #f8961e;
+            --danger: #e63946; --shadow: 0 4px 6px rgba(0,0,0,0.1);
+            --shadow-lg: 0 10px 25px rgba(0,0,0,0.1); --radius: 10px;
             --transition: all 0.3s ease;
         }
-        body { font-family: 'Open Sans', sans-serif; line-height: 1.6; color: var(--dark); background: var(--light); }
-        h1,h2,h3,h4,h5,h6 { font-family: 'Poppins', sans-serif; font-weight: 600; line-height: 1.3; }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Open Sans', sans-serif; line-height: 1.6; color: var(--dark); background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); min-height: 100vh; }
+        h1,h2,h3,h4,h5,h6 { font-family: 'Poppins', sans-serif; font-weight: 600; }
         a { text-decoration: none; color: inherit; }
+        .container { max-width: 1200px; margin: 0 auto; padding: 0 20px; }
         
         /* Navigation */
-        .navbar { background: white; box-shadow: var(--shadow); position: sticky; top: 0; z-index: 1000; }
-        .nav-container { max-width: 1200px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center; padding: 1rem 2rem; }
+        .navbar { background: rgba(255,255,255,0.95); backdrop-filter: blur(10px); position: fixed; top: 0; width: 100%; z-index: 1000; box-shadow: var(--shadow); }
+        .nav-container { display: flex; justify-content: space-between; align-items: center; padding: 1rem 2rem; }
         .logo { display: flex; align-items: center; gap: 10px; font-size: 1.5rem; font-weight: 700; color: var(--primary); }
         .logo i { font-size: 1.8rem; }
-        .nav-menu { display: flex; list-style: none; gap: 2rem; align-items: center; }
+        .nav-menu { display: flex; list-style: none; gap: 1.5rem; align-items: center; }
         .nav-menu a { color: var(--dark); font-weight: 500; padding: 0.5rem 1rem; border-radius: var(--radius); transition: var(--transition); display: flex; align-items: center; gap: 8px; }
-        .nav-menu a:hover { color: var(--primary); background: var(--light-gray); }
-        .nav-menu a.active { color: var(--primary); background: rgba(74, 111, 165, 0.1); }
-        .btn-login { background: var(--primary); color: white !important; padding: 0.5rem 1.5rem !important; }
-        .btn-login:hover { background: var(--primary-dark) !important; }
+        .nav-menu a:hover { color: var(--primary); background: rgba(67, 97, 238, 0.1); }
+        .nav-menu a.active { color: white; background: var(--primary); }
+        .btn-login { background: var(--primary); color: white !important; padding: 0.6rem 1.8rem !important; }
         .hamburger { display: none; flex-direction: column; gap: 4px; cursor: pointer; }
         .hamburger span { width: 25px; height: 3px; background: var(--dark); border-radius: 2px; transition: var(--transition); }
         
         /* Hero Section */
-        .hero { padding: 4rem 2rem; background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%); display: grid; grid-template-columns: 1fr 1fr; gap: 4rem; align-items: center; max-width: 1200px; margin: 0 auto; }
-        .hero-content h1 { font-size: 3rem; margin-bottom: 1.5rem; color: var(--dark); }
-        .hero-content p { font-size: 1.2rem; color: var(--gray); margin-bottom: 2rem; }
-        .hero-buttons { display: flex; gap: 1rem; flex-wrap: wrap; }
-        .btn-primary, .btn-secondary { padding: 0.8rem 2rem; border-radius: var(--radius); font-weight: 600; display: inline-flex; align-items: center; gap: 10px; transition: var(--transition); border: none; cursor: pointer; font-size: 1rem; }
-        .btn-primary { background: var(--primary); color: white; }
-        .btn-primary:hover { background: var(--primary-dark); transform: translateY(-2px); box-shadow: var(--shadow-lg); }
+        .hero { padding: 8rem 2rem 4rem; background: linear-gradient(135deg, rgba(102,126,234,0.1) 0%, rgba(118,75,162,0.1) 100%); }
+        .hero-content { text-align: center; max-width: 800px; margin: 0 auto; }
+        .hero h1 { font-size: 3.5rem; margin-bottom: 1.5rem; background: linear-gradient(45deg, var(--primary), var(--accent)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .hero p { font-size: 1.2rem; color: var(--dark); margin-bottom: 2.5rem; opacity: 0.9; }
+        .hero-buttons { display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap; }
+        .btn { padding: 0.9rem 2.5rem; border-radius: var(--radius); font-weight: 600; display: inline-flex; align-items: center; gap: 10px; transition: var(--transition); border: none; cursor: pointer; font-size: 1rem; }
+        .btn-primary { background: var(--primary); color: white; box-shadow: 0 4px 15px rgba(67, 97, 238, 0.3); }
+        .btn-primary:hover { transform: translateY(-3px); box-shadow: 0 6px 20px rgba(67, 97, 238, 0.4); background: var(--primary-dark); }
         .btn-secondary { background: white; color: var(--primary); border: 2px solid var(--primary); }
-        .btn-secondary:hover { background: var(--light-gray); transform: translateY(-2px); }
+        .btn-secondary:hover { background: var(--primary); color: white; transform: translateY(-3px); }
         
-        .mockup-player { background: white; border-radius: var(--radius); overflow: hidden; box-shadow: var(--shadow-lg); max-width: 500px; margin: 0 auto; }
-        .mockup-header { background: var(--dark); color: white; padding: 1rem; display: flex; align-items: center; justify-content: space-between; }
-        .mockup-dots { display: flex; gap: 5px; }
-        .mockup-dots span { width: 12px; height: 12px; border-radius: 50%; background: rgba(255,255,255,0.3); }
-        .mockup-title { font-weight: 500; }
-        .mockup-video { height: 250px; background: linear-gradient(45deg, #667eea 0%, #764ba2 100%); display: flex; align-items: center; justify-content: center; position: relative; }
-        .live-indicator { background: #dc3545; color: white; padding: 0.5rem 1rem; border-radius: 20px; display: flex; align-items: center; gap: 8px; font-weight: 600; }
-        .live-dot { width: 8px; height: 8px; background: white; border-radius: 50%; animation: pulse 1.5s infinite; }
-        @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.5; } 100% { opacity: 1; } }
-        .mockup-controls { padding: 1rem; background: var(--light-gray); display: flex; justify-content: center; gap: 2rem; }
-        .mockup-controls i { font-size: 1.2rem; color: var(--gray); cursor: pointer; transition: var(--transition); }
-        .mockup-controls i:hover { color: var(--primary); }
+        /* Live Stream Preview */
+        .live-preview { max-width: 800px; margin: 3rem auto; background: white; border-radius: var(--radius); overflow: hidden; box-shadow: var(--shadow-lg); }
+        .live-header { background: var(--dark); color: white; padding: 1.2rem; display: flex; justify-content: space-between; align-items: center; }
+        .live-badge { background: var(--danger); color: white; padding: 0.5rem 1.5rem; border-radius: 20px; display: flex; align-items: center; gap: 8px; font-weight: 600; animation: pulse 2s infinite; }
+        @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.7; } }
+        .live-viewers { display: flex; align-items: center; gap: 5px; color: #ccc; }
+        .live-video { height: 300px; background: linear-gradient(45deg, #1a2980, #26d0ce); display: flex; align-items: center; justify-content: center; }
+        .live-info { padding: 1.5rem; }
+        .live-title { font-size: 1.5rem; margin-bottom: 0.5rem; color: var(--dark); }
         
         /* Features */
-        .features { padding: 5rem 2rem; max-width: 1200px; margin: 0 auto; }
-        .features h2 { text-align: center; font-size: 2.5rem; margin-bottom: 1rem; }
-        .section-subtitle { text-align: center; color: var(--gray); font-size: 1.1rem; margin-bottom: 3rem; }
-        .features-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 2rem; }
-        .feature-card { background: white; padding: 2rem; border-radius: var(--radius); box-shadow: var(--shadow); transition: var(--transition); text-align: center; }
-        .feature-card:hover { transform: translateY(-5px); box-shadow: var(--shadow-lg); }
-        .feature-icon { width: 70px; height: 70px; background: rgba(74,111,165,0.1); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 1.5rem; color: var(--primary); font-size: 1.8rem; }
+        .features { padding: 5rem 2rem; background: white; }
+        .section-title { text-align: center; font-size: 2.5rem; margin-bottom: 1rem; color: var(--dark); }
+        .section-subtitle { text-align: center; color: var(--gray); margin-bottom: 3rem; max-width: 600px; margin: 0 auto 3rem; }
+        .features-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 2rem; }
+        .feature-card { background: var(--light); padding: 2.5rem 2rem; border-radius: var(--radius); transition: var(--transition); border: 1px solid transparent; }
+        .feature-card:hover { transform: translateY(-10px); border-color: var(--primary); box-shadow: var(--shadow-lg); }
+        .feature-icon { width: 70px; height: 70px; background: linear-gradient(135deg, var(--primary), var(--secondary)); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 1.5rem; color: white; font-size: 1.8rem; }
         
-        /* Current Service */
-        .current-service { max-width: 1200px; margin: 0 auto 4rem; padding: 0 2rem; }
-        .service-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem; }
-        .service-header h2 { font-size: 2rem; display: flex; align-items: center; gap: 10px; }
-        .service-time { background: var(--primary); color: white; padding: 0.5rem 1.5rem; border-radius: 20px; font-weight: 600; }
-        .service-content { background: white; border-radius: var(--radius); padding: 2rem; box-shadow: var(--shadow); display: grid; grid-template-columns: 2fr 1fr; gap: 3rem; }
-        .service-details { display: grid; gap: 1.5rem; margin-bottom: 2rem; }
-        .detail-item { display: flex; align-items: center; gap: 1rem; }
-        .detail-item i { width: 40px; height: 40px; background: var(--light-gray); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: var(--primary); }
-        .schedule-list { list-style: none; }
-        .schedule-list li { display: flex; align-items: center; padding: 1rem 0; border-bottom: 1px solid var(--light-gray); }
-        .schedule-time { min-width: 60px; font-weight: 600; color: var(--primary); }
-        .schedule-item { margin-left: 1rem; }
+        /* Services */
+        .services { padding: 5rem 2rem; background: linear-gradient(135deg, rgba(67,97,238,0.05) 0%, rgba(248,37,133,0.05) 100%); }
+        .service-tabs { display: flex; justify-content: center; gap: 1rem; margin-bottom: 3rem; flex-wrap: wrap; }
+        .tab-btn { padding: 0.8rem 2rem; background: white; border: 2px solid var(--light-gray); border-radius: var(--radius); cursor: pointer; transition: var(--transition); font-weight: 500; }
+        .tab-btn.active { background: var(--primary); color: white; border-color: var(--primary); }
+        .service-content { background: white; border-radius: var(--radius); padding: 2.5rem; box-shadow: var(--shadow); }
+        .service-schedule { list-style: none; }
+        .schedule-item { display: flex; padding: 1.2rem 0; border-bottom: 1px solid var(--light-gray); align-items: center; }
+        .schedule-time { min-width: 100px; font-weight: 600; color: var(--primary); background: rgba(67,97,238,0.1); padding: 0.5rem 1rem; border-radius: var(--radius); }
+        .schedule-details { margin-left: 1.5rem; }
         
         /* Footer */
-        .footer { background: var(--dark); color: white; padding-top: 3rem; }
-        .footer-content { max-width: 1200px; margin: 0 auto; padding: 0 2rem 3rem; display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 3rem; }
-        .footer-section .logo { color: white; margin-bottom: 1rem; }
-        .social-icons { display: flex; gap: 1rem; }
+        .footer { background: var(--dark); color: white; padding: 4rem 2rem 2rem; }
+        .footer-content { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 3rem; margin-bottom: 3rem; }
+        .social-icons { display: flex; gap: 1rem; margin-top: 1.5rem; }
         .social-icons a { width: 40px; height: 40px; background: rgba(255,255,255,0.1); border-radius: 50%; display: flex; align-items: center; justify-content: center; transition: var(--transition); }
         .social-icons a:hover { background: var(--primary); transform: translateY(-3px); }
-        .footer-bottom { border-top: 1px solid rgba(255,255,255,0.1); padding: 1.5rem 0; text-align: center; color: rgba(255,255,255,0.6); }
+        .footer-links ul { list-style: none; }
+        .footer-links li { margin-bottom: 0.8rem; }
+        .footer-links a { color: #ccc; transition: var(--transition); }
+        .footer-links a:hover { color: white; padding-left: 5px; }
+        .footer-bottom { text-align: center; padding-top: 2rem; border-top: 1px solid rgba(255,255,255,0.1); color: #999; }
         
         /* Responsive */
-        @media (max-width: 992px) {
-            .hero { grid-template-columns: 1fr; text-align: center; gap: 3rem; }
-            .hero-content h1 { font-size: 2.5rem; }
-            .service-content { grid-template-columns: 1fr; }
-        }
         @media (max-width: 768px) {
+            .hamburger { display: flex; }
             .nav-menu { position: fixed; left: -100%; top: 70px; flex-direction: column; background: white; width: 100%; text-align: center; transition: 0.3s; box-shadow: var(--shadow); padding: 2rem 0; gap: 0; }
             .nav-menu.active { left: 0; }
             .nav-menu li { width: 100%; }
-            .nav-menu a { padding: 1rem; justify-content: center; }
-            .hamburger { display: flex; }
-            .hero-content h1 { font-size: 2rem; }
-            .features h2 { font-size: 2rem; }
-            .service-header { flex-direction: column; gap: 1rem; align-items: flex-start; }
+            .nav-menu a { padding: 1.2rem; justify-content: center; }
+            .hero { padding: 6rem 1rem 3rem; }
+            .hero h1 { font-size: 2.5rem; }
+            .features-grid { grid-template-columns: 1fr; }
         }
     </style>
 </head>
@@ -117,7 +111,7 @@
             </div>
             <ul class="nav-menu">
                 <li><a href="index.html" class="active"><i class="fas fa-home"></i> Home</a></li>
-                <li><a href="live.html"><i class="fas fa-broadcast-tower"></i> Live Stream</a></li>
+                <li><a href="live.html"><i class="fas fa-broadcast-tower"></i> Live</a></li>
                 <li><a href="songs.html"><i class="fas fa-music"></i> Songs</a></li>
                 <li><a href="bible.html"><i class="fas fa-bible"></i> Bible</a></li>
                 <li><a href="events.html"><i class="fas fa-calendar-alt"></i> Events</a></li>
@@ -134,239 +128,266 @@
     <!-- Hero Section -->
     <section class="hero">
         <div class="hero-content">
-            <h1>Streamlined Worship Experience</h1>
-            <p>Professional worship software with live streaming, song management, and event planning</p>
+            <h1>Professional Worship Software</h1>
+            <p>Streamline your worship services with live streaming, song management, Bible tools, and event planning. All in one platform.</p>
             <div class="hero-buttons">
-                <a href="live.html" class="btn-primary">
-                    <i class="fas fa-play-circle"></i> Go Live Now
+                <a href="live.html" class="btn btn-primary">
+                    <i class="fas fa-play-circle"></i> Start Live Stream
                 </a>
-                <a href="dashboard.html" class="btn-secondary">
-                    <i class="fas fa-tachometer-alt"></i> Open Dashboard
+                <a href="dashboard.html" class="btn btn-secondary">
+                    <i class="fas fa-rocket"></i> Launch Dashboard
                 </a>
-            </div>
-        </div>
-        <div class="hero-image">
-            <div class="mockup-player">
-                <div class="mockup-header">
-                    <div class="mockup-dots">
-                        <span></span>
-                        <span></span>
-                        <span></span>
-                    </div>
-                    <div class="mockup-title">Live Worship Service</div>
-                </div>
-                <div class="mockup-video">
-                    <div class="live-indicator">
-                        <span class="live-dot"></span>
-                        LIVE
-                    </div>
-                </div>
-                <div class="mockup-controls">
-                    <i class="fas fa-play"></i>
-                    <i class="fas fa-volume-up"></i>
-                    <i class="fas fa-expand"></i>
-                </div>
             </div>
         </div>
     </section>
 
-    <!-- Features Section -->
+    <!-- Live Stream Preview -->
+    <section class="live-preview">
+        <div class="live-header">
+            <div class="live-badge">
+                <i class="fas fa-circle"></i> LIVE NOW
+            </div>
+            <div class="live-viewers">
+                <i class="fas fa-eye"></i> <span id="viewerCount">1,247</span> watching
+            </div>
+        </div>
+        <div class="live-video">
+            <div style="text-align: center; color: white;">
+                <i class="fas fa-broadcast-tower" style="font-size: 4rem; margin-bottom: 1rem;"></i>
+                <h2 style="font-size: 1.8rem; margin-bottom: 0.5rem;">Sunday Worship Service</h2>
+                <p>Live from Main Sanctuary</p>
+            </div>
+        </div>
+        <div class="live-info">
+            <h3 class="live-title">Sunday Morning Worship</h3>
+            <p>Join us for powerful worship and teaching from God's Word. Today's message: "Living by Faith"</p>
+            <a href="live.html" class="btn btn-primary" style="margin-top: 1rem;">
+                <i class="fas fa-play"></i> Join Live Stream
+            </a>
+        </div>
+    </section>
+
+    <!-- Features -->
     <section class="features">
-        <h2>Complete Worship Solution</h2>
-        <p class="section-subtitle">Everything you need for modern worship services</p>
-        
-        <div class="features-grid">
-            <div class="feature-card">
-                <div class="feature-icon">
-                    <i class="fas fa-broadcast-tower"></i>
-                </div>
-                <h3>Live Streaming</h3>
-                <p>Broadcast your services live with high-quality video and audio streaming.</p>
-            </div>
+        <div class="container">
+            <h2 class="section-title">Complete Worship Solution</h2>
+            <p class="section-subtitle">Everything you need to manage modern worship services in one platform</p>
             
-            <div class="feature-card">
-                <div class="feature-icon">
-                    <i class="fas fa-music"></i>
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-broadcast-tower"></i>
+                    </div>
+                    <h3>Live Streaming</h3>
+                    <p>HD video streaming with real-time chat, viewer analytics, and multi-platform broadcasting.</p>
                 </div>
-                <h3>Song Management</h3>
-                <p>Organize lyrics, chords, and presentations for your worship team.</p>
-            </div>
-            
-            <div class="feature-card">
-                <div class="feature-icon">
-                    <i class="fas fa-bible"></i>
+                
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-music"></i>
+                    </div>
+                    <h3>Song Library</h3>
+                    <p>Organize lyrics, chords, and media files. Create setlists and share with your team.</p>
                 </div>
-                <h3>Bible Integration</h3>
-                <p>Access multiple translations and create verse presentations.</p>
-            </div>
-            
-            <div class="feature-card">
-                <div class="feature-icon">
-                    <i class="fas fa-calendar-alt"></i>
+                
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-bible"></i>
+                    </div>
+                    <h3>Bible Tools</h3>
+                    <p>Multiple translations, verse search, sermon notes, and presentation mode.</p>
                 </div>
-                <h3>Event Planning</h3>
-                <p>Schedule services, rehearsals, and special events.</p>
+                
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-calendar-alt"></i>
+                    </div>
+                    <h3>Event Management</h3>
+                    <p>Schedule services, manage volunteers, send reminders, and track attendance.</p>
+                </div>
             </div>
         </div>
     </section>
 
-    <!-- Current Service Section -->
-    <section class="current-service">
-        <div class="service-header">
-            <h2><i class="fas fa-calendar-check"></i> Today's Service</h2>
-            <span class="service-time">10:00 AM - 12:00 PM</span>
-        </div>
-        
-        <div class="service-content">
-            <div class="service-info">
-                <h3>Sunday Morning Worship</h3>
-                <p>Join us for a powerful time of worship and teaching from the Word of God.</p>
-                
-                <div class="service-details">
-                    <div class="detail-item">
-                        <i class="fas fa-user"></i>
-                        <div>
-                            <strong>Speaker:</strong>
-                            <span>Pastor John Smith</span>
-                        </div>
-                    </div>
-                    <div class="detail-item">
-                        <i class="fas fa-music"></i>
-                        <div>
-                            <strong>Worship Leader:</strong>
-                            <span>Sarah Johnson</span>
-                        </div>
-                    </div>
-                    <div class="detail-item">
-                        <i class="fas fa-map-marker-alt"></i>
-                        <div>
-                            <strong>Location:</strong>
-                            <span>Main Sanctuary</span>
-                        </div>
-                    </div>
-                </div>
-                
-                <a href="live.html" class="btn-primary">
-                    <i class="fas fa-video"></i> Join Service
-                </a>
+    <!-- Services Schedule -->
+    <section class="services">
+        <div class="container">
+            <h2 class="section-title">Weekly Services</h2>
+            <p class="section-subtitle">Join us for worship throughout the week</p>
+            
+            <div class="service-tabs">
+                <button class="tab-btn active" data-day="sunday">Sunday</button>
+                <button class="tab-btn" data-day="wednesday">Wednesday</button>
+                <button class="tab-btn" data-day="friday">Friday</button>
+                <button class="tab-btn" data-day="special">Special Events</button>
             </div>
             
-            <div class="service-schedule">
-                <h4>Order of Service</h4>
-                <ul class="schedule-list">
-                    <li>
-                        <span class="schedule-time">10:00</span>
-                        <span class="schedule-item">Worship Through Song</span>
-                    </li>
-                    <li>
-                        <span class="schedule-time">10:30</span>
-                        <span class="schedule-item">Announcements & Prayer</span>
-                    </li>
-                    <li>
-                        <span class="schedule-time">10:45</span>
-                        <span class="schedule-item">Message: "Faith in Action"</span>
-                    </li>
-                    <li>
-                        <span class="schedule-time">11:30</span>
-                        <span class="schedule-item">Response & Closing Worship</span>
-                    </li>
-                </ul>
+            <div class="service-content">
+                <div id="sunday-service" class="service-details active">
+                    <h3>Sunday Services</h3>
+                    <ul class="service-schedule">
+                        <li class="schedule-item">
+                            <span class="schedule-time">8:30 AM</span>
+                            <div class="schedule-details">
+                                <strong>Traditional Service</strong>
+                                <p>Classic hymns and liturgy</p>
+                            </div>
+                        </li>
+                        <li class="schedule-item">
+                            <span class="schedule-time">10:00 AM</span>
+                            <div class="schedule-details">
+                                <strong>Contemporary Worship</strong>
+                                <p>Modern worship with full band</p>
+                            </div>
+                        </li>
+                        <li class="schedule-item">
+                            <span class="schedule-time">11:30 AM</span>
+                            <div class="schedule-details">
+                                <strong>Youth Service</strong>
+                                <p>High-energy worship for youth</p>
+                            </div>
+                        </li>
+                        <li class="schedule-item">
+                            <span class="schedule-time">6:00 PM</span>
+                            <div class="schedule-details">
+                                <strong>Evening Service</strong>
+                                <p>Teaching and prayer</p>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+                
+                <div id="wednesday-service" class="service-details" style="display: none;">
+                    <h3>Wednesday Midweek</h3>
+                    <ul class="service-schedule">
+                        <li class="schedule-item">
+                            <span class="schedule-time">6:30 PM</span>
+                            <div class="schedule-details">
+                                <strong>Prayer Meeting</strong>
+                                <p>Corporate prayer and intercession</p>
+                            </div>
+                        </li>
+                        <li class="schedule-item">
+                            <span class="schedule-time">7:00 PM</span>
+                            <div class="schedule-details">
+                                <strong>Bible Study</strong>
+                                <p>In-depth study of God's Word</p>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
             </div>
         </div>
     </section>
 
     <!-- Footer -->
     <footer class="footer">
-        <div class="footer-content">
-            <div class="footer-section">
-                <div class="logo">
-                    <i class="fas fa-church"></i>
-                    <span>WorshipFlow</span>
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <div class="logo">
+                        <i class="fas fa-church"></i>
+                        <span>WorshipFlow</span>
+                    </div>
+                    <p>Professional worship software for churches of all sizes. Streamline your ministry with our all-in-one platform.</p>
+                    <div class="social-icons">
+                        <a href="#"><i class="fab fa-facebook-f"></i></a>
+                        <a href="#"><i class="fab fa-youtube"></i></a>
+                        <a href="#"><i class="fab fa-twitter"></i></a>
+                        <a href="#"><i class="fab fa-instagram"></i></a>
+                    </div>
                 </div>
-                <p>Professional worship software for modern churches.</p>
-                <div class="social-icons">
-                    <a href="#"><i class="fab fa-facebook"></i></a>
-                    <a href="#"><i class="fab fa-youtube"></i></a>
-                    <a href="#"><i class="fab fa-twitter"></i></a>
-                    <a href="#"><i class="fab fa-instagram"></i></a>
+                
+                <div class="footer-section footer-links">
+                    <h4>Platform</h4>
+                    <ul>
+                        <li><a href="live.html">Live Streaming</a></li>
+                        <li><a href="songs.html">Song Management</a></li>
+                        <li><a href="bible.html">Bible Tools</a></li>
+                        <li><a href="events.html">Event Planning</a></li>
+                    </ul>
+                </div>
+                
+                <div class="footer-section footer-links">
+                    <h4>Resources</h4>
+                    <ul>
+                        <li><a href="#">Documentation</a></li>
+                        <li><a href="#">Tutorials</a></li>
+                        <li><a href="#">API</a></li>
+                        <li><a href="#">Support</a></li>
+                    </ul>
+                </div>
+                
+                <div class="footer-section">
+                    <h4>Contact Us</h4>
+                    <p><i class="fas fa-envelope"></i> support@worshipflow.com</p>
+                    <p><i class="fas fa-phone"></i> (888) 555-1234</p>
+                    <p><i class="fas fa-map-marker-alt"></i> 123 Church St, Anytown</p>
                 </div>
             </div>
             
-            <div class="footer-section">
-                <h4>Quick Links</h4>
-                <ul>
-                    <li><a href="index.html">Home</a></li>
-                    <li><a href="live.html">Live Stream</a></li>
-                    <li><a href="songs.html">Songs</a></li>
-                    <li><a href="bible.html">Bible</a></li>
-                </ul>
+            <div class="footer-bottom">
+                <p>&copy; 2024 WorshipFlow. All rights reserved. | <a href="#" style="color: #999;">Privacy Policy</a> | <a href="#" style="color: #999;">Terms of Service</a></p>
             </div>
-            
-            <div class="footer-section">
-                <h4>Resources</h4>
-                <ul>
-                    <li><a href="#">Documentation</a></li>
-                    <li><a href="#">Support</a></li>
-                    <li><a href="#">Privacy Policy</a></li>
-                    <li><a href="#">Terms of Service</a></li>
-                </ul>
-            </div>
-            
-            <div class="footer-section">
-                <h4>Contact</h4>
-                <p><i class="fas fa-envelope"></i> support@worshipflow.com</p>
-                <p><i class="fas fa-phone"></i> (555) 123-4567</p>
-            </div>
-        </div>
-        
-        <div class="footer-bottom">
-            <p>&copy; 2024 WorshipFlow. All rights reserved.</p>
         </div>
     </footer>
 
     <script>
-        // Mobile Navigation Toggle
+        // Mobile Navigation
         const hamburger = document.querySelector('.hamburger');
         const navMenu = document.querySelector('.nav-menu');
         
-        if (hamburger) {
-            hamburger.addEventListener('click', () => {
-                hamburger.classList.toggle('active');
-                navMenu.classList.toggle('active');
+        hamburger.addEventListener('click', () => {
+            hamburger.classList.toggle('active');
+            navMenu.classList.toggle('active');
+        });
+        
+        // Close menu when clicking links
+        document.querySelectorAll('.nav-menu a').forEach(link => {
+            link.addEventListener('click', () => {
+                hamburger.classList.remove('active');
+                navMenu.classList.remove('active');
             });
-            
-            document.querySelectorAll('.nav-menu a').forEach(link => {
-                link.addEventListener('click', () => {
-                    hamburger.classList.remove('active');
-                    navMenu.classList.remove('active');
-                });
+        });
+        
+        // Service Tabs
+        const tabBtns = document.querySelectorAll('.tab-btn');
+        const serviceDetails = document.querySelectorAll('.service-details');
+        
+        tabBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                // Remove active class from all tabs
+                tabBtns.forEach(b => b.classList.remove('active'));
+                // Hide all service details
+                serviceDetails.forEach(detail => detail.style.display = 'none');
+                
+                // Add active class to clicked tab
+                btn.classList.add('active');
+                // Show corresponding service details
+                const day = btn.dataset.day;
+                document.getElementById(`${day}-service`).style.display = 'block';
             });
+        });
+        
+        // Update viewer count
+        function updateViewerCount() {
+            const viewerCount = document.getElementById('viewerCount');
+            const current = parseInt(viewerCount.textContent.replace(/,/g, ''));
+            const change = Math.floor(Math.random() * 21) - 10; // -10 to +10
+            const newCount = Math.max(current + change, 1200);
+            viewerCount.textContent = newCount.toLocaleString();
         }
         
-        // Add active class to current page
+        setInterval(updateViewerCount, 30000); // Update every 30 seconds
+        
+        // Set active navigation
         document.addEventListener('DOMContentLoaded', () => {
-            const currentPage = window.location.pathname.split('/').pop() || 'index.html';
-            const navLinks = document.querySelectorAll('.nav-menu a');
-            
-            navLinks.forEach(link => {
-                const linkPage = link.getAttribute('href');
-                if (linkPage === currentPage || 
-                    (currentPage === '' && linkPage === 'index.html')) {
+            document.querySelectorAll('.nav-menu a').forEach(link => {
+                if (link.getAttribute('href') === 'index.html') {
                     link.classList.add('active');
                 }
             });
-            
-            // Update current time
-            updateCurrentTime();
-            setInterval(updateCurrentTime, 60000);
         });
-        
-        function updateCurrentTime() {
-            const now = new Date();
-            const timeString = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-            const timeElements = document.querySelectorAll('.current-time');
-            timeElements.forEach(el => el.textContent = timeString);
-        }
     </script>
 </body>
 </html>
