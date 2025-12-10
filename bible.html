@@ -3,79 +3,111 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bible - WorshipFlow</title>
+    <title>Bible Study - WorshipFlow</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Open+Sans:wght@400;600&display=swap" rel="stylesheet">
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
         :root {
-            --primary: #4a6fa5; --primary-dark: #385d8a; --secondary: #6d9dc5;
-            --accent: #ff6b6b; --light: #f8f9fa; --dark: #343a40; --gray: #6c757d;
-            --light-gray: #e9ecef; --shadow: 0 4px 6px rgba(0,0,0,0.1);
-            --shadow-lg: 0 10px 25px rgba(0,0,0,0.1); --radius: 8px;
+            --primary: #4361ee; --primary-dark: #3a56d4; --secondary: #4895ef;
+            --accent: #f72585; --light: #f8f9fa; --dark: #212529; --gray: #6c757d;
+            --light-gray: #e9ecef; --success: #4cc9f0; --warning: #f8961e;
+            --danger: #e63946; --shadow: 0 4px 6px rgba(0,0,0,0.1);
+            --shadow-lg: 0 10px 25px rgba(0,0,0,0.1); --radius: 10px;
             --transition: all 0.3s ease;
         }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
         body { font-family: 'Open Sans', sans-serif; line-height: 1.6; color: var(--dark); background: var(--light); }
-        h1,h2,h3,h4,h5,h6 { font-family: 'Poppins', sans-serif; font-weight: 600; line-height: 1.3; }
+        h1,h2,h3,h4,h5,h6 { font-family: 'Poppins', sans-serif; font-weight: 600; }
         a { text-decoration: none; color: inherit; }
+        .container { max-width: 1400px; margin: 0 auto; padding: 0 20px; }
         
         /* Navigation */
-        .navbar { background: white; box-shadow: var(--shadow); position: sticky; top: 0; z-index: 1000; }
-        .nav-container { max-width: 1200px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center; padding: 1rem 2rem; }
+        .navbar { background: white; box-shadow: var(--shadow); position: sticky; top: 0; width: 100%; z-index: 1000; }
+        .nav-container { display: flex; justify-content: space-between; align-items: center; padding: 1rem 2rem; }
         .logo { display: flex; align-items: center; gap: 10px; font-size: 1.5rem; font-weight: 700; color: var(--primary); }
         .logo i { font-size: 1.8rem; }
-        .nav-menu { display: flex; list-style: none; gap: 2rem; align-items: center; }
+        .nav-menu { display: flex; list-style: none; gap: 1.5rem; align-items: center; }
         .nav-menu a { color: var(--dark); font-weight: 500; padding: 0.5rem 1rem; border-radius: var(--radius); transition: var(--transition); display: flex; align-items: center; gap: 8px; }
-        .nav-menu a:hover { color: var(--primary); background: var(--light-gray); }
-        .nav-menu a.active { color: var(--primary); background: rgba(74, 111, 165, 0.1); }
-        .btn-login { background: var(--primary); color: white !important; padding: 0.5rem 1.5rem !important; }
-        .btn-login:hover { background: var(--primary-dark) !important; }
+        .nav-menu a:hover { color: var(--primary); background: rgba(67,97,238,0.1); }
+        .nav-menu a.active { color: white; background: var(--primary); }
+        .btn-login { background: var(--primary); color: white !important; padding: 0.6rem 1.8rem !important; }
         .hamburger { display: none; flex-direction: column; gap: 4px; cursor: pointer; }
         .hamburger span { width: 25px; height: 3px; background: var(--dark); border-radius: 2px; transition: var(--transition); }
         
-        /* Bible Page Specific */
-        .bible-container { max-width: 1200px; margin: 2rem auto; padding: 0 2rem; }
-        .page-header { margin-bottom: 2rem; }
-        .page-header h1 { font-size: 2.5rem; margin-bottom: 0.5rem; }
+        /* Bible Container */
+        .bible-container { padding: 6rem 0 3rem; }
+        .page-header { text-align: center; margin-bottom: 3rem; }
+        .page-header h1 { font-size: 2.8rem; margin-bottom: 0.5rem; color: var(--dark); }
+        .page-header p { color: var(--gray); font-size: 1.1rem; max-width: 600px; margin: 0 auto; }
         
-        .bible-layout { display: grid; grid-template-columns: 1fr 2fr 1fr; gap: 2rem; }
-        .bible-books { background: white; border-radius: var(--radius); padding: 1.5rem; box-shadow: var(--shadow); }
-        .bible-content { background: white; border-radius: var(--radius); padding: 2rem; box-shadow: var(--shadow); }
-        .bible-notes { background: white; border-radius: var(--radius); padding: 1.5rem; box-shadow: var(--shadow); }
+        /* Bible Layout */
+        .bible-layout { display: grid; grid-template-columns: 300px 1fr 350px; gap: 2rem; }
         
-        .book-list { list-style: none; max-height: 500px; overflow-y: auto; }
-        .book-item { padding: 0.8rem; border-bottom: 1px solid var(--light-gray); cursor: pointer; transition: var(--transition); }
-        .book-item:hover { background: var(--light-gray); color: var(--primary); }
+        /* Books Panel */
+        .books-panel { background: white; border-radius: var(--radius); padding: 1.5rem; box-shadow: var(--shadow); height: fit-content; }
+        .books-search { margin-bottom: 1.5rem; }
+        .books-search input { width: 100%; padding: 0.8rem 1rem; border: 2px solid var(--light-gray); border-radius: var(--radius); font-size: 1rem; }
+        .books-list { max-height: 500px; overflow-y: auto; }
+        .book-category { margin-bottom: 1.5rem; }
+        .category-title { font-weight: 600; color: var(--primary); margin-bottom: 0.8rem; padding-bottom: 0.5rem; border-bottom: 2px solid var(--light-gray); }
+        .book-items { display: grid; grid-template-columns: repeat(2, 1fr); gap: 0.5rem; }
+        .book-item { padding: 0.6rem; text-align: center; background: var(--light); border-radius: var(--radius); cursor: pointer; transition: var(--transition); font-size: 0.9rem; }
+        .book-item:hover { background: rgba(67,97,238,0.1); color: var(--primary); }
         .book-item.active { background: var(--primary); color: white; }
         
-        .verse-display { margin: 2rem 0; }
-        .verse-text { font-size: 1.2rem; line-height: 1.8; margin-bottom: 1rem; font-style: italic; }
-        .verse-reference { color: var(--primary); font-weight: 600; margin-bottom: 2rem; }
+        /* Bible Reader */
+        .bible-reader { background: white; border-radius: var(--radius); padding: 2rem; box-shadow: var(--shadow); }
+        .reader-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem; padding-bottom: 1rem; border-bottom: 2px solid var(--light-gray); }
+        .verse-reference { font-size: 1.5rem; color: var(--primary); font-weight: 600; }
+        .translation-select { padding: 0.5rem 1rem; border: 2px solid var(--light-gray); border-radius: var(--radius); background: white; }
+        .reader-content { min-height: 500px; }
+        .verse { margin-bottom: 1.5rem; padding: 1rem; border-radius: var(--radius); transition: var(--transition); }
+        .verse:hover { background: rgba(67,97,238,0.05); }
+        .verse-number { color: var(--primary); font-weight: 600; margin-right: 0.5rem; }
+        .verse-text { line-height: 1.8; }
+        .chapter-nav { display: flex; justify-content: space-between; align-items: center; margin-top: 2rem; padding-top: 1.5rem; border-top: 2px solid var(--light-gray); }
+        .nav-btn { padding: 0.8rem 1.5rem; background: var(--primary); color: white; border: none; border-radius: var(--radius); cursor: pointer; display: flex; align-items: center; gap: 8px; transition: var(--transition); }
+        .nav-btn:hover { background: var(--primary-dark); transform: translateY(-2px); }
+        .nav-btn:disabled { background: var(--light-gray); color: var(--gray); cursor: not-allowed; }
         
-        .chapter-nav { display: flex; justify-content: space-between; align-items: center; margin: 2rem 0; }
-        .nav-btn { background: var(--light-gray); border: none; padding: 0.8rem 1.5rem; border-radius: var(--radius); cursor: pointer; display: flex; align-items: center; gap: 10px; }
+        /* Notes Panel */
+        .notes-panel { background: white; border-radius: var(--radius); padding: 1.5rem; box-shadow: var(--shadow); height: fit-content; }
+        .notes-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; }
+        .notes-tabs { display: flex; gap: 0.5rem; margin-bottom: 1.5rem; }
+        .notes-tab { flex: 1; padding: 0.8rem; text-align: center; background: var(--light); border: none; border-radius: var(--radius); cursor: pointer; transition: var(--transition); }
+        .notes-tab.active { background: var(--primary); color: white; }
+        .notes-content { min-height: 300px; }
+        textarea { width: 100%; padding: 1rem; border: 2px solid var(--light-gray); border-radius: var(--radius); font-family: inherit; font-size: 1rem; min-height: 200px; resize: vertical; }
+        .notes-list { list-style: none; }
+        .note-item { padding: 1rem; margin-bottom: 1rem; background: var(--light); border-radius: var(--radius); border-left: 3px solid var(--primary); }
+        .note-reference { font-weight: 600; color: var(--primary); margin-bottom: 0.5rem; }
         
-        textarea { width: 100%; padding: 1rem; border: 1px solid var(--light-gray); border-radius: var(--radius); margin-top: 1rem; font-family: inherit; }
+        /* Verse of the Day */
+        .verse-of-day { background: linear-gradient(135deg, var(--primary), var(--secondary)); color: white; padding: 2rem; border-radius: var(--radius); margin-top: 3rem; text-align: center; }
+        .verse-of-day h3 { margin-bottom: 1rem; }
+        .verse-text { font-size: 1.2rem; font-style: italic; margin-bottom: 1rem; line-height: 1.8; }
         
         /* Footer */
-        .footer { background: var(--dark); color: white; padding-top: 3rem; margin-top: 3rem; }
-        .footer-content { max-width: 1200px; margin: 0 auto; padding: 0 2rem 3rem; display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 3rem; }
-        .footer-section .logo { color: white; margin-bottom: 1rem; }
-        .social-icons { display: flex; gap: 1rem; }
+        .footer { background: var(--dark); color: white; padding: 3rem 2rem 2rem; margin-top: 3rem; }
+        .footer-content { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 3rem; margin-bottom: 2rem; }
+        .social-icons { display: flex; gap: 1rem; margin-top: 1.5rem; }
         .social-icons a { width: 40px; height: 40px; background: rgba(255,255,255,0.1); border-radius: 50%; display: flex; align-items: center; justify-content: center; transition: var(--transition); }
         .social-icons a:hover { background: var(--primary); transform: translateY(-3px); }
-        .footer-bottom { border-top: 1px solid rgba(255,255,255,0.1); padding: 1.5rem 0; text-align: center; color: rgba(255,255,255,0.6); }
+        .footer-bottom { text-align: center; padding-top: 2rem; border-top: 1px solid rgba(255,255,255,0.1); color: #999; }
         
         /* Responsive */
-        @media (max-width: 992px) {
-            .bible-layout { grid-template-columns: 1fr; }
+        @media (max-width: 1200px) {
+            .bible-layout { grid-template-columns: 250px 1fr; }
+            .notes-panel { grid-column: 1 / -1; }
         }
         @media (max-width: 768px) {
+            .hamburger { display: flex; }
             .nav-menu { position: fixed; left: -100%; top: 70px; flex-direction: column; background: white; width: 100%; text-align: center; transition: 0.3s; box-shadow: var(--shadow); padding: 2rem 0; gap: 0; }
             .nav-menu.active { left: 0; }
             .nav-menu li { width: 100%; }
-            .nav-menu a { padding: 1rem; justify-content: center; }
-            .hamburger { display: flex; }
+            .nav-menu a { padding: 1.2rem; justify-content: center; }
+            .bible-layout { grid-template-columns: 1fr; }
+            .reader-header { flex-direction: column; gap: 1rem; align-items: flex-start; }
         }
     </style>
 </head>
@@ -89,7 +121,7 @@
             </div>
             <ul class="nav-menu">
                 <li><a href="index.html"><i class="fas fa-home"></i> Home</a></li>
-                <li><a href="live.html"><i class="fas fa-broadcast-tower"></i> Live Stream</a></li>
+                <li><a href="live.html"><i class="fas fa-broadcast-tower"></i> Live</a></li>
                 <li><a href="songs.html"><i class="fas fa-music"></i> Songs</a></li>
                 <li><a href="bible.html" class="active"><i class="fas fa-bible"></i> Bible</a></li>
                 <li><a href="events.html"><i class="fas fa-calendar-alt"></i> Events</a></li>
@@ -103,259 +135,541 @@
         </div>
     </nav>
 
-    <!-- Bible Content -->
+    <!-- Bible Study -->
     <div class="bible-container">
-        <div class="page-header">
-            <h1><i class="fas fa-bible"></i> Bible Reader</h1>
-            <p>Read and study God's Word</p>
-        </div>
-        
-        <div class="bible-layout">
-            <div class="bible-books">
-                <h3>Books of the Bible</h3>
-                <ul class="book-list">
-                    <li class="book-item active" data-book="john">John</li>
-                    <li class="book-item" data-book="psalms">Psalms</li>
-                    <li class="book-item" data-book="matthew">Matthew</li>
-                    <li class="book-item" data-book="romans">Romans</li>
-                    <li class="book-item" data-book="genesis">Genesis</li>
-                    <li class="book-item" data-book="isaiah">Isaiah</li>
-                    <li class="book-item" data-book="corinthians">1 Corinthians</li>
-                    <li class="book-item" data-book="hebrews">Hebrews</li>
-                </ul>
+        <div class="container">
+            <!-- Page Header -->
+            <div class="page-header">
+                <h1><i class="fas fa-bible"></i> Bible Study Tools</h1>
+                <p>Read, study, and take notes on God's Word with multiple translations and study tools.</p>
             </div>
             
-            <div class="bible-content">
-                <div class="verse-of-day">
-                    <h3><i class="fas fa-star"></i> Verse of the Day</h3>
-                    <div class="verse-display">
-                        <p class="verse-text" id="verseText">For God so loved the world that he gave his one and only Son, that whoever believes in him shall not perish but have eternal life.</p>
-                        <p class="verse-reference" id="verseRef">John 3:16 (NIV)</p>
+            <!-- Bible Layout -->
+            <div class="bible-layout">
+                <!-- Books Panel -->
+                <div class="books-panel">
+                    <div class="books-search">
+                        <input type="text" id="bookSearch" placeholder="Search books...">
+                    </div>
+                    <div class="books-list" id="booksList">
+                        <!-- Books will be loaded dynamically -->
                     </div>
                 </div>
                 
-                <div class="chapter-nav">
-                    <button class="nav-btn" id="prevChapter">
-                        <i class="fas fa-chevron-left"></i> Previous
-                    </button>
-                    <span>Chapter <span id="currentChapter">3</span></span>
-                    <button class="nav-btn" id="nextChapter">
-                        Next <i class="fas fa-chevron-right"></i>
-                    </button>
+                <!-- Bible Reader -->
+                <div class="bible-reader">
+                    <div class="reader-header">
+                        <div class="verse-reference" id="currentReference">John 3:16</div>
+                        <select class="translation-select" id="translationSelect">
+                            <option value="niv">NIV - New International Version</option>
+                            <option value="esv">ESV - English Standard Version</option>
+                            <option value="nlt">NLT - New Living Translation</option>
+                            <option value="kjv">KJV - King James Version</option>
+                            <option value="nasb">NASB - New American Standard Bible</option>
+                        </select>
+                    </div>
+                    
+                    <div class="reader-content" id="readerContent">
+                        <!-- Bible verses will be loaded here -->
+                    </div>
+                    
+                    <div class="chapter-nav">
+                        <button class="nav-btn" id="prevChapter">
+                            <i class="fas fa-chevron-left"></i> Previous Chapter
+                        </button>
+                        <div>
+                            <span id="currentChapter">Chapter 3</span>
+                        </div>
+                        <button class="nav-btn" id="nextChapter">
+                            Next Chapter <i class="fas fa-chevron-right"></i>
+                        </button>
+                    </div>
                 </div>
                 
-                <div class="bible-text">
-                    <h4>Selected Verses</h4>
-                    <p id="bibleVerses">
-                        <strong>John 3:16-17</strong><br>
-                        For God so loved the world that he gave his one and only Son, that whoever believes in him shall not perish but have eternal life. For God did not send his Son into the world to condemn the world, but to save the world through him.
-                    </p>
+                <!-- Notes Panel -->
+                <div class="notes-panel">
+                    <div class="notes-header">
+                        <h3><i class="fas fa-edit"></i> Study Notes</h3>
+                        <button class="nav-btn" id="saveNote">
+                            <i class="fas fa-save"></i> Save
+                        </button>
+                    </div>
+                    
+                    <div class="notes-tabs">
+                        <button class="notes-tab active" data-tab="write">Write Note</button>
+                        <button class="notes-tab" data-tab="view">View Notes</button>
+                        <button class="notes-tab" data-tab="highlights">Highlights</button>
+                    </div>
+                    
+                    <div class="notes-content">
+                        <div id="writeTab" class="notes-tab-content">
+                            <textarea id="noteText" placeholder="Write your study notes here..."></textarea>
+                            <div style="margin-top: 1rem; display: flex; gap: 0.5rem;">
+                                <button class="action-btn secondary" onclick="highlightVerse('yellow')">
+                                    <i class="fas fa-highlighter" style="color: #ffd700;"></i>
+                                </button>
+                                <button class="action-btn secondary" onclick="highlightVerse('blue')">
+                                    <i class="fas fa-highlighter" style="color: #4361ee;"></i>
+                                </button>
+                                <button class="action-btn secondary" onclick="highlightVerse('pink')">
+                                    <i class="fas fa-highlighter" style="color: #f72585;"></i>
+                                </button>
+                                <button class="action-btn secondary" onclick="highlightVerse('green')">
+                                    <i class="fas fa-highlighter" style="color: #4cc9f0;"></i>
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <div id="viewTab" class="notes-tab-content" style="display: none;">
+                            <ul class="notes-list" id="notesList">
+                                <!-- Saved notes will appear here -->
+                            </ul>
+                        </div>
+                        
+                        <div id="highlightsTab" class="notes-tab-content" style="display: none;">
+                            <div id="highlightsList">
+                                <!-- Highlights will appear here -->
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
             
-            <div class="bible-notes">
-                <h3><i class="fas fa-edit"></i> My Notes</h3>
-                <textarea id="bibleNotes" rows="10" placeholder="Add your notes here..."></textarea>
-                <button style="width: 100%; margin-top: 1rem; padding: 0.8rem; background: var(--primary); color: white; border: none; border-radius: var(--radius); cursor: pointer;">
-                    <i class="fas fa-save"></i> Save Notes
-                </button>
+            <!-- Verse of the Day -->
+            <div class="verse-of-day">
+                <h3><i class="fas fa-star"></i> Verse of the Day</h3>
+                <div class="verse-text" id="verseOfDayText">"For I know the plans I have for you," declares the LORD, "plans to prosper you and not to harm you, plans to give you hope and a future."</div>
+                <div class="verse-reference" id="verseOfDayRef">Jeremiah 29:11 (NIV)</div>
             </div>
         </div>
     </div>
 
     <!-- Footer -->
     <footer class="footer">
-        <div class="footer-content">
-            <div class="footer-section">
-                <div class="logo">
-                    <i class="fas fa-church"></i>
-                    <span>WorshipFlow</span>
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <div class="logo">
+                        <i class="fas fa-church"></i>
+                        <span>WorshipFlow</span>
+                    </div>
+                    <p>Deepen your Bible study with powerful tools and resources. Multiple translations, notes, and highlights.</p>
+                    <div class="social-icons">
+                        <a href="#"><i class="fab fa-facebook-f"></i></a>
+                        <a href="#"><i class="fab fa-youtube"></i></a>
+                        <a href="#"><i class="fab fa-twitter"></i></a>
+                        <a href="#"><i class="fab fa-instagram"></i></a>
+                    </div>
                 </div>
-                <p>Professional worship software for modern churches.</p>
-                <div class="social-icons">
-                    <a href="#"><i class="fab fa-facebook"></i></a>
-                    <a href="#"><i class="fab fa-youtube"></i></a>
-                    <a href="#"><i class="fab fa-twitter"></i></a>
-                    <a href="#"><i class="fab fa-instagram"></i></a>
+                
+                <div class="footer-section">
+                    <h4>Bible Translations</h4>
+                    <ul style="list-style: none;">
+                        <li><a href="#" style="color: #ccc;">New International Version</a></li>
+                        <li><a href="#" style="color: #ccc;">English Standard Version</a></li>
+                        <li><a href="#" style="color: #ccc;">New Living Translation</a></li>
+                        <li><a href="#" style="color: #ccc;">King James Version</a></li>
+                    </ul>
+                </div>
+                
+                <div class="footer-section">
+                    <h4>Study Tools</h4>
+                    <p><i class="fas fa-search"></i> <a href="#" style="color: #ccc;">Verse Search</a></p>
+                    <p><i class="fas fa-book"></i> <a href="#" style="color: #ccc;">Reading Plans</a></p>
+                    <p><i class="fas fa-comment"></i> <a href="#" style="color: #ccc;">Commentaries</a></p>
+                    <p><i class="fas fa-cross"></i> <a href="#" style="color: #ccc;">Devotionals</a></p>
+                </div>
+                
+                <div class="footer-section">
+                    <h4>Quick Stats</h4>
+                    <p><i class="fas fa-book-open"></i> Chapters Read: <span id="chaptersRead">142</span></p>
+                    <p><i class="fas fa-edit"></i> Notes Taken: <span id="notesCount">28</span></p>
+                    <p><i class="fas fa-highlighter"></i> Highlights: <span id="highlightsCount">56</span></p>
+                    <p><i class="fas fa-clock"></i> Study Time: <span id="studyTime">42h</span></p>
                 </div>
             </div>
             
-            <div class="footer-section">
-                <h4>Quick Links</h4>
-                <ul>
-                    <li><a href="index.html">Home</a></li>
-                    <li><a href="live.html">Live Stream</a></li>
-                    <li><a href="songs.html">Songs</a></li>
-                    <li><a href="bible.html">Bible</a></li>
-                </ul>
+            <div class="footer-bottom">
+                <p>&copy; 2024 WorshipFlow Bible Tools. Scripture quotations provided by BibleGateway.</p>
             </div>
-            
-            <div class="footer-section">
-                <h4>Resources</h4>
-                <ul>
-                    <li><a href="#">Documentation</a></li>
-                    <li><a href="#">Support</a></li>
-                    <li><a href="#">Privacy Policy</a></li>
-                    <li><a href="#">Terms of Service</a></li>
-                </ul>
-            </div>
-            
-            <div class="footer-section">
-                <h4>Contact</h4>
-                <p><i class="fas fa-envelope"></i> support@worshipflow.com</p>
-                <p><i class="fas fa-phone"></i> (555) 123-4567</p>
-            </div>
-        </div>
-        
-        <div class="footer-bottom">
-            <p>&copy; 2024 WorshipFlow. All rights reserved.</p>
         </div>
     </footer>
 
+    <!-- Bible Data and Functionality -->
     <script>
-        // Mobile Navigation
-        const hamburger = document.querySelector('.hamburger');
-        const navMenu = document.querySelector('.nav-menu');
-        
-        if (hamburger) {
+        // Bible books data
+        const bibleBooks = [
+            { name: "Genesis", chapters: 50, category: "old", testament: "Old Testament" },
+            { name: "Exodus", chapters: 40, category: "old", testament: "Old Testament" },
+            { name: "Leviticus", chapters: 27, category: "old", testament: "Old Testament" },
+            { name: "Numbers", chapters: 36, category: "old", testament: "Old Testament" },
+            { name: "Deuteronomy", chapters: 34, category: "old", testament: "Old Testament" },
+            { name: "Joshua", chapters: 24, category: "old", testament: "Old Testament" },
+            { name: "Judges", chapters: 21, category: "old", testament: "Old Testament" },
+            { name: "Ruth", chapters: 4, category: "old", testament: "Old Testament" },
+            { name: "1 Samuel", chapters: 31, category: "old", testament: "Old Testament" },
+            { name: "2 Samuel", chapters: 24, category: "old", testament: "Old Testament" },
+            { name: "1 Kings", chapters: 22, category: "old", testament: "Old Testament" },
+            { name: "2 Kings", chapters: 25, category: "old", testament: "Old Testament" },
+            { name: "1 Chronicles", chapters: 29, category: "old", testament: "Old Testament" },
+            { name: "2 Chronicles", chapters: 36, category: "old", testament: "Old Testament" },
+            { name: "Ezra", chapters: 10, category: "old", testament: "Old Testament" },
+            { name: "Nehemiah", chapters: 13, category: "old", testament: "Old Testament" },
+            { name: "Esther", chapters: 10, category: "old", testament: "Old Testament" },
+            { name: "Job", chapters: 42, category: "old", testament: "Old Testament" },
+            { name: "Psalms", chapters: 150, category: "poetry", testament: "Old Testament" },
+            { name: "Proverbs", chapters: 31, category: "poetry", testament: "Old Testament" },
+            { name: "Ecclesiastes", chapters: 12, category: "poetry", testament: "Old Testament" },
+            { name: "Song of Solomon", chapters: 8, category: "poetry", testament: "Old Testament" },
+            { name: "Isaiah", chapters: 66, category: "prophets", testament: "Old Testament" },
+            { name: "Jeremiah", chapters: 52, category: "prophets", testament: "Old Testament" },
+            { name: "Lamentations", chapters: 5, category: "prophets", testament: "Old Testament" },
+            { name: "Ezekiel", chapters: 48, category: "prophets", testament: "Old Testament" },
+            { name: "Daniel", chapters: 12, category: "prophets", testament: "Old Testament" },
+            { name: "Hosea", chapters: 14, category: "prophets", testament: "Old Testament" },
+            { name: "Joel", chapters: 3, category: "prophets", testament: "Old Testament" },
+            { name: "Amos", chapters: 9, category: "prophets", testament: "Old Testament" },
+            { name: "Obadiah", chapters: 1, category: "prophets", testament: "Old Testament" },
+            { name: "Jonah", chapters: 4, category: "prophets", testament: "Old Testament" },
+            { name: "Micah", chapters: 7, category: "prophets", testament: "Old Testament" },
+            { name: "Nahum", chapters: 3, category: "prophets", testament: "Old Testament" },
+            { name: "Habakkuk", chapters: 3, category: "prophets", testament: "Old Testament" },
+            { name: "Zephaniah", chapters: 3, category: "prophets", testament: "Old Testament" },
+            { name: "Haggai", chapters: 2, category: "prophets", testament: "Old Testament" },
+            { name: "Zechariah", chapters: 14, category: "prophets", testament: "Old Testament" },
+            { name: "Malachi", chapters: 4, category: "prophets", testament: "Old Testament" },
+            { name: "Matthew", chapters: 28, category: "gospels", testament: "New Testament" },
+            { name: "Mark", chapters: 16, category: "gospels", testament: "New Testament" },
+            { name: "Luke", chapters: 24, category: "gospels", testament: "New Testament" },
+            { name: "John", chapters: 21, category: "gospels", testament: "New Testament" },
+            { name: "Acts", chapters: 28, category: "history", testament: "New Testament" },
+            { name: "Romans", chapters: 16, category: "epistles", testament: "New Testament" },
+            { name: "1 Corinthians", chapters: 16, category: "epistles", testament: "New Testament" },
+            { name: "2 Corinthians", chapters: 13, category: "epistles", testament: "New Testament" },
+            { name: "Galatians", chapters: 6, category: "epistles", testament: "New Testament" },
+            { name: "Ephesians", chapters: 6, category: "epistles", testament: "New Testament" },
+            { name: "Philippians", chapters: 4, category: "epistles", testament: "New Testament" },
+            { name: "Colossians", chapters: 4, category: "epistles", testament: "New Testament" },
+            { name: "1 Thessalonians", chapters: 5, category: "epistles", testament: "New Testament" },
+            { name: "2 Thessalonians", chapters: 3, category: "epistles", testament: "New Testament" },
+            { name: "1 Timothy", chapters: 6, category: "epistles", testament: "New Testament" },
+            { name: "2 Timothy", chapters: 4, category: "epistles", testament: "New Testament" },
+            { name: "Titus", chapters: 3, category: "epistles", testament: "New Testament" },
+            { name: "Philemon", chapters: 1, category: "epistles", testament: "New Testament" },
+            { name: "Hebrews", chapters: 13, category: "epistles", testament: "New Testament" },
+            { name: "James", chapters: 5, category: "epistles", testament: "New Testament" },
+            { name: "1 Peter", chapters: 5, category: "epistles", testament: "New Testament" },
+            { name: "2 Peter", chapters: 3, category: "epistles", testament: "New Testament" },
+            { name: "1 John", chapters: 5, category: "epistles", testament: "New Testament" },
+            { name: "2 John", chapters: 1, category: "epistles", testament: "New Testament" },
+            { name: "3 John", chapters: 1, category: "epistles", testament: "New Testament" },
+            { name: "Jude", chapters: 1, category: "epistles", testament: "New Testament" },
+            { name: "Revelation", chapters: 22, category: "prophecy", testament: "New Testament" }
+        ];
+
+        // Sample verse data (in a real app, this would come from an API)
+        const verseData = {
+            "john": {
+                3: {
+                    16: { 
+                        niv: "For God so loved the world that he gave his one and only Son, that whoever believes in him shall not perish but have eternal life.",
+                        esv: "For God so loved the world, that he gave his only Son, that whoever believes in him should not perish but have eternal life.",
+                        nlt: "For God loved the world so much that he gave his one and only Son, so that everyone who believes in him will not perish but have eternal life.",
+                        kjv: "For God so loved the world, that he gave his only begotten Son, that whosoever believeth in him should not perish, but have everlasting life.",
+                        nasb: "For God so loved the world, that He gave His only Son, so that everyone who believes in Him will not perish, but have eternal life."
+                    },
+                    17: {
+                        niv: "For God did not send his Son into the world to condemn the world, but to save the world through him.",
+                        esv: "For God did not send his Son into the world to condemn the world, but in order that the world might be saved through him.",
+                        nlt: "God sent his Son into the world not to judge the world, but to save the world through him.",
+                        kjv: "For God sent not his Son into the world to condemn the world; but that the world through him might be saved.",
+                        nasb: "For God did not send the Son into the world to judge the world, but so that the world might be saved through Him."
+                    }
+                }
+            },
+            "psalms": {
+                23: {
+                    1: {
+                        niv: "The LORD is my shepherd, I lack nothing.",
+                        esv: "The LORD is my shepherd; I shall not want.",
+                        nlt: "The LORD is my shepherd; I have all that I need.",
+                        kjv: "The LORD is my shepherd; I shall not want.",
+                        nasb: "The LORD is my shepherd, I shall not want."
+                    },
+                    4: {
+                        niv: "Even though I walk through the darkest valley, I will fear no evil, for you are with me; your rod and your staff, they comfort me.",
+                        esv: "Even though I walk through the valley of the shadow of death, I will fear no evil, for you are with me; your rod and your staff, they comfort me.",
+                        nlt: "Even when I walk through the darkest valley, I will not be afraid, for you are close beside me. Your rod and your staff protect and comfort me.",
+                        kjv: "Yea, though I walk through the valley of the shadow of death, I will fear no evil: for thou art with me; thy rod and thy staff they comfort me.",
+                        nasb: "Even though I walk through the valley of the shadow of death, I fear no evil, for You are with me; Your rod and Your staff, they comfort me."
+                    }
+                }
+            },
+            "jeremiah": {
+                29: {
+                    11: {
+                        niv: "For I know the plans I have for you,” declares the LORD, “plans to prosper you and not to harm you, plans to give you hope and a future.",
+                        esv: "For I know the plans I have for you, declares the LORD, plans for welfare and not for evil, to give you a future and a hope.",
+                        nlt: "For I know the plans I have for you,” says the LORD. “They are plans for good and not for disaster, to give you a future and a hope.",
+                        kjv: "For I know the thoughts that I think toward you, saith the LORD, thoughts of peace, and not of evil, to give you an expected end.",
+                        nasb: "For I know the plans that I have for you,' declares the LORD, 'plans for prosperity and not for disaster, to give you a future and a hope."
+                    }
+                }
+            }
+        };
+
+        // Current state
+        let currentBook = "john";
+        let currentChapter = 3;
+        let currentTranslation = "niv";
+        let notes = JSON.parse(localStorage.getItem('bibleNotes')) || [];
+        let highlights = JSON.parse(localStorage.getItem('bibleHighlights')) || [];
+
+        // Initialize books list
+        function displayBooks() {
+            const booksList = document.getElementById('booksList');
+            booksList.innerHTML = '';
+            
+            // Group books by testament
+            const oldTestament = bibleBooks.filter(book => book.testament === "Old Testament");
+            const newTestament = bibleBooks.filter(book => book.testament === "New Testament");
+            
+            // Display Old Testament
+            const oldTestamentDiv = document.createElement('div');
+            oldTestamentDiv.className = 'book-category';
+            oldTestamentDiv.innerHTML = `<div class="category-title">Old Testament</div>`;
+            
+            const oldBooksDiv = document.createElement('div');
+            oldBooksDiv.className = 'book-items';
+            oldTestament.forEach(book => {
+                const bookItem = document.createElement('div');
+                bookItem.className = `book-item ${book.name.toLowerCase() === currentBook ? 'active' : ''}`;
+                bookItem.textContent = book.name;
+                bookItem.dataset.book = book.name.toLowerCase().replace(/\s+/g, '');
+                bookItem.addEventListener('click', () => selectBook(book.name.toLowerCase().replace(/\s+/g, '')));
+                oldBooksDiv.appendChild(bookItem);
+            });
+            
+            oldTestamentDiv.appendChild(oldBooksDiv);
+            booksList.appendChild(oldTestamentDiv);
+            
+            // Display New Testament
+            const newTestamentDiv = document.createElement('div');
+            newTestamentDiv.className = 'book-category';
+            newTestamentDiv.innerHTML = `<div class="category-title">New Testament</div>`;
+            
+            const newBooksDiv = document.createElement('div');
+            newBooksDiv.className = 'book-items';
+            newTestament.forEach(book => {
+                const bookItem = document.createElement('div');
+                bookItem.className = `book-item ${book.name.toLowerCase() === currentBook ? 'active' : ''}`;
+                bookItem.textContent = book.name;
+                bookItem.dataset.book = book.name.toLowerCase().replace(/\s+/g, '');
+                bookItem.addEventListener('click', () => selectBook(book.name.toLowerCase().replace(/\s+/g, '')));
+                newBooksDiv.appendChild(bookItem);
+            });
+            
+            newTestamentDiv.appendChild(newBooksDiv);
+            booksList.appendChild(newTestamentDiv);
+        }
+
+        // Select book
+        function selectBook(book) {
+            currentBook = book;
+            currentChapter = 1;
+            displayBooks();
+            loadChapter();
+        }
+
+        // Load chapter
+        function loadChapter() {
+            const bookData = verseData[currentBook];
+            if (!bookData || !bookData[currentChapter]) {
+                document.getElementById('readerContent').innerHTML = `
+                    <div class="verse">
+                        <p>Chapter ${currentChapter} data not available in this demo.</p>
+                        <p>In a complete implementation, this would load from a Bible API.</p>
+                    </div>
+                `;
+                document.getElementById('currentReference').textContent = `${currentBook.charAt(0).toUpperCase() + currentBook.slice(1)} ${currentChapter}`;
+                document.getElementById('currentChapter').textContent = `Chapter ${currentChapter}`;
+                return;
+            }
+            
+            const chapterData = bookData[currentChapter];
+            const readerContent = document.getElementById('readerContent');
+            readerContent.innerHTML = '';
+            
+            Object.keys(chapterData).forEach(verseNum => {
+                const verseDiv = document.createElement('div');
+                verseDiv.className = 'verse';
+                verseDiv.dataset.verse = verseNum;
+                verseDiv.innerHTML = `
+                    <span class="verse-number">${verseNum}</span>
+                    <span class="verse-text">${chapterData[verseNum][currentTranslation]}</span>
+                `;
+                readerContent.appendChild(verseDiv);
+            });
+            
+            document.getElementById('currentReference').textContent = `${currentBook.charAt(0).toUpperCase() + currentBook.slice(1)} ${currentChapter}`;
+            document.getElementById('currentChapter').textContent = `Chapter ${currentChapter}`;
+            
+            // Update navigation buttons
+            const bookInfo = bibleBooks.find(b => b.name.toLowerCase().replace(/\s+/g, '') === currentBook);
+            document.getElementById('prevChapter').disabled = currentChapter <= 1;
+            document.getElementById('nextChapter').disabled = currentChapter >= bookInfo.chapters;
+        }
+
+        // Highlight verse
+        function highlightVerse(color) {
+            alert(`Verse highlighted in ${color}\n\nIn a complete implementation, this would save the highlight to your account.`);
+            highlights.push({
+                book: currentBook,
+                chapter: currentChapter,
+                color: color,
+                date: new Date().toISOString()
+            });
+            localStorage.setItem('bibleHighlights', JSON.stringify(highlights));
+            updateStats();
+        }
+
+        // Save note
+        function saveNote() {
+            const noteText = document.getElementById('noteText').value.trim();
+            if (noteText) {
+                notes.push({
+                    book: currentBook,
+                    chapter: currentChapter,
+                    text: noteText,
+                    date: new Date().toISOString()
+                });
+                localStorage.setItem('bibleNotes', JSON.stringify(notes));
+                document.getElementById('noteText').value = '';
+                alert('Note saved successfully!');
+                updateStats();
+                displayNotes();
+            } else {
+                alert('Please enter a note before saving.');
+            }
+        }
+
+        // Display notes
+        function displayNotes() {
+            const notesList = document.getElementById('notesList');
+            notesList.innerHTML = '';
+            
+            if (notes.length === 0) {
+                notesList.innerHTML = '<p>No notes yet. Start writing notes above!</p>';
+                return;
+            }
+            
+            notes.slice().reverse().forEach((note, index) => {
+                const noteItem = document.createElement('li');
+                noteItem.className = 'note-item';
+                noteItem.innerHTML = `
+                    <div class="note-reference">${note.book.charAt(0).toUpperCase() + note.book.slice(1)} ${note.chapter}</div>
+                    <p>${note.text}</p>
+                    <div style="color: var(--gray); font-size: 0.8rem; margin-top: 0.5rem;">
+                        ${new Date(note.date).toLocaleDateString()}
+                    </div>
+                `;
+                notesList.appendChild(noteItem);
+            });
+        }
+
+        // Update statistics
+        function updateStats() {
+            document.getElementById('notesCount').textContent = notes.length;
+            document.getElementById('highlightsCount').textContent = highlights.length;
+            document.getElementById('chaptersRead').textContent = Math.floor(Math.random() * 100) + 100;
+            document.getElementById('studyTime').textContent = Math.floor(Math.random() * 50) + 30 + 'h';
+        }
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            // Mobile Navigation
+            const hamburger = document.querySelector('.hamburger');
+            const navMenu = document.querySelector('.nav-menu');
+            
             hamburger.addEventListener('click', () => {
                 hamburger.classList.toggle('active');
                 navMenu.classList.toggle('active');
             });
             
+            // Close menu when clicking links
             document.querySelectorAll('.nav-menu a').forEach(link => {
                 link.addEventListener('click', () => {
                     hamburger.classList.remove('active');
                     navMenu.classList.remove('active');
                 });
             });
-        }
-        
-        // Bible Data
-        const bibleData = {
-            john: {
-                name: "John",
-                chapters: {
-                    3: {
-                        16: "For God so loved the world that he gave his one and only Son, that whoever believes in him shall not perish but have eternal life.",
-                        17: "For God did not send his Son into the world to condemn the world, but to save the world through him."
-                    }
-                }
-            },
-            psalms: {
-                name: "Psalms",
-                chapters: {
-                    23: {
-                        1: "The Lord is my shepherd, I lack nothing.",
-                        4: "Even though I walk through the darkest valley, I will fear no evil, for you are with me; your rod and your staff, they comfort me."
-                    }
-                }
-            },
-            matthew: {
-                name: "Matthew",
-                chapters: {
-                    28: {
-                        19: "Therefore go and make disciples of all nations, baptizing them in the name of the Father and of the Son and of the Holy Spirit.",
-                        20: "and teaching them to obey everything I have commanded you. And surely I am with you always, to the very end of the age."
-                    }
-                }
-            }
-        };
-        
-        // Current state
-        let currentBook = 'john';
-        let currentChapter = 3;
-        
-        // Update verse display
-        function updateVerseDisplay() {
-            const verseText = document.getElementById('verseText');
-            const verseRef = document.getElementById('verseRef');
-            const bibleVerses = document.getElementById('bibleVerses');
-            
-            const book = bibleData[currentBook];
-            const chapter = book.chapters[currentChapter];
-            
-            if (chapter) {
-                let versesHtml = `<strong>${book.name} ${currentChapter}</strong><br><br>`;
-                let allVerses = "";
-                
-                for (const [verseNum, verseText] of Object.entries(chapter)) {
-                    versesHtml += `<strong>${verseNum}</strong> ${verseText}<br><br>`;
-                    allVerses += verseText + " ";
-                }
-                
-                // Use first verse for verse of the day display
-                const firstVerseNum = Object.keys(chapter)[0];
-                const firstVerse = chapter[firstVerseNum];
-                
-                verseText.textContent = firstVerse;
-                verseRef.textContent = `${book.name} ${currentChapter}:${firstVerseNum}`;
-                bibleVerses.innerHTML = versesHtml;
-                
-                // Update chapter display
-                document.getElementById('currentChapter').textContent = currentChapter;
-            }
-        }
-        
-        // Book selection
-        document.querySelectorAll('.book-item').forEach(item => {
-            item.addEventListener('click', function() {
-                // Update active state
-                document.querySelectorAll('.book-item').forEach(i => i.classList.remove('active'));
-                this.classList.add('active');
-                
-                // Update current book
-                currentBook = this.getAttribute('data-book');
-                currentChapter = 3; // Reset to first chapter
-                updateVerseDisplay();
-            });
-        });
-        
-        // Chapter navigation
-        document.getElementById('prevChapter').addEventListener('click', function() {
-            if (currentChapter > 1) {
-                currentChapter--;
-                updateVerseDisplay();
-            }
-        });
-        
-        document.getElementById('nextChapter').addEventListener('click', function() {
-            const book = bibleData[currentBook];
-            const maxChapter = Object.keys(book.chapters).length;
-            if (currentChapter < maxChapter) {
-                currentChapter++;
-                updateVerseDisplay();
-            }
-        });
-        
-        // Save notes
-        const notesTextarea = document.getElementById('bibleNotes');
-        const saveButton = notesTextarea.nextElementSibling;
-        
-        saveButton.addEventListener('click', function() {
-            if (notesTextarea.value.trim()) {
-                localStorage.setItem('bibleNotes', notesTextarea.value);
-                alert('Notes saved successfully!');
-            }
-        });
-        
-        // Load saved notes
-        window.addEventListener('DOMContentLoaded', () => {
-            const savedNotes = localStorage.getItem('bibleNotes');
-            if (savedNotes) {
-                notesTextarea.value = savedNotes;
-            }
             
             // Set active navigation
-            const navLinks = document.querySelectorAll('.nav-menu a');
-            navLinks.forEach(link => {
+            document.querySelectorAll('.nav-menu a').forEach(link => {
                 if (link.getAttribute('href') === 'bible.html') {
                     link.classList.add('active');
                 }
             });
             
-            // Initial display
-            updateVerseDisplay();
+            // Initialize books and chapter
+            displayBooks();
+            loadChapter();
+            displayNotes();
+            updateStats();
+            
+            // Event listeners
+            document.getElementById('translationSelect').addEventListener('change', function() {
+                currentTranslation = this.value;
+                loadChapter();
+            });
+            
+            document.getElementById('prevChapter').addEventListener('click', () => {
+                if (currentChapter > 1) {
+                    currentChapter--;
+                    loadChapter();
+                }
+            });
+            
+            document.getElementById('nextChapter').addEventListener('click', () => {
+                const bookInfo = bibleBooks.find(b => b.name.toLowerCase().replace(/\s+/g, '') === currentBook);
+                if (currentChapter < bookInfo.chapters) {
+                    currentChapter++;
+                    loadChapter();
+                }
+            });
+            
+            document.getElementById('saveNote').addEventListener('click', saveNote);
+            
+            // Notes tabs
+            document.querySelectorAll('.notes-tab').forEach(tab => {
+                tab.addEventListener('click', function() {
+                    document.querySelectorAll('.notes-tab').forEach(t => t.classList.remove('active'));
+                    document.querySelectorAll('.notes-tab-content').forEach(c => c.style.display = 'none');
+                    this.classList.add('active');
+                    document.getElementById(this.dataset.tab + 'Tab').style.display = 'block';
+                });
+            });
+            
+            // Book search
+            document.getElementById('bookSearch').addEventListener('input', function() {
+                const searchTerm = this.value.toLowerCase();
+                document.querySelectorAll('.book-item').forEach(item => {
+                    const bookName = item.textContent.toLowerCase();
+                    item.style.display = bookName.includes(searchTerm) ? 'block' : 'none';
+                });
+            });
+            
+            // Random verse of the day
+            const versesOfDay = [
+                { text: "For I know the plans I have for you,” declares the LORD, “plans to prosper you and not to harm you, plans to give you hope and a future.", ref: "Jeremiah 29:11 (NIV)" },
+                { text: "Trust in the LORD with all your heart and lean not on your own understanding; in all your ways submit to him, and he will make your paths straight.", ref: "Proverbs 3:5-6 (NIV)" },
+                { text: "I can do all this through him who gives me strength.", ref: "Philippians 4:13 (NIV)" },
+                { text: "The LORD is my shepherd, I lack nothing.", ref: "Psalm 23:1 (NIV)" },
+                { text: "For God so loved the world that he gave his one and only Son, that whoever believes in him shall not perish but have eternal life.", ref: "John 3:16 (NIV)" }
+            ];
+            const randomVerse = versesOfDay[Math.floor(Math.random() * versesOfDay.length)];
+            document.getElementById('verseOfDayText').textContent = `"${randomVerse.text}"`;
+            document.getElementById('verseOfDayRef').textContent = randomVerse.ref;
         });
     </script>
 </body>
