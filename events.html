@@ -3,81 +3,113 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Events - WorshipFlow</title>
+    <title>Events Calendar - WorshipFlow</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Open+Sans:wght@400;600&display=swap" rel="stylesheet">
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
         :root {
-            --primary: #4a6fa5; --primary-dark: #385d8a; --secondary: #6d9dc5;
-            --accent: #ff6b6b; --light: #f8f9fa; --dark: #343a40; --gray: #6c757d;
-            --light-gray: #e9ecef; --shadow: 0 4px 6px rgba(0,0,0,0.1);
-            --shadow-lg: 0 10px 25px rgba(0,0,0,0.1); --radius: 8px;
+            --primary: #4361ee; --primary-dark: #3a56d4; --secondary: #4895ef;
+            --accent: #f72585; --light: #f8f9fa; --dark: #212529; --gray: #6c757d;
+            --light-gray: #e9ecef; --success: #4cc9f0; --warning: #f8961e;
+            --danger: #e63946; --shadow: 0 4px 6px rgba(0,0,0,0.1);
+            --shadow-lg: 0 10px 25px rgba(0,0,0,0.1); --radius: 10px;
             --transition: all 0.3s ease;
         }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
         body { font-family: 'Open Sans', sans-serif; line-height: 1.6; color: var(--dark); background: var(--light); }
-        h1,h2,h3,h4,h5,h6 { font-family: 'Poppins', sans-serif; font-weight: 600; line-height: 1.3; }
+        h1,h2,h3,h4,h5,h6 { font-family: 'Poppins', sans-serif; font-weight: 600; }
         a { text-decoration: none; color: inherit; }
+        .container { max-width: 1400px; margin: 0 auto; padding: 0 20px; }
         
         /* Navigation */
-        .navbar { background: white; box-shadow: var(--shadow); position: sticky; top: 0; z-index: 1000; }
-        .nav-container { max-width: 1200px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center; padding: 1rem 2rem; }
+        .navbar { background: white; box-shadow: var(--shadow); position: sticky; top: 0; width: 100%; z-index: 1000; }
+        .nav-container { display: flex; justify-content: space-between; align-items: center; padding: 1rem 2rem; }
         .logo { display: flex; align-items: center; gap: 10px; font-size: 1.5rem; font-weight: 700; color: var(--primary); }
         .logo i { font-size: 1.8rem; }
-        .nav-menu { display: flex; list-style: none; gap: 2rem; align-items: center; }
+        .nav-menu { display: flex; list-style: none; gap: 1.5rem; align-items: center; }
         .nav-menu a { color: var(--dark); font-weight: 500; padding: 0.5rem 1rem; border-radius: var(--radius); transition: var(--transition); display: flex; align-items: center; gap: 8px; }
-        .nav-menu a:hover { color: var(--primary); background: var(--light-gray); }
-        .nav-menu a.active { color: var(--primary); background: rgba(74, 111, 165, 0.1); }
-        .btn-login { background: var(--primary); color: white !important; padding: 0.5rem 1.5rem !important; }
-        .btn-login:hover { background: var(--primary-dark) !important; }
+        .nav-menu a:hover { color: var(--primary); background: rgba(67,97,238,0.1); }
+        .nav-menu a.active { color: white; background: var(--primary); }
+        .btn-login { background: var(--primary); color: white !important; padding: 0.6rem 1.8rem !important; }
         .hamburger { display: none; flex-direction: column; gap: 4px; cursor: pointer; }
         .hamburger span { width: 25px; height: 3px; background: var(--dark); border-radius: 2px; transition: var(--transition); }
         
-        /* Events Page Specific */
-        .events-container { max-width: 1200px; margin: 2rem auto; padding: 0 2rem; }
-        .page-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem; }
-        .page-header h1 { font-size: 2.5rem; }
+        /* Events Container */
+        .events-container { padding: 6rem 0 3rem; }
+        .page-header { margin-bottom: 3rem; }
+        .page-header h1 { font-size: 2.8rem; margin-bottom: 0.5rem; color: var(--dark); }
+        .page-header p { color: var(--gray); font-size: 1.1rem; max-width: 600px; }
         
-        .calendar-view { background: white; border-radius: var(--radius); padding: 1.5rem; box-shadow: var(--shadow); margin-bottom: 2rem; }
+        /* Events Layout */
+        .events-layout { display: grid; grid-template-columns: 350px 1fr; gap: 2rem; }
+        
+        /* Calendar */
+        .calendar-panel { background: white; border-radius: var(--radius); padding: 1.5rem; box-shadow: var(--shadow); height: fit-content; }
         .calendar-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; }
-        .calendar-nav button { background: var(--light-gray); border: none; padding: 0.5rem 1rem; border-radius: var(--radius); cursor: pointer; }
-        .calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 5px; }
-        .calendar-day { padding: 0.8rem; text-align: center; border-radius: var(--radius); }
+        .calendar-nav button { background: var(--light-gray); border: none; width: 40px; height: 40px; border-radius: 50%; cursor: pointer; transition: var(--transition); }
+        .calendar-nav button:hover { background: #ddd; }
+        .calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 5px; margin-bottom: 1.5rem; }
+        .calendar-day { padding: 0.8rem; text-align: center; border-radius: var(--radius); cursor: pointer; transition: var(--transition); }
         .calendar-day.header { font-weight: 600; background: var(--light-gray); }
         .calendar-day.today { background: var(--primary); color: white; }
-        .calendar-day.has-event { background: rgba(74, 111, 165, 0.1); position: relative; }
+        .calendar-day.selected { background: var(--secondary); color: white; }
+        .calendar-day.has-event { background: rgba(67,97,238,0.1); position: relative; }
         .calendar-day.has-event::after { content: ''; position: absolute; bottom: 5px; left: 50%; transform: translateX(-50%); width: 6px; height: 6px; background: var(--primary); border-radius: 50%; }
+        .quick-add { margin-top: 1.5rem; }
+        .quick-add input { width: 100%; padding: 0.8rem; border: 2px solid var(--light-gray); border-radius: var(--radius); margin-bottom: 0.5rem; }
         
-        .events-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(350px, 1fr)); gap: 1.5rem; }
-        .event-card { background: white; border-radius: var(--radius); padding: 1.5rem; box-shadow: var(--shadow); transition: var(--transition); }
-        .event-card:hover { transform: translateY(-5px); box-shadow: var(--shadow-lg); }
+        /* Events List */
+        .events-panel { background: white; border-radius: var(--radius); padding: 2rem; box-shadow: var(--shadow); }
+        .events-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem; }
+        .events-filter { display: flex; gap: 0.5rem; }
+        .filter-btn { padding: 0.5rem 1.5rem; background: var(--light-gray); border: none; border-radius: 20px; cursor: pointer; transition: var(--transition); }
+        .filter-btn.active { background: var(--primary); color: white; }
+        .events-list { display: grid; gap: 1.5rem; }
+        .event-card { border: 2px solid var(--light-gray); border-radius: var(--radius); padding: 1.5rem; transition: var(--transition); }
+        .event-card:hover { border-color: var(--primary); transform: translateY(-5px); box-shadow: var(--shadow); }
         .event-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 1rem; }
-        .event-date { background: var(--primary); color: white; padding: 0.5rem 1rem; border-radius: var(--radius); text-align: center; }
-        .event-date .day { font-size: 1.5rem; font-weight: 700; }
-        .event-date .month { font-size: 0.9rem; }
-        .event-category { background: var(--light-gray); padding: 0.3rem 0.8rem; border-radius: 20px; font-size: 0.9rem; }
+        .event-date { background: var(--primary); color: white; padding: 0.8rem 1.2rem; border-radius: var(--radius); text-align: center; min-width: 80px; }
+        .event-date .day { font-size: 1.8rem; font-weight: 700; line-height: 1; }
+        .event-date .month { font-size: 0.9rem; opacity: 0.9; }
+        .event-category { display: inline-block; padding: 0.3rem 0.8rem; background: var(--light-gray); border-radius: 20px; font-size: 0.9rem; margin-bottom: 0.5rem; }
+        .event-actions { display: flex; gap: 0.8rem; margin-top: 1rem; }
         
-        .event-actions { display: flex; gap: 10px; margin-top: 1rem; }
+        /* Stats */
+        .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1.5rem; margin-top: 3rem; }
+        .stat-card { background: white; padding: 1.5rem; border-radius: var(--radius); box-shadow: var(--shadow); text-align: center; }
+        .stat-number { font-size: 2.5rem; font-weight: 700; color: var(--primary); margin-bottom: 0.5rem; }
+        
+        /* Modal */
+        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 2000; align-items: center; justify-content: center; }
+        .modal-content { background: white; border-radius: var(--radius); width: 90%; max-width: 500px; }
+        .modal-header { background: var(--primary); color: white; padding: 1.5rem; display: flex; justify-content: space-between; align-items: center; }
+        .modal-body { padding: 2rem; }
+        .form-group { margin-bottom: 1.5rem; }
+        .form-group label { display: block; margin-bottom: 0.5rem; font-weight: 600; }
+        .form-group input, .form-group select, .form-group textarea { width: 100%; padding: 0.8rem; border: 2px solid var(--light-gray); border-radius: var(--radius); font-family: inherit; }
+        .form-actions { display: flex; gap: 1rem; justify-content: flex-end; margin-top: 2rem; }
         
         /* Footer */
-        .footer { background: var(--dark); color: white; padding-top: 3rem; margin-top: 3rem; }
-        .footer-content { max-width: 1200px; margin: 0 auto; padding: 0 2rem 3rem; display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 3rem; }
-        .footer-section .logo { color: white; margin-bottom: 1rem; }
-        .social-icons { display: flex; gap: 1rem; }
+        .footer { background: var(--dark); color: white; padding: 3rem 2rem 2rem; margin-top: 3rem; }
+        .footer-content { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 3rem; margin-bottom: 2rem; }
+        .social-icons { display: flex; gap: 1rem; margin-top: 1.5rem; }
         .social-icons a { width: 40px; height: 40px; background: rgba(255,255,255,0.1); border-radius: 50%; display: flex; align-items: center; justify-content: center; transition: var(--transition); }
         .social-icons a:hover { background: var(--primary); transform: translateY(-3px); }
-        .footer-bottom { border-top: 1px solid rgba(255,255,255,0.1); padding: 1.5rem 0; text-align: center; color: rgba(255,255,255,0.6); }
+        .footer-bottom { text-align: center; padding-top: 2rem; border-top: 1px solid rgba(255,255,255,0.1); color: #999; }
         
         /* Responsive */
+        @media (max-width: 1024px) {
+            .events-layout { grid-template-columns: 1fr; }
+            .calendar-panel { max-width: 500px; margin: 0 auto; }
+        }
         @media (max-width: 768px) {
+            .hamburger { display: flex; }
             .nav-menu { position: fixed; left: -100%; top: 70px; flex-direction: column; background: white; width: 100%; text-align: center; transition: 0.3s; box-shadow: var(--shadow); padding: 2rem 0; gap: 0; }
             .nav-menu.active { left: 0; }
             .nav-menu li { width: 100%; }
-            .nav-menu a { padding: 1rem; justify-content: center; }
-            .hamburger { display: flex; }
-            .page-header { flex-direction: column; gap: 1rem; align-items: flex-start; }
-            .events-grid { grid-template-columns: 1fr; }
-            .calendar-grid { font-size: 0.9rem; }
+            .nav-menu a { padding: 1.2rem; justify-content: center; }
+            .events-header { flex-direction: column; gap: 1rem; align-items: flex-start; }
+            .events-filter { flex-wrap: wrap; }
         }
     </style>
 </head>
@@ -91,7 +123,7 @@
             </div>
             <ul class="nav-menu">
                 <li><a href="index.html"><i class="fas fa-home"></i> Home</a></li>
-                <li><a href="live.html"><i class="fas fa-broadcast-tower"></i> Live Stream</a></li>
+                <li><a href="live.html"><i class="fas fa-broadcast-tower"></i> Live</a></li>
                 <li><a href="songs.html"><i class="fas fa-music"></i> Songs</a></li>
                 <li><a href="bible.html"><i class="fas fa-bible"></i> Bible</a></li>
                 <li><a href="events.html" class="active"><i class="fas fa-calendar-alt"></i> Events</a></li>
@@ -105,161 +137,133 @@
         </div>
     </nav>
 
-    <!-- Events Content -->
+    <!-- Events Calendar -->
     <div class="events-container">
-        <div class="page-header">
-            <h1><i class="fas fa-calendar-alt"></i> Church Events</h1>
-            <button style="background: var(--primary); color: white; border: none; padding: 0.8rem 1.5rem; border-radius: var(--radius); cursor: pointer; display: flex; align-items: center; gap: 10px;">
-                <i class="fas fa-plus"></i> Add New Event
-            </button>
-        </div>
-        
-        <div class="calendar-view">
-            <div class="calendar-header">
-                <h3>December 2024</h3>
-                <div class="calendar-nav">
-                    <button id="prevMonth"><i class="fas fa-chevron-left"></i></button>
-                    <button style="margin: 0 1rem;">Today</button>
-                    <button id="nextMonth"><i class="fas fa-chevron-right"></i></button>
+        <div class="container">
+            <!-- Page Header -->
+            <div class="page-header">
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <div>
+                        <h1><i class="fas fa-calendar-alt"></i> Church Events</h1>
+                        <p>Manage services, meetings, and special events for your church</p>
+                    </div>
+                    <button class="nav-btn" id="createEventBtn" style="padding: 0.9rem 2rem;">
+                        <i class="fas fa-plus"></i> Create Event
+                    </button>
                 </div>
             </div>
-            <div class="calendar-grid">
-                <div class="calendar-day header">Sun</div>
-                <div class="calendar-day header">Mon</div>
-                <div class="calendar-day header">Tue</div>
-                <div class="calendar-day header">Wed</div>
-                <div class="calendar-day header">Thu</div>
-                <div class="calendar-day header">Fri</div>
-                <div class="calendar-day header">Sat</div>
+            
+            <!-- Events Layout -->
+            <div class="events-layout">
+                <!-- Calendar -->
+                <div class="calendar-panel">
+                    <div class="calendar-header">
+                        <h3 id="currentMonth">December 2024</h3>
+                        <div class="calendar-nav">
+                            <button id="prevMonth"><i class="fas fa-chevron-left"></i></button>
+                            <button id="todayBtn" style="margin: 0 0.5rem;">Today</button>
+                            <button id="nextMonth"><i class="fas fa-chevron-right"></i></button>
+                        </div>
+                    </div>
+                    
+                    <div class="calendar-grid" id="calendarGrid">
+                        <!-- Calendar will be generated here -->
+                    </div>
+                    
+                    <div class="quick-add">
+                        <h4>Quick Add</h4>
+                        <input type="text" id="quickEvent" placeholder="Add event for selected date...">
+                        <button class="nav-btn" id="addQuickEvent" style="width: 100%; padding: 0.8rem;">
+                            <i class="fas fa-plus"></i> Add Event
+                        </button>
+                    </div>
+                </div>
                 
-                <!-- Calendar days will be populated by JavaScript -->
-                <div id="calendarDays"></div>
+                <!-- Events List -->
+                <div class="events-panel">
+                    <div class="events-header">
+                        <h3>Upcoming Events</h3>
+                        <div class="events-filter">
+                            <button class="filter-btn active" data-filter="all">All</button>
+                            <button class="filter-btn" data-filter="services">Services</button>
+                            <button class="filter-btn" data-filter="meetings">Meetings</button>
+                            <button class="filter-btn" data-filter="special">Special</button>
+                        </div>
+                    </div>
+                    
+                    <div class="events-list" id="eventsList">
+                        <!-- Events will be loaded dynamically -->
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Stats -->
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-number" id="totalEvents">24</div>
+                    <div class="stat-label">Total Events</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="upcomingEvents">8</div>
+                    <div class="stat-label">Upcoming This Month</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="avgAttendance">142</div>
+                    <div class="stat-label">Avg. Attendance</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="volunteers">45</div>
+                    <div class="stat-label">Volunteers</div>
+                </div>
             </div>
         </div>
-        
-        <h2 style="margin-bottom: 1.5rem;">Upcoming Events</h2>
-        
-        <div class="events-grid">
-            <!-- Event 1 -->
-            <div class="event-card">
-                <div class="event-header">
-                    <div class="event-date">
-                        <div class="day">15</div>
-                        <div class="month">DEC</div>
-                    </div>
-                    <span class="event-category">Sunday Service</span>
-                </div>
-                <h3>Sunday Morning Worship</h3>
-                <p style="color: var(--gray); margin: 0.5rem 0 1rem;">Join us for worship, prayer, and teaching from God's Word.</p>
-                <div style="display: flex; gap: 1rem; margin-bottom: 1rem;">
-                    <div style="display: flex; align-items: center; gap: 5px;">
-                        <i class="fas fa-clock" style="color: var(--primary);"></i>
-                        <span>10:00 AM - 12:00 PM</span>
-                    </div>
-                    <div style="display: flex; align-items: center; gap: 5px;">
-                        <i class="fas fa-map-marker-alt" style="color: var(--primary);"></i>
-                        <span>Main Sanctuary</span>
-                    </div>
-                </div>
-                <div class="event-actions">
-                    <button style="flex: 1; background: var(--primary); color: white; border: none; padding: 0.5rem; border-radius: var(--radius); cursor: pointer;">
-                        <i class="fas fa-info-circle"></i> Details
-                    </button>
-                    <button style="flex: 1; background: var(--light-gray); border: none; padding: 0.5rem; border-radius: var(--radius); cursor: pointer;">
-                        <i class="fas fa-share-alt"></i> Share
-                    </button>
-                </div>
+    </div>
+
+    <!-- Create Event Modal -->
+    <div class="modal" id="eventModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="modalTitle">Create New Event</h3>
+                <button class="modal-close" id="closeModal">&times;</button>
             </div>
-            
-            <!-- Event 2 -->
-            <div class="event-card">
-                <div class="event-header">
-                    <div class="event-date">
-                        <div class="day">18</div>
-                        <div class="month">DEC</div>
-                    </div>
-                    <span class="event-category">Prayer Meeting</span>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label for="eventTitle">Event Title</label>
+                    <input type="text" id="eventTitle" placeholder="Sunday Service, Prayer Meeting, etc.">
                 </div>
-                <h3>Midweek Prayer Night</h3>
-                <p style="color: var(--gray); margin: 0.5rem 0 1rem;">Corporate prayer for our church, community, and world needs.</p>
-                <div style="display: flex; gap: 1rem; margin-bottom: 1rem;">
-                    <div style="display: flex; align-items: center; gap: 5px;">
-                        <i class="fas fa-clock" style="color: var(--primary);"></i>
-                        <span>7:00 PM - 8:30 PM</span>
-                    </div>
-                    <div style="display: flex; align-items: center; gap: 5px;">
-                        <i class="fas fa-map-marker-alt" style="color: var(--primary);"></i>
-                        <span>Prayer Chapel</span>
-                    </div>
+                
+                <div class="form-group">
+                    <label for="eventDate">Date & Time</label>
+                    <input type="datetime-local" id="eventDate">
                 </div>
-                <div class="event-actions">
-                    <button style="flex: 1; background: var(--primary); color: white; border: none; padding: 0.5rem; border-radius: var(--radius); cursor: pointer;">
-                        <i class="fas fa-info-circle"></i> Details
+                
+                <div class="form-group">
+                    <label for="eventCategory">Category</label>
+                    <select id="eventCategory">
+                        <option value="services">Service</option>
+                        <option value="meetings">Meeting</option>
+                        <option value="special">Special Event</option>
+                        <option value="youth">Youth</option>
+                        <option value="outreach">Outreach</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label for="eventLocation">Location</label>
+                    <input type="text" id="eventLocation" placeholder="Main Sanctuary, Room 201, etc.">
+                </div>
+                
+                <div class="form-group">
+                    <label for="eventDescription">Description</label>
+                    <textarea id="eventDescription" rows="4" placeholder="Describe the event..."></textarea>
+                </div>
+                
+                <div class="form-actions">
+                    <button class="nav-btn" id="cancelEvent" style="background: var(--light-gray); color: var(--dark);">
+                        Cancel
                     </button>
-                    <button style="flex: 1; background: var(--light-gray); border: none; padding: 0.5rem; border-radius: var(--radius); cursor: pointer;">
-                        <i class="fas fa-share-alt"></i> Share
-                    </button>
-                </div>
-            </div>
-            
-            <!-- Event 3 -->
-            <div class="event-card">
-                <div class="event-header">
-                    <div class="event-date">
-                        <div class="day">20</div>
-                        <div class="month">DEC</div>
-                    </div>
-                    <span class="event-category">Youth</span>
-                </div>
-                <h3>Youth Christmas Party</h3>
-                <p style="color: var(--gray); margin: 0.5rem 0 1rem;">Annual Christmas celebration for youth with games, food, and worship.</p>
-                <div style="display: flex; gap: 1rem; margin-bottom: 1rem;">
-                    <div style="display: flex; align-items: center; gap: 5px;">
-                        <i class="fas fa-clock" style="color: var(--primary);"></i>
-                        <span>6:00 PM - 9:00 PM</span>
-                    </div>
-                    <div style="display: flex; align-items: center; gap: 5px;">
-                        <i class="fas fa-map-marker-alt" style="color: var(--primary);"></i>
-                        <span>Youth Center</span>
-                    </div>
-                </div>
-                <div class="event-actions">
-                    <button style="flex: 1; background: var(--primary); color: white; border: none; padding: 0.5rem; border-radius: var(--radius); cursor: pointer;">
-                        <i class="fas fa-info-circle"></i> Details
-                    </button>
-                    <button style="flex: 1; background: var(--light-gray); border: none; padding: 0.5rem; border-radius: var(--radius); cursor: pointer;">
-                        <i class="fas fa-share-alt"></i> Share
-                    </button>
-                </div>
-            </div>
-            
-            <!-- Event 4 -->
-            <div class="event-card">
-                <div class="event-header">
-                    <div class="event-date">
-                        <div class="day">22</div>
-                        <div class="month">DEC</div>
-                    </div>
-                    <span class="event-category">Special Event</span>
-                </div>
-                <h3>Christmas Cantata</h3>
-                <p style="color: var(--gray); margin: 0.5rem 0 1rem;">Our choir presents the annual Christmas cantata "Joy to the World".</p>
-                <div style="display: flex; gap: 1rem; margin-bottom: 1rem;">
-                    <div style="display: flex; align-items: center; gap: 5px;">
-                        <i class="fas fa-clock" style="color: var(--primary);"></i>
-                        <span>6:00 PM - 8:00 PM</span>
-                    </div>
-                    <div style="display: flex; align-items: center; gap: 5px;">
-                        <i class="fas fa-map-marker-alt" style="color: var(--primary);"></i>
-                        <span>Main Sanctuary</span>
-                    </div>
-                </div>
-                <div class="event-actions">
-                    <button style="flex: 1; background: var(--primary); color: white; border: none; padding: 0.5rem; border-radius: var(--radius); cursor: pointer;">
-                        <i class="fas fa-info-circle"></i> Details
-                    </button>
-                    <button style="flex: 1; background: var(--light-gray); border: none; padding: 0.5rem; border-radius: var(--radius); cursor: pointer;">
-                        <i class="fas fa-share-alt"></i> Share
+                    <button class="nav-btn" id="saveEvent">
+                        <i class="fas fa-save"></i> Save Event
                     </button>
                 </div>
             </div>
@@ -268,101 +272,175 @@
 
     <!-- Footer -->
     <footer class="footer">
-        <div class="footer-content">
-            <div class="footer-section">
-                <div class="logo">
-                    <i class="fas fa-church"></i>
-                    <span>WorshipFlow</span>
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <div class="logo">
+                        <i class="fas fa-church"></i>
+                        <span>WorshipFlow</span>
+                    </div>
+                    <p>Manage your church events efficiently. Schedule services, track attendance, and coordinate volunteers.</p>
+                    <div class="social-icons">
+                        <a href="#"><i class="fab fa-facebook-f"></i></a>
+                        <a href="#"><i class="fab fa-youtube"></i></a>
+                        <a href="#"><i class="fab fa-twitter"></i></a>
+                        <a href="#"><i class="fab fa-instagram"></i></a>
+                    </div>
                 </div>
-                <p>Professional worship software for modern churches.</p>
-                <div class="social-icons">
-                    <a href="#"><i class="fab fa-facebook"></i></a>
-                    <a href="#"><i class="fab fa-youtube"></i></a>
-                    <a href="#"><i class="fab fa-twitter"></i></a>
-                    <a href="#"><i class="fab fa-instagram"></i></a>
+                
+                <div class="footer-section">
+                    <h4>Event Categories</h4>
+                    <ul style="list-style: none;">
+                        <li><a href="#" style="color: #ccc;">Sunday Services</a></li>
+                        <li><a href="#" style="color: #ccc;">Midweek Meetings</a></li>
+                        <li><a href="#" style="color: #ccc;">Youth Events</a></li>
+                        <li><a href="#" style="color: #ccc;">Outreach Programs</a></li>
+                    </ul>
+                </div>
+                
+                <div class="footer-section">
+                    <h4>Quick Links</h4>
+                    <p><i class="fas fa-download"></i> <a href="#" style="color: #ccc;">Export Calendar</a></p>
+                    <p><i class="fas fa-share-alt"></i> <a href="#" style="color: #ccc;">Share Calendar</a></p>
+                    <p><i class="fas fa-bell"></i> <a href="#" style="color: #ccc;">Set Reminders</a></p>
+                    <p><i class="fas fa-users"></i> <a href="#" style="color: #ccc;">Volunteer Sign-up</a></p>
+                </div>
+                
+                <div class="footer-section">
+                    <h4>Need Help?</h4>
+                    <p><i class="fas fa-calendar-plus"></i> <a href="#" style="color: #ccc;">How to Schedule Events</a></p>
+                    <p><i class="fas fa-user-plus"></i> <a href="#" style="color: #ccc;">Add Team Members</a></p>
+                    <p><i class="fas fa-sync"></i> <a href="#" style="color: #ccc;">Sync with Google Calendar</a></p>
+                    <p><i class="fas fa-headset"></i> <a href="#" style="color: #ccc;">Calendar Support</a></p>
                 </div>
             </div>
             
-            <div class="footer-section">
-                <h4>Quick Links</h4>
-                <ul>
-                    <li><a href="index.html">Home</a></li>
-                    <li><a href="live.html">Live Stream</a></li>
-                    <li><a href="songs.html">Songs</a></li>
-                    <li><a href="bible.html">Bible</a></li>
-                </ul>
+            <div class="footer-bottom">
+                <p>&copy; 2024 WorshipFlow Events Calendar. All rights reserved.</p>
             </div>
-            
-            <div class="footer-section">
-                <h4>Resources</h4>
-                <ul>
-                    <li><a href="#">Documentation</a></li>
-                    <li><a href="#">Support</a></li>
-                    <li><a href="#">Privacy Policy</a></li>
-                    <li><a href="#">Terms of Service</a></li>
-                </ul>
-            </div>
-            
-            <div class="footer-section">
-                <h4>Contact</h4>
-                <p><i class="fas fa-envelope"></i> support@worshipflow.com</p>
-                <p><i class="fas fa-phone"></i> (555) 123-4567</p>
-            </div>
-        </div>
-        
-        <div class="footer-bottom">
-            <p>&copy; 2024 WorshipFlow. All rights reserved.</p>
         </div>
     </footer>
 
+    <!-- Events Data and Functionality -->
     <script>
-        // Mobile Navigation
-        const hamburger = document.querySelector('.hamburger');
-        const navMenu = document.querySelector('.nav-menu');
-        
-        if (hamburger) {
-            hamburger.addEventListener('click', () => {
-                hamburger.classList.toggle('active');
-                navMenu.classList.toggle('active');
+        // Sample events data
+        let events = JSON.parse(localStorage.getItem('churchEvents')) || [
+            {
+                id: 1,
+                title: "Sunday Morning Worship",
+                date: "2024-12-15T10:00",
+                category: "services",
+                location: "Main Sanctuary",
+                description: "Join us for worship, prayer, and teaching from God's Word.",
+                attendees: 0
+            },
+            {
+                id: 2,
+                title: "Prayer Meeting",
+                date: "2024-12-18T19:00",
+                category: "meetings",
+                location: "Prayer Chapel",
+                description: "Corporate prayer for church needs and community.",
+                attendees: 0
+            },
+            {
+                id: 3,
+                title: "Youth Christmas Party",
+                date: "2024-12-20T18:00",
+                category: "special",
+                location: "Youth Center",
+                description: "Annual Christmas celebration for youth with games and worship.",
+                attendees: 0
+            },
+            {
+                id: 4,
+                title: "Christmas Cantata",
+                date: "2024-12-22T18:00",
+                category: "special",
+                location: "Main Sanctuary",
+                description: "Choir presents 'Joy to the World' Christmas cantata.",
+                attendees: 0
+            },
+            {
+                id: 5,
+                title: "Christmas Eve Service",
+                date: "2024-12-24T17:00",
+                category: "services",
+                location: "Main Sanctuary",
+                description: "Special Christmas Eve candlelight service.",
+                attendees: 0
+            },
+            {
+                id: 6,
+                title: "New Year's Eve Service",
+                date: "2024-12-31T21:00",
+                category: "services",
+                location: "Main Sanctuary",
+                description: "Watch night service with communion and prayer.",
+                attendees: 0
+            },
+            {
+                id: 7,
+                title: "Leadership Meeting",
+                date: "2024-12-19T18:30",
+                category: "meetings",
+                location: "Conference Room",
+                description: "Monthly leadership planning and strategy meeting.",
+                attendees: 0
+            },
+            {
+                id: 8,
+                title: "Food Bank Outreach",
+                date: "2024-12-21T09:00",
+                category: "outreach",
+                location: "Community Center",
+                description: "Monthly food distribution to those in need.",
+                attendees: 0
+            }
+        ];
+
+        // Calendar variables
+        let currentDate = new Date();
+        let selectedDate = new Date();
+        let currentFilter = "all";
+
+        // Initialize calendar
+        function generateCalendar(year = currentDate.getFullYear(), month = currentDate.getMonth()) {
+            const calendarGrid = document.getElementById('calendarGrid');
+            calendarGrid.innerHTML = '';
+            
+            // Update month display
+            const monthNames = ["January", "February", "March", "April", "May", "June",
+                "July", "August", "September", "October", "November", "December"];
+            document.getElementById('currentMonth').textContent = `${monthNames[month]} ${year}`;
+            
+            // Day headers
+            const dayNames = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+            dayNames.forEach(day => {
+                const dayHeader = document.createElement('div');
+                dayHeader.className = 'calendar-day header';
+                dayHeader.textContent = day;
+                calendarGrid.appendChild(dayHeader);
             });
             
-            document.querySelectorAll('.nav-menu a').forEach(link => {
-                link.addEventListener('click', () => {
-                    hamburger.classList.remove('active');
-                    navMenu.classList.remove('active');
-                });
-            });
-        }
-        
-        // Calendar functionality
-        const today = new Date();
-        let currentMonth = today.getMonth();
-        let currentYear = today.getFullYear();
-        
-        const monthNames = ["January", "February", "March", "April", "May", "June",
-            "July", "August", "September", "October", "November", "December"];
-        
-        function generateCalendar(month, year) {
-            const calendarDays = document.getElementById('calendarDays');
+            // Get first day of month
             const firstDay = new Date(year, month, 1);
-            const lastDay = new Date(year, month + 1, 0);
-            const daysInMonth = lastDay.getDate();
             const startingDay = firstDay.getDay();
             
-            // Update header
-            document.querySelector('.calendar-header h3').textContent = `${monthNames[month]} ${year}`;
+            // Get last day of month
+            const lastDay = new Date(year, month + 1, 0);
+            const daysInMonth = lastDay.getDate();
             
-            // Clear previous calendar
-            calendarDays.innerHTML = '';
-            
-            // Add empty cells for days before the first day of month
+            // Previous month days
             for (let i = 0; i < startingDay; i++) {
                 const emptyDay = document.createElement('div');
                 emptyDay.className = 'calendar-day';
-                calendarDays.appendChild(emptyDay);
+                emptyDay.style.opacity = '0.3';
+                calendarGrid.appendChild(emptyDay);
             }
             
-            // Add days of the month
+            // Current month days
+            const today = new Date();
             for (let day = 1; day <= daysInMonth; day++) {
                 const dayElement = document.createElement('div');
                 dayElement.className = 'calendar-day';
@@ -373,69 +451,395 @@
                     dayElement.classList.add('today');
                 }
                 
-                // Add events on specific days
-                const eventDays = [1, 8, 15, 22, 18, 20]; // Example event days
-                if (eventDays.includes(day)) {
+                // Check if selected
+                if (day === selectedDate.getDate() && month === selectedDate.getMonth() && year === selectedDate.getFullYear()) {
+                    dayElement.classList.add('selected');
+                }
+                
+                // Check if has events
+                const dateStr = `${year}-${(month + 1).toString().padStart(2, '0')}-${day.toString().padStart(2, '0')}`;
+                if (hasEventsOnDate(dateStr)) {
                     dayElement.classList.add('has-event');
                 }
                 
-                calendarDays.appendChild(dayElement);
+                // Add click event
+                dayElement.addEventListener('click', () => {
+                    selectedDate = new Date(year, month, day);
+                    generateCalendar(year, month);
+                    displayEvents();
+                });
+                
+                calendarGrid.appendChild(dayElement);
             }
         }
-        
-        // Navigation buttons
-        document.getElementById('prevMonth').addEventListener('click', () => {
-            currentMonth--;
-            if (currentMonth < 0) {
-                currentMonth = 11;
-                currentYear--;
-            }
-            generateCalendar(currentMonth, currentYear);
-        });
-        
-        document.getElementById('nextMonth').addEventListener('click', () => {
-            currentMonth++;
-            if (currentMonth > 11) {
-                currentMonth = 0;
-                currentYear++;
-            }
-            generateCalendar(currentMonth, currentYear);
-        });
-        
-        // Event details
-        document.querySelectorAll('.event-actions button:first-child').forEach(btn => {
-            btn.addEventListener('click', function() {
-                const eventTitle = this.closest('.event-card').querySelector('h3').textContent;
-                alert(`Event Details: ${eventTitle}\n\nFull event details would appear here in a complete implementation.`);
+
+        // Check if date has events
+        function hasEventsOnDate(dateStr) {
+            return events.some(event => {
+                const eventDate = new Date(event.date).toISOString().split('T')[0];
+                return eventDate === dateStr;
             });
-        });
-        
-        // Share event
-        document.querySelectorAll('.event-actions button:last-child').forEach(btn => {
-            btn.addEventListener('click', function() {
-                const eventTitle = this.closest('.event-card').querySelector('h3').textContent;
-                if (navigator.share) {
-                    navigator.share({
-                        title: eventTitle,
-                        text: 'Check out this church event!',
-                        url: window.location.href
-                    });
-                } else {
-                    alert(`Share "${eventTitle}"\n\nShare link copied to clipboard.`);
+        }
+
+        // Display events
+        function displayEvents() {
+            const eventsList = document.getElementById('eventsList');
+            eventsList.innerHTML = '';
+            
+            // Filter events
+            let filteredEvents = events.filter(event => {
+                if (currentFilter !== 'all' && event.category !== currentFilter) {
+                    return false;
                 }
+                return true;
             });
-        });
-        
+            
+            // Sort by date
+            filteredEvents.sort((a, b) => new Date(a.date) - new Date(b.date));
+            
+            if (filteredEvents.length === 0) {
+                eventsList.innerHTML = `
+                    <div style="text-align: center; padding: 3rem; color: var(--gray);">
+                        <i class="fas fa-calendar-times" style="font-size: 3rem; margin-bottom: 1rem;"></i>
+                        <h3>No events found</h3>
+                        <p>Create your first event using the button above</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            filteredEvents.forEach(event => {
+                const eventDate = new Date(event.date);
+                const now = new Date();
+                const isPast = eventDate < now;
+                
+                const eventCard = document.createElement('div');
+                eventCard.className = 'event-card';
+                eventCard.innerHTML = `
+                    <div class="event-header">
+                        <div class="event-date">
+                            <div class="day">${eventDate.getDate()}</div>
+                            <div class="month">${eventDate.toLocaleString('default', { month: 'short' })}</div>
+                        </div>
+                        <div style="flex: 1; margin-left: 1.5rem;">
+                            <span class="event-category">${getCategoryLabel(event.category)}</span>
+                            <h3 style="margin: 0.5rem 0;">${event.title}</h3>
+                            <div style="display: flex; gap: 1rem; color: var(--gray); font-size: 0.9rem;">
+                                <span><i class="fas fa-clock"></i> ${eventDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
+                                <span><i class="fas fa-map-marker-alt"></i> ${event.location}</span>
+                            </div>
+                            <p style="margin: 0.8rem 0;">${event.description}</p>
+                            ${isPast ? 
+                                `<div style="color: var(--success); font-weight: 600;">
+                                    <i class="fas fa-check-circle"></i> Completed • ${event.attendees || 0} attended
+                                </div>` : 
+                                `<div style="color: var(--primary); font-weight: 600;">
+                                    <i class="fas fa-clock"></i> ${getTimeUntil(eventDate)}
+                                </div>`
+                            }
+                        </div>
+                    </div>
+                    <div class="event-actions">
+                        <button class="nav-btn" onclick="viewEvent(${event.id})" style="padding: 0.5rem 1rem; font-size: 0.9rem;">
+                            <i class="fas fa-eye"></i> Details
+                        </button>
+                        <button class="nav-btn" onclick="editEvent(${event.id})" style="padding: 0.5rem 1rem; font-size: 0.9rem; background: var(--light-gray); color: var(--dark);">
+                            <i class="fas fa-edit"></i> Edit
+                        </button>
+                        ${!isPast ? `
+                            <button class="nav-btn" onclick="rsvpEvent(${event.id})" style="padding: 0.5rem 1rem; font-size: 0.9rem; background: var(--success);">
+                                <i class="fas fa-user-plus"></i> RSVP
+                            </button>
+                        ` : ''}
+                    </div>
+                `;
+                eventsList.appendChild(eventCard);
+            });
+            
+            updateStats();
+        }
+
+        // Get category label
+        function getCategoryLabel(category) {
+            const labels = {
+                'services': 'Service',
+                'meetings': 'Meeting',
+                'special': 'Special Event',
+                'youth': 'Youth',
+                'outreach': 'Outreach'
+            };
+            return labels[category] || category;
+        }
+
+        // Get time until event
+        function getTimeUntil(eventDate) {
+            const now = new Date();
+            const diff = eventDate - now;
+            const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+            const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            
+            if (days > 0) return `In ${days} day${days !== 1 ? 's' : ''}`;
+            if (hours > 0) return `In ${hours} hour${hours !== 1 ? 's' : ''}`;
+            if (diff > 0) return 'Today';
+            return 'Past';
+        }
+
+        // View event
+        function viewEvent(eventId) {
+            const event = events.find(e => e.id === eventId);
+            if (!event) return;
+            
+            const eventDate = new Date(event.date);
+            alert(`
+                Event Details:
+                
+                Title: ${event.title}
+                Date: ${eventDate.toLocaleDateString()}
+                Time: ${eventDate.toLocaleTimeString()}
+                Location: ${event.location}
+                Category: ${getCategoryLabel(event.category)}
+                
+                Description:
+                ${event.description}
+                
+                ${event.attendees ? `Attendance: ${event.attendees} people` : ''}
+            `);
+        }
+
+        // Edit event
+        function editEvent(eventId) {
+            const event = events.find(e => e.id === eventId);
+            if (!event) return;
+            
+            document.getElementById('modalTitle').textContent = 'Edit Event';
+            document.getElementById('eventTitle').value = event.title;
+            document.getElementById('eventDate').value = event.date.slice(0, 16);
+            document.getElementById('eventCategory').value = event.category;
+            document.getElementById('eventLocation').value = event.location;
+            document.getElementById('eventDescription').value = event.description;
+            
+            // Store event ID for saving
+            document.getElementById('saveEvent').dataset.eventId = eventId;
+            document.getElementById('eventModal').style.display = 'flex';
+        }
+
+        // RSVP to event
+        function rsvpEvent(eventId) {
+            const event = events.find(e => e.id === eventId);
+            if (!event) return;
+            
+            const name = prompt('Enter your name to RSVP:');
+            if (name) {
+                event.attendees = (event.attendees || 0) + 1;
+                saveEvents();
+                alert(`Thank you ${name}! You're registered for "${event.title}".`);
+                displayEvents();
+            }
+        }
+
+        // Create new event
+        function createEvent() {
+            document.getElementById('modalTitle').textContent = 'Create New Event';
+            document.getElementById('eventTitle').value = '';
+            document.getElementById('eventDate').value = '';
+            document.getElementById('eventCategory').value = 'services';
+            document.getElementById('eventLocation').value = '';
+            document.getElementById('eventDescription').value = '';
+            delete document.getElementById('saveEvent').dataset.eventId;
+            document.getElementById('eventModal').style.display = 'flex';
+        }
+
+        // Save event
+        function saveEvent() {
+            const title = document.getElementById('eventTitle').value.trim();
+            const date = document.getElementById('eventDate').value;
+            const category = document.getElementById('eventCategory').value;
+            const location = document.getElementById('eventLocation').value.trim();
+            const description = document.getElementById('eventDescription').value.trim();
+            const eventId = document.getElementById('saveEvent').dataset.eventId;
+            
+            if (!title || !date || !location) {
+                alert('Please fill in all required fields.');
+                return;
+            }
+            
+            if (eventId) {
+                // Update existing event
+                const eventIndex = events.findIndex(e => e.id === parseInt(eventId));
+                if (eventIndex !== -1) {
+                    events[eventIndex] = {
+                        ...events[eventIndex],
+                        title,
+                        date,
+                        category,
+                        location,
+                        description
+                    };
+                }
+            } else {
+                // Create new event
+                const newEvent = {
+                    id: events.length > 0 ? Math.max(...events.map(e => e.id)) + 1 : 1,
+                    title,
+                    date,
+                    category,
+                    location,
+                    description,
+                    attendees: 0
+                };
+                events.push(newEvent);
+            }
+            
+            saveEvents();
+            document.getElementById('eventModal').style.display = 'none';
+            generateCalendar(currentDate.getFullYear(), currentDate.getMonth());
+            displayEvents();
+            alert('Event saved successfully!');
+        }
+
+        // Quick add event
+        function quickAddEvent() {
+            const eventText = document.getElementById('quickEvent').value.trim();
+            if (!eventText) {
+                alert('Please enter an event description.');
+                return;
+            }
+            
+            const year = selectedDate.getFullYear();
+            const month = (selectedDate.getMonth() + 1).toString().padStart(2, '0');
+            const day = selectedDate.getDate().toString().padStart(2, '0');
+            
+            const newEvent = {
+                id: events.length > 0 ? Math.max(...events.map(e => e.id)) + 1 : 1,
+                title: eventText,
+                date: `${year}-${month}-${day}T10:00`,
+                category: 'meetings',
+                location: 'To be determined',
+                description: 'Quickly added event',
+                attendees: 0
+            };
+            
+            events.push(newEvent);
+            saveEvents();
+            document.getElementById('quickEvent').value = '';
+            generateCalendar(currentDate.getFullYear(), currentDate.getMonth());
+            displayEvents();
+            alert('Event added to selected date!');
+        }
+
+        // Save events to localStorage
+        function saveEvents() {
+            localStorage.setItem('churchEvents', JSON.stringify(events));
+        }
+
+        // Update statistics
+        function updateStats() {
+            const now = new Date();
+            const thisMonthEvents = events.filter(event => {
+                const eventDate = new Date(event.date);
+                return eventDate.getMonth() === now.getMonth() && 
+                       eventDate.getFullYear() === now.getFullYear() &&
+                       eventDate >= now;
+            });
+            
+            const upcomingEvents = events.filter(event => new Date(event.date) >= now);
+            
+            // Calculate average attendance
+            const pastEvents = events.filter(event => new Date(event.date) < now);
+            const totalAttendance = pastEvents.reduce((sum, event) => sum + (event.attendees || 0), 0);
+            const avgAttendance = pastEvents.length > 0 ? Math.round(totalAttendance / pastEvents.length) : 0;
+            
+            document.getElementById('totalEvents').textContent = events.length;
+            document.getElementById('upcomingEvents').textContent = upcomingEvents.length;
+            document.getElementById('avgAttendance').textContent = avgAttendance;
+            document.getElementById('volunteers').textContent = Math.floor(Math.random() * 30) + 30;
+        }
+
         // Initialize
         document.addEventListener('DOMContentLoaded', () => {
-            generateCalendar(currentMonth, currentYear);
+            // Mobile Navigation
+            const hamburger = document.querySelector('.hamburger');
+            const navMenu = document.querySelector('.nav-menu');
+            
+            hamburger.addEventListener('click', () => {
+                hamburger.classList.toggle('active');
+                navMenu.classList.toggle('active');
+            });
+            
+            // Close menu when clicking links
+            document.querySelectorAll('.nav-menu a').forEach(link => {
+                link.addEventListener('click', () => {
+                    hamburger.classList.remove('active');
+                    navMenu.classList.remove('active');
+                });
+            });
             
             // Set active navigation
-            const navLinks = document.querySelectorAll('.nav-menu a');
-            navLinks.forEach(link => {
+            document.querySelectorAll('.nav-menu a').forEach(link => {
                 if (link.getAttribute('href') === 'events.html') {
                     link.classList.add('active');
                 }
+            });
+            
+            // Initialize calendar and events
+            generateCalendar();
+            displayEvents();
+            
+            // Calendar navigation
+            document.getElementById('prevMonth').addEventListener('click', () => {
+                currentDate.setMonth(currentDate.getMonth() - 1);
+                generateCalendar(currentDate.getFullYear(), currentDate.getMonth());
+            });
+            
+            document.getElementById('nextMonth').addEventListener('click', () => {
+                currentDate.setMonth(currentDate.getMonth() + 1);
+                generateCalendar(currentDate.getFullYear(), currentDate.getMonth());
+            });
+            
+            document.getElementById('todayBtn').addEventListener('click', () => {
+                currentDate = new Date();
+                selectedDate = new Date();
+                generateCalendar(currentDate.getFullYear(), currentDate.getMonth());
+                displayEvents();
+            });
+            
+            // Filter buttons
+            document.querySelectorAll('.filter-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+                    this.classList.add('active');
+                    currentFilter = this.dataset.filter;
+                    displayEvents();
+                });
+            });
+            
+            // Create event button
+            document.getElementById('createEventBtn').addEventListener('click', createEvent);
+            
+            // Quick add event
+            document.getElementById('addQuickEvent').addEventListener('click', quickAddEvent);
+            
+            // Modal controls
+            document.getElementById('closeModal').addEventListener('click', () => {
+                document.getElementById('eventModal').style.display = 'none';
+            });
+            
+            document.getElementById('cancelEvent').addEventListener('click', () => {
+                document.getElementById('eventModal').style.display = 'none';
+            });
+            
+            document.getElementById('saveEvent').addEventListener('click', saveEvent);
+            
+            // Close modal when clicking outside
+            document.getElementById('eventModal').addEventListener('click', (e) => {
+                if (e.target === document.getElementById('eventModal')) {
+                    document.getElementById('eventModal').style.display = 'none';
+                }
+            });
+            
+            // Quick event on enter
+            document.getElementById('quickEvent').addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') quickAddEvent();
             });
         });
     </script>
