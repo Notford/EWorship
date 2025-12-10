@@ -7,76 +7,97 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Open+Sans:wght@400;600&display=swap" rel="stylesheet">
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
         :root {
-            --primary: #4a6fa5; --primary-dark: #385d8a; --secondary: #6d9dc5;
-            --accent: #ff6b6b; --light: #f8f9fa; --dark: #343a40; --gray: #6c757d;
-            --light-gray: #e9ecef; --shadow: 0 4px 6px rgba(0,0,0,0.1);
-            --shadow-lg: 0 10px 25px rgba(0,0,0,0.1); --radius: 8px;
+            --primary: #4361ee; --primary-dark: #3a56d4; --secondary: #4895ef;
+            --accent: #f72585; --light: #f8f9fa; --dark: #212529; --gray: #6c757d;
+            --light-gray: #e9ecef; --success: #4cc9f0; --warning: #f8961e;
+            --danger: #e63946; --shadow: 0 4px 6px rgba(0,0,0,0.1);
+            --shadow-lg: 0 10px 25px rgba(0,0,0,0.1); --radius: 10px;
             --transition: all 0.3s ease;
         }
-        body { font-family: 'Open Sans', sans-serif; line-height: 1.6; color: var(--dark); background: var(--light); }
-        h1,h2,h3,h4,h5,h6 { font-family: 'Poppins', sans-serif; font-weight: 600; line-height: 1.3; }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Open Sans', sans-serif; line-height: 1.6; color: var(--dark); background: var(--dark); }
+        h1,h2,h3,h4,h5,h6 { font-family: 'Poppins', sans-serif; font-weight: 600; }
         a { text-decoration: none; color: inherit; }
+        .container { max-width: 1400px; margin: 0 auto; padding: 0 20px; }
         
         /* Navigation */
-        .navbar { background: white; box-shadow: var(--shadow); position: sticky; top: 0; z-index: 1000; }
-        .nav-container { max-width: 1200px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center; padding: 1rem 2rem; }
-        .logo { display: flex; align-items: center; gap: 10px; font-size: 1.5rem; font-weight: 700; color: var(--primary); }
+        .navbar { background: rgba(33,37,41,0.95); backdrop-filter: blur(10px); position: fixed; top: 0; width: 100%; z-index: 1000; border-bottom: 1px solid rgba(255,255,255,0.1); }
+        .nav-container { display: flex; justify-content: space-between; align-items: center; padding: 1rem 2rem; }
+        .logo { display: flex; align-items: center; gap: 10px; font-size: 1.5rem; font-weight: 700; color: white; }
         .logo i { font-size: 1.8rem; }
-        .nav-menu { display: flex; list-style: none; gap: 2rem; align-items: center; }
-        .nav-menu a { color: var(--dark); font-weight: 500; padding: 0.5rem 1rem; border-radius: var(--radius); transition: var(--transition); display: flex; align-items: center; gap: 8px; }
-        .nav-menu a:hover { color: var(--primary); background: var(--light-gray); }
-        .nav-menu a.active { color: var(--primary); background: rgba(74, 111, 165, 0.1); }
-        .btn-login { background: var(--primary); color: white !important; padding: 0.5rem 1.5rem !important; }
-        .btn-login:hover { background: var(--primary-dark) !important; }
+        .nav-menu { display: flex; list-style: none; gap: 1.5rem; align-items: center; }
+        .nav-menu a { color: #ccc; font-weight: 500; padding: 0.5rem 1rem; border-radius: var(--radius); transition: var(--transition); display: flex; align-items: center; gap: 8px; }
+        .nav-menu a:hover { color: white; background: rgba(255,255,255,0.1); }
+        .nav-menu a.active { color: white; background: var(--primary); }
+        .btn-login { background: var(--primary); color: white !important; padding: 0.6rem 1.8rem !important; }
         .hamburger { display: none; flex-direction: column; gap: 4px; cursor: pointer; }
-        .hamburger span { width: 25px; height: 3px; background: var(--dark); border-radius: 2px; transition: var(--transition); }
+        .hamburger span { width: 25px; height: 3px; background: white; border-radius: 2px; transition: var(--transition); }
         
-        /* Live Stream Specific */
-        .live-container { max-width: 1200px; margin: 2rem auto; padding: 0 2rem; }
-        .live-header { text-align: center; margin-bottom: 2rem; }
-        .live-header h1 { font-size: 2.5rem; margin-bottom: 0.5rem; }
-        .live-status { display: inline-flex; align-items: center; gap: 10px; background: #dc3545; color: white; padding: 0.5rem 1.5rem; border-radius: 20px; font-weight: 600; }
-        .stream-container { display: grid; grid-template-columns: 2fr 1fr; gap: 2rem; }
-        .video-player { background: var(--dark); border-radius: var(--radius); overflow: hidden; }
-        .video-placeholder { height: 400px; background: linear-gradient(45deg, #1a2980, #26d0ce); display: flex; align-items: center; justify-content: center; color: white; font-size: 1.2rem; }
-        .player-controls { background: rgba(0,0,0,0.8); padding: 1rem; display: flex; justify-content: center; gap: 2rem; }
-        .control-btn { background: none; border: none; color: white; font-size: 1.2rem; cursor: pointer; transition: var(--transition); }
-        .control-btn:hover { color: var(--primary); }
+        /* Live Stream Layout */
+        .live-container { padding: 6rem 0 2rem; min-height: 100vh; }
+        .stream-grid { display: grid; grid-template-columns: 1fr 400px; gap: 2rem; }
+        
+        /* Video Player */
+        .video-container { background: #000; border-radius: var(--radius); overflow: hidden; position: relative; }
+        .video-header { background: rgba(0,0,0,0.8); padding: 1rem; display: flex; justify-content: space-between; align-items: center; }
+        .live-badge { background: var(--danger); color: white; padding: 0.5rem 1.5rem; border-radius: 20px; display: flex; align-items: center; gap: 8px; font-weight: 600; animation: pulse 2s infinite; }
+        @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.7; } }
+        .video-stats { display: flex; gap: 1.5rem; color: #ccc; }
+        .video-main { height: 500px; background: #111; display: flex; align-items: center; justify-content: center; position: relative; }
+        .video-placeholder { text-align: center; color: white; }
+        .video-placeholder i { font-size: 4rem; color: var(--primary); margin-bottom: 1rem; }
+        
+        /* Controls */
+        .video-controls { background: rgba(0,0,0,0.8); padding: 1rem; display: flex; justify-content: space-between; align-items: center; }
+        .control-group { display: flex; gap: 1rem; }
+        .control-btn { background: none; border: none; color: white; font-size: 1.2rem; cursor: pointer; width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; transition: var(--transition); }
+        .control-btn:hover { background: rgba(255,255,255,0.1); }
+        .control-btn.primary { background: var(--primary); }
+        .progress-bar { flex: 1; height: 4px; background: rgba(255,255,255,0.2); border-radius: 2px; margin: 0 1rem; position: relative; }
+        .progress-fill { position: absolute; left: 0; top: 0; height: 100%; background: var(--primary); border-radius: 2px; width: 65%; }
         
         /* Chat */
-        .chat-container { background: white; border-radius: var(--radius); box-shadow: var(--shadow); overflow: hidden; }
-        .chat-header { background: var(--primary); color: white; padding: 1rem; text-align: center; }
-        .chat-messages { height: 350px; padding: 1rem; overflow-y: auto; }
-        .chat-message { margin-bottom: 1rem; padding: 0.8rem; background: var(--light-gray); border-radius: var(--radius); }
-        .chat-input { padding: 1rem; border-top: 1px solid var(--light-gray); display: flex; gap: 10px; }
-        .chat-input input { flex: 1; padding: 0.8rem; border: 1px solid var(--light-gray); border-radius: var(--radius); }
-        .chat-input button { background: var(--primary); color: white; border: none; padding: 0.8rem 1.5rem; border-radius: var(--radius); cursor: pointer; }
+        .chat-container { background: var(--dark); border-radius: var(--radius); overflow: hidden; display: flex; flex-direction: column; border: 1px solid rgba(255,255,255,0.1); }
+        .chat-header { background: rgba(67,97,238,0.2); padding: 1.2rem; border-bottom: 1px solid rgba(255,255,255,0.1); }
+        .chat-messages { flex: 1; padding: 1rem; overflow-y: auto; max-height: 400px; }
+        .chat-message { margin-bottom: 1rem; padding: 0.8rem; background: rgba(255,255,255,0.05); border-radius: var(--radius); border-left: 3px solid var(--primary); }
+        .message-header { display: flex; justify-content: space-between; margin-bottom: 0.3rem; }
+        .message-user { font-weight: 600; color: var(--primary); }
+        .message-time { color: #999; font-size: 0.8rem; }
+        .chat-input { padding: 1rem; border-top: 1px solid rgba(255,255,255,0.1); display: flex; gap: 10px; }
+        .chat-input input { flex: 1; padding: 0.8rem 1rem; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: var(--radius); color: white; }
+        .chat-input button { background: var(--primary); color: white; border: none; padding: 0.8rem 1.5rem; border-radius: var(--radius); cursor: pointer; transition: var(--transition); }
+        .chat-input button:hover { background: var(--primary-dark); }
         
         /* Stats */
         .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1.5rem; margin-top: 2rem; }
-        .stat-card { background: white; padding: 1.5rem; border-radius: var(--radius); box-shadow: var(--shadow); text-align: center; }
+        .stat-card { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); padding: 1.5rem; border-radius: var(--radius); text-align: center; transition: var(--transition); }
+        .stat-card:hover { background: rgba(67,97,238,0.1); border-color: var(--primary); }
         .stat-number { font-size: 2.5rem; font-weight: 700; color: var(--primary); margin-bottom: 0.5rem; }
+        .stat-label { color: #ccc; font-size: 0.9rem; }
         
         /* Footer */
-        .footer { background: var(--dark); color: white; padding-top: 3rem; margin-top: 3rem; }
-        .footer-content { max-width: 1200px; margin: 0 auto; padding: 0 2rem 3rem; display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 3rem; }
-        .footer-section .logo { color: white; margin-bottom: 1rem; }
-        .social-icons { display: flex; gap: 1rem; }
+        .footer { background: rgba(0,0,0,0.8); color: white; padding: 3rem 2rem 2rem; margin-top: 3rem; border-top: 1px solid rgba(255,255,255,0.1); }
+        .footer-content { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 3rem; margin-bottom: 2rem; }
+        .social-icons { display: flex; gap: 1rem; margin-top: 1.5rem; }
         .social-icons a { width: 40px; height: 40px; background: rgba(255,255,255,0.1); border-radius: 50%; display: flex; align-items: center; justify-content: center; transition: var(--transition); }
         .social-icons a:hover { background: var(--primary); transform: translateY(-3px); }
-        .footer-bottom { border-top: 1px solid rgba(255,255,255,0.1); padding: 1.5rem 0; text-align: center; color: rgba(255,255,255,0.6); }
+        .footer-bottom { text-align: center; padding-top: 2rem; border-top: 1px solid rgba(255,255,255,0.1); color: #999; }
         
         /* Responsive */
+        @media (max-width: 1024px) {
+            .stream-grid { grid-template-columns: 1fr; }
+            .video-main { height: 400px; }
+        }
         @media (max-width: 768px) {
-            .nav-menu { position: fixed; left: -100%; top: 70px; flex-direction: column; background: white; width: 100%; text-align: center; transition: 0.3s; box-shadow: var(--shadow); padding: 2rem 0; gap: 0; }
+            .hamburger { display: flex; }
+            .nav-menu { position: fixed; left: -100%; top: 70px; flex-direction: column; background: var(--dark); width: 100%; text-align: center; transition: 0.3s; padding: 2rem 0; gap: 0; border-top: 1px solid rgba(255,255,255,0.1); }
             .nav-menu.active { left: 0; }
             .nav-menu li { width: 100%; }
-            .nav-menu a { padding: 1rem; justify-content: center; }
-            .hamburger { display: flex; }
-            .stream-container { grid-template-columns: 1fr; }
-            .live-header h1 { font-size: 2rem; }
+            .nav-menu a { padding: 1.2rem; justify-content: center; }
+            .video-controls { flex-direction: column; gap: 1rem; }
+            .progress-bar { width: 100%; margin: 0.5rem 0; }
         }
     </style>
 </head>
@@ -90,7 +111,7 @@
             </div>
             <ul class="nav-menu">
                 <li><a href="index.html"><i class="fas fa-home"></i> Home</a></li>
-                <li><a href="live.html" class="active"><i class="fas fa-broadcast-tower"></i> Live Stream</a></li>
+                <li><a href="live.html" class="active"><i class="fas fa-broadcast-tower"></i> Live</a></li>
                 <li><a href="songs.html"><i class="fas fa-music"></i> Songs</a></li>
                 <li><a href="bible.html"><i class="fas fa-bible"></i> Bible</a></li>
                 <li><a href="events.html"><i class="fas fa-calendar-alt"></i> Events</a></li>
@@ -104,125 +125,180 @@
         </div>
     </nav>
 
-    <!-- Live Stream Content -->
+    <!-- Live Stream -->
     <div class="live-container">
-        <div class="live-header">
-            <h1>Sunday Worship Service</h1>
-            <div class="live-status">
-                <span class="live-dot"></span>
-                LIVE NOW
-            </div>
-            <p style="margin-top: 1rem; color: var(--gray);">Joined by <span class="viewer-count">1,234</span> viewers</p>
-        </div>
-        
-        <div class="stream-container">
-            <div class="video-player">
-                <div class="video-placeholder">
-                    <div style="text-align: center;">
-                        <i class="fas fa-broadcast-tower" style="font-size: 3rem; margin-bottom: 1rem;"></i>
-                        <p>Live Stream Playing</p>
-                        <p style="font-size: 0.9rem; margin-top: 0.5rem;">For actual streaming, integrate with YouTube Live, Vimeo, or OBS</p>
+        <div class="container">
+            <!-- Stream Grid -->
+            <div class="stream-grid">
+                <!-- Video Player -->
+                <div class="video-container">
+                    <div class="video-header">
+                        <div class="live-badge">
+                            <i class="fas fa-circle"></i> LIVE
+                        </div>
+                        <div class="video-stats">
+                            <span><i class="fas fa-eye"></i> <span id="viewerCount">1,247</span></span>
+                            <span><i class="fas fa-heart"></i> <span id="likeCount">342</span></span>
+                            <span><i class="fas fa-share"></i> <span id="shareCount">89</span></span>
+                        </div>
+                    </div>
+                    
+                    <div class="video-main">
+                        <div class="video-placeholder">
+                            <i class="fas fa-broadcast-tower"></i>
+                            <h2>Sunday Worship Service</h2>
+                            <p>Stream will begin shortly</p>
+                            <div style="margin-top: 2rem; display: flex; gap: 1rem; justify-content: center;">
+                                <button id="startStream" class="control-btn primary">
+                                    <i class="fas fa-play"></i> Start Stream
+                                </button>
+                                <button id="stopStream" class="control-btn" style="background: var(--danger);">
+                                    <i class="fas fa-stop"></i> Stop Stream
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="video-controls">
+                        <div class="control-group">
+                            <button class="control-btn" id="playBtn">
+                                <i class="fas fa-play"></i>
+                            </button>
+                            <button class="control-btn" id="volumeBtn">
+                                <i class="fas fa-volume-up"></i>
+                            </button>
+                        </div>
+                        
+                        <div class="progress-bar">
+                            <div class="progress-fill"></div>
+                        </div>
+                        
+                        <div class="control-group">
+                            <button class="control-btn" id="fullscreenBtn">
+                                <i class="fas fa-expand"></i>
+                            </button>
+                            <button class="control-btn" id="settingsBtn">
+                                <i class="fas fa-cog"></i>
+                            </button>
+                        </div>
                     </div>
                 </div>
-                <div class="player-controls">
-                    <button class="control-btn"><i class="fas fa-play"></i></button>
-                    <button class="control-btn"><i class="fas fa-volume-up"></i></button>
-                    <button class="control-btn"><i class="fas fa-expand"></i></button>
-                    <button class="control-btn"><i class="fas fa-share"></i></button>
+                
+                <!-- Chat -->
+                <div class="chat-container">
+                    <div class="chat-header">
+                        <h3><i class="fas fa-comments"></i> Live Chat</h3>
+                        <p style="color: #ccc; font-size: 0.9rem; margin-top: 0.3rem;">Connected: <span id="chatUsers">243</span> users</p>
+                    </div>
+                    
+                    <div class="chat-messages" id="chatMessages">
+                        <div class="chat-message">
+                            <div class="message-header">
+                                <span class="message-user">Sarah Johnson</span>
+                                <span class="message-time">2:30 PM</span>
+                            </div>
+                            <p>Praise God! This worship is powerful 🙏</p>
+                        </div>
+                        <div class="chat-message">
+                            <div class="message-header">
+                                <span class="message-user">Michael Chen</span>
+                                <span class="message-time">2:28 PM</span>
+                            </div>
+                            <p>Can someone pray for my family? We're going through a tough time</p>
+                        </div>
+                        <div class="chat-message">
+                            <div class="message-header">
+                                <span class="message-user">Prayer Team</span>
+                                <span class="message-time">2:29 PM</span>
+                            </div>
+                            <p>We're praying for you Michael! God is with you</p>
+                        </div>
+                        <div class="chat-message">
+                            <div class="message-header">
+                                <span class="message-user">Grace Williams</span>
+                                <span class="message-time">2:25 PM</span>
+                            </div>
+                            <p>That verse really spoke to me. Thank you pastor!</p>
+                        </div>
+                    </div>
+                    
+                    <div class="chat-input">
+                        <input type="text" id="chatInput" placeholder="Type your message...">
+                        <button id="sendBtn">
+                            <i class="fas fa-paper-plane"></i>
+                        </button>
+                    </div>
                 </div>
             </div>
             
-            <div class="chat-container">
-                <div class="chat-header">
-                    <h3><i class="fas fa-comments"></i> Live Chat</h3>
+            <!-- Stats -->
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-number" id="totalViewers">1,247</div>
+                    <div class="stat-label">Total Viewers</div>
                 </div>
-                <div class="chat-messages">
-                    <div class="chat-message">
-                        <strong>Sarah:</strong> Great worship today! 🙏
-                        <span style="float: right; font-size: 0.8rem; color: #666;">2 min ago</span>
-                    </div>
-                    <div class="chat-message">
-                        <strong>Michael:</strong> Amen to that message!
-                        <span style="float: right; font-size: 0.8rem; color: #666;">5 min ago</span>
-                    </div>
-                    <div class="chat-message">
-                        <strong>Grace:</strong> Praying for everyone watching
-                        <span style="float: right; font-size: 0.8rem; color: #666;">8 min ago</span>
-                    </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="peakViewers">1,589</div>
+                    <div class="stat-label">Peak Viewers</div>
                 </div>
-                <div class="chat-input">
-                    <input type="text" placeholder="Type your message..." id="chatInput">
-                    <button id="sendMessage"><i class="fas fa-paper-plane"></i></button>
+                <div class="stat-card">
+                    <div class="stat-number" id="avgWatchTime">42:15</div>
+                    <div class="stat-label">Avg. Watch Time</div>
                 </div>
-            </div>
-        </div>
-        
-        <div class="stats-grid">
-            <div class="stat-card">
-                <div class="stat-number">1,234</div>
-                <div class="stat-label">Current Viewers</div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-number">45</div>
-                <div class="stat-label">Countries</div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-number">2:15</div>
-                <div class="stat-label">Stream Duration</div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-number">89%</div>
-                <div class="stat-label">Engagement</div>
+                <div class="stat-card">
+                    <div class="stat-number" id="engagementRate">87%</div>
+                    <div class="stat-label">Engagement Rate</div>
+                </div>
             </div>
         </div>
     </div>
 
     <!-- Footer -->
     <footer class="footer">
-        <div class="footer-content">
-            <div class="footer-section">
-                <div class="logo">
-                    <i class="fas fa-church"></i>
-                    <span>WorshipFlow</span>
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <div class="logo">
+                        <i class="fas fa-church"></i>
+                        <span>WorshipFlow</span>
+                    </div>
+                    <p>Professional live streaming for churches. Reach your congregation anywhere, anytime.</p>
+                    <div class="social-icons">
+                        <a href="#"><i class="fab fa-facebook-f"></i></a>
+                        <a href="#"><i class="fab fa-youtube"></i></a>
+                        <a href="#"><i class="fab fa-twitter"></i></a>
+                        <a href="#"><i class="fab fa-instagram"></i></a>
+                    </div>
                 </div>
-                <p>Professional worship software for modern churches.</p>
-                <div class="social-icons">
-                    <a href="#"><i class="fab fa-facebook"></i></a>
-                    <a href="#"><i class="fab fa-youtube"></i></a>
-                    <a href="#"><i class="fab fa-twitter"></i></a>
-                    <a href="#"><i class="fab fa-instagram"></i></a>
+                
+                <div class="footer-section">
+                    <h4>Stream Info</h4>
+                    <p><i class="fas fa-clock"></i> Started: <span id="streamStartTime">2:15 PM</span></p>
+                    <p><i class="fas fa-globe"></i> Countries: <span id="streamCountries">24</span></p>
+                    <p><i class="fas fa-wifi"></i> Quality: <span id="streamQuality">HD 1080p</span></p>
+                </div>
+                
+                <div class="footer-section">
+                    <h4>Quick Links</h4>
+                    <ul style="list-style: none;">
+                        <li><a href="index.html" style="color: #ccc;">Home</a></li>
+                        <li><a href="songs.html" style="color: #ccc;">Song Library</a></li>
+                        <li><a href="events.html" style="color: #ccc;">Events</a></li>
+                        <li><a href="dashboard.html" style="color: #ccc;">Dashboard</a></li>
+                    </ul>
+                </div>
+                
+                <div class="footer-section">
+                    <h4>Support</h4>
+                    <p><i class="fas fa-question-circle"></i> <a href="#" style="color: #ccc;">Streaming Guide</a></p>
+                    <p><i class="fas fa-headset"></i> <a href="#" style="color: #ccc;">Live Support</a></p>
+                    <p><i class="fas fa-download"></i> <a href="#" style="color: #ccc;">Download App</a></p>
                 </div>
             </div>
             
-            <div class="footer-section">
-                <h4>Quick Links</h4>
-                <ul>
-                    <li><a href="index.html">Home</a></li>
-                    <li><a href="live.html">Live Stream</a></li>
-                    <li><a href="songs.html">Songs</a></li>
-                    <li><a href="bible.html">Bible</a></li>
-                </ul>
+            <div class="footer-bottom">
+                <p>&copy; 2024 WorshipFlow Live Streaming. All rights reserved.</p>
             </div>
-            
-            <div class="footer-section">
-                <h4>Resources</h4>
-                <ul>
-                    <li><a href="#">Documentation</a></li>
-                    <li><a href="#">Support</a></li>
-                    <li><a href="#">Privacy Policy</a></li>
-                    <li><a href="#">Terms of Service</a></li>
-                </ul>
-            </div>
-            
-            <div class="footer-section">
-                <h4>Contact</h4>
-                <p><i class="fas fa-envelope"></i> support@worshipflow.com</p>
-                <p><i class="fas fa-phone"></i> (555) 123-4567</p>
-            </div>
-        </div>
-        
-        <div class="footer-bottom">
-            <p>&copy; 2024 WorshipFlow. All rights reserved.</p>
         </div>
     </footer>
 
@@ -231,92 +307,217 @@
         const hamburger = document.querySelector('.hamburger');
         const navMenu = document.querySelector('.nav-menu');
         
-        if (hamburger) {
-            hamburger.addEventListener('click', () => {
-                hamburger.classList.toggle('active');
-                navMenu.classList.toggle('active');
-            });
-            
-            document.querySelectorAll('.nav-menu a').forEach(link => {
-                link.addEventListener('click', () => {
-                    hamburger.classList.remove('active');
-                    navMenu.classList.remove('active');
-                });
-            });
-        }
+        hamburger.addEventListener('click', () => {
+            hamburger.classList.toggle('active');
+            navMenu.classList.toggle('active');
+        });
         
-        // Live Chat Functionality
-        const chatMessages = document.querySelector('.chat-messages');
+        // Chat Functionality
         const chatInput = document.getElementById('chatInput');
-        const sendButton = document.getElementById('sendMessage');
+        const sendBtn = document.getElementById('sendBtn');
+        const chatMessages = document.getElementById('chatMessages');
+        const chatUsers = document.getElementById('chatUsers');
         
+        // Sample user names for auto-generated messages
+        const userNames = ['John D.', 'Maria G.', 'David L.', 'Sarah K.', 'Robert P.', 'Lisa M.', 'James W.', 'Emily R.'];
+        const prayerTeam = ['Prayer Team', 'Pastor John', 'Worship Leader'];
+        
+        function addMessage(user, message, isSystem = false) {
+            const messageDiv = document.createElement('div');
+            messageDiv.className = 'chat-message';
+            
+            const now = new Date();
+            const time = `${now.getHours()}:${now.getMinutes().toString().padStart(2, '0')}`;
+            
+            messageDiv.innerHTML = `
+                <div class="message-header">
+                    <span class="message-user" style="${isSystem ? 'color: var(--accent)' : ''}">${user}</span>
+                    <span class="message-time">${time}</span>
+                </div>
+                <p>${message}</p>
+            `;
+            
+            chatMessages.appendChild(messageDiv);
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+            
+            // Update user count occasionally
+            if (Math.random() > 0.7) {
+                const current = parseInt(chatUsers.textContent);
+                const change = Math.random() > 0.5 ? 1 : -1;
+                chatUsers.textContent = Math.max(current + change, 200);
+            }
+        }
+        
+        // Send message
         function sendMessage() {
-            if (chatInput.value.trim() !== '') {
-                const messageDiv = document.createElement('div');
-                messageDiv.className = 'chat-message';
-                messageDiv.innerHTML = `
-                    <strong>You:</strong> ${chatInput.value}
-                    <span style="float: right; font-size: 0.8rem; color: #666;">Just now</span>
-                `;
-                chatMessages.appendChild(messageDiv);
+            const message = chatInput.value.trim();
+            if (message) {
+                addMessage('You', message);
                 chatInput.value = '';
-                chatMessages.scrollTop = chatMessages.scrollHeight;
                 
-                // Simulate response
+                // Auto-reply after 1-3 seconds
                 setTimeout(() => {
-                    const responses = [
-                        "Amen! 🙏",
-                        "Praise God!",
-                        "Thank you for sharing!",
-                        "Praying with you",
-                        "God bless you!"
-                    ];
-                    const response = responses[Math.floor(Math.random() * responses.length)];
+                    if (message.toLowerCase().includes('pray')) {
+                        addMessage(prayerTeam[Math.floor(Math.random() * prayerTeam.length)], 'We are praying with you! 🙏', true);
+                    } else if (message.toLowerCase().includes('amen') || message.toLowerCase().includes('praise')) {
+                        addMessage(userNames[Math.floor(Math.random() * userNames.length)], 'Amen! 🙌');
+                    } else {
+                        const replies = [
+                            'Thanks for sharing!',
+                            'God bless you!',
+                            'Praying with you',
+                            'That touched my heart ❤️',
+                            'Amen to that!'
+                        ];
+                        addMessage(userNames[Math.floor(Math.random() * userNames.length)], 
+                                 replies[Math.floor(Math.random() * replies.length)]);
+                    }
+                }, 1000 + Math.random() * 2000);
+            }
+        }
+        
+        sendBtn.addEventListener('click', sendMessage);
+        chatInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') sendMessage();
+        });
+        
+        // Auto-add messages every 30-60 seconds
+        setInterval(() => {
+            const messages = [
+                'This worship is amazing!',
+                'Can we pray for the sick?',
+                'Thank you for streaming this service',
+                'God is good all the time!',
+                'That message spoke to me',
+                'Praying for our church leadership',
+                'Blessings from [City]!',
+                'Watching with my family 🙏'
+            ];
+            addMessage(userNames[Math.floor(Math.random() * userNames.length)], 
+                      messages[Math.floor(Math.random() * messages.length)]);
+        }, 30000 + Math.random() * 30000);
+        
+        // Stream Controls
+        const startStreamBtn = document.getElementById('startStream');
+        const stopStreamBtn = document.getElementById('stopStream');
+        const playBtn = document.getElementById('playBtn');
+        const volumeBtn = document.getElementById('volumeBtn');
+        const fullscreenBtn = document.getElementById('fullscreenBtn');
+        const settingsBtn = document.getElementById('settingsBtn');
+        
+        let isStreaming = false;
+        let isPlaying = false;
+        let isMuted = false;
+        
+        startStreamBtn.addEventListener('click', () => {
+            isStreaming = true;
+            document.querySelector('.video-placeholder').innerHTML = `
+                <i class="fas fa-satellite-dish" style="animation: pulse 2s infinite"></i>
+                <h2>LIVE NOW</h2>
+                <p>Sunday Worship Service - Live from Main Sanctuary</p>
+                <div style="margin-top: 1rem; color: #ccc;">
+                    <p><i class="fas fa-check-circle" style="color: var(--success);"></i> Stream started successfully</p>
+                </div>
+            `;
+            document.querySelector('.live-badge').innerHTML = '<i class="fas fa-circle"></i> LIVE NOW';
+        });
+        
+        stopStreamBtn.addEventListener('click', () => {
+            isStreaming = false;
+            document.querySelector('.video-placeholder').innerHTML = `
+                <i class="fas fa-broadcast-tower"></i>
+                <h2>Stream Ended</h2>
+                <p>Thank you for joining our service</p>
+                <div style="margin-top: 2rem;">
+                    <button id="startStream" class="control-btn primary">
+                        <i class="fas fa-play"></i> Start New Stream
+                    </button>
+                </div>
+            `;
+            document.querySelector('.live-badge').innerHTML = '<i class="fas fa-circle" style="color: #ccc;"></i> OFFLINE';
+        });
+        
+        playBtn.addEventListener('click', () => {
+            isPlaying = !isPlaying;
+            playBtn.innerHTML = isPlaying ? '<i class="fas fa-pause"></i>' : '<i class="fas fa-play"></i>';
+        });
+        
+        volumeBtn.addEventListener('click', () => {
+            isMuted = !isMuted;
+            volumeBtn.innerHTML = isMuted ? '<i class="fas fa-volume-mute"></i>' : '<i class="fas fa-volume-up"></i>';
+        });
+        
+        fullscreenBtn.addEventListener('click', () => {
+            const videoContainer = document.querySelector('.video-container');
+            if (!document.fullscreenElement) {
+                videoContainer.requestFullscreen().catch(err => {
+                    console.log(`Error attempting to enable fullscreen: ${err.message}`);
+                });
+            } else {
+                document.exitFullscreen();
+            }
+        });
+        
+        settingsBtn.addEventListener('click', () => {
+            alert('Stream Settings:\n\n• Quality: 1080p HD\n• Bitrate: 5000 kbps\n• Framerate: 30 fps\n• Codec: H.264\n• Audio: 192 kbps stereo');
+        });
+        
+        // Update statistics
+        function updateStats() {
+            const stats = {
+                viewerCount: document.getElementById('viewerCount'),
+                likeCount: document.getElementById('likeCount'),
+                shareCount: document.getElementById('shareCount'),
+                totalViewers: document.getElementById('totalViewers'),
+                peakViewers: document.getElementById('peakViewers'),
+                engagementRate: document.getElementById('engagementRate')
+            };
+            
+            Object.keys(stats).forEach(key => {
+                if (stats[key]) {
+                    const current = parseInt(stats[key].textContent.replace(/,/g, '').replace('%', ''));
+                    let newValue;
                     
-                    const responseDiv = document.createElement('div');
-                    responseDiv.className = 'chat-message';
-                    responseDiv.innerHTML = `
-                        <strong>Worshipper:</strong> ${response}
-                        <span style="float: right; font-size: 0.8rem; color: #666;">Just now</span>
-                    `;
-                    chatMessages.appendChild(responseDiv);
-                    chatMessages.scrollTop = chatMessages.scrollHeight;
-                }, 1000);
-            }
-        }
-        
-        if (sendButton) {
-            sendButton.addEventListener('click', sendMessage);
-            chatInput.addEventListener('keypress', (e) => {
-                if (e.key === 'Enter') sendMessage();
-            });
-        }
-        
-        // Update viewer count
-        function updateViewerCount() {
-            const viewerCount = document.querySelector('.viewer-count');
-            if (viewerCount) {
-                const baseCount = 1234;
-                const randomChange = Math.floor(Math.random() * 21) - 10;
-                const newCount = Math.max(baseCount + randomChange, 1200);
-                viewerCount.textContent = newCount.toLocaleString();
-            }
-        }
-        
-        // Update every 30 seconds
-        setInterval(updateViewerCount, 30000);
-        updateViewerCount();
-        
-        // Update current page active status
-        document.addEventListener('DOMContentLoaded', () => {
-            const navLinks = document.querySelectorAll('.nav-menu a');
-            navLinks.forEach(link => {
-                if (link.getAttribute('href') === 'live.html') {
-                    link.classList.add('active');
-                } else {
-                    link.classList.remove('active');
+                    if (key === 'engagementRate') {
+                        newValue = Math.min(100, Math.max(80, current + (Math.random() > 0.5 ? 1 : -1)));
+                        stats[key].textContent = newValue + '%';
+                    } else if (key === 'peakViewers') {
+                        const currentViewers = parseInt(document.getElementById('viewerCount').textContent.replace(/,/g, ''));
+                        if (currentViewers > current) {
+                            stats[key].textContent = currentViewers.toLocaleString();
+                        }
+                    } else {
+                        const change = Math.floor(Math.random() * 21) - 10;
+                        newValue = Math.max(key === 'likeCount' ? 300 : 1000, current + change);
+                        stats[key].textContent = newValue.toLocaleString();
+                    }
                 }
             });
+            
+            // Update stream time
+            const startTime = document.getElementById('streamStartTime');
+            if (startTime) {
+                const [hours, minutes] = startTime.textContent.split(':').map(Number);
+                const newMinutes = (minutes + 1) % 60;
+                const newHours = minutes === 59 ? hours + 1 : hours;
+                startTime.textContent = `${newHours}:${newMinutes.toString().padStart(2, '0')}`;
+            }
+        }
+        
+        // Update stats every 30 seconds
+        setInterval(updateStats, 30000);
+        
+        // Initial setup
+        document.addEventListener('DOMContentLoaded', () => {
+            // Set active navigation
+            document.querySelectorAll('.nav-menu a').forEach(link => {
+                if (link.getAttribute('href') === 'live.html') {
+                    link.classList.add('active');
+                }
+            });
+            
+            // Add initial messages
+            setTimeout(() => addMessage('System', 'Welcome to our live stream! Feel free to chat and engage with others.', true), 2000);
         });
     </script>
 </body>
