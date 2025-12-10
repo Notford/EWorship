@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - WorshipFlow</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Open+Sans:wght@400;600&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        :root {
+            --primary: #4a6fa5; --primary-dark: #385d8a; --secondary: #6d9dc5;
+            --accent: #ff6b6b; --light: #f8f9fa; --dark: #343a40; --gray: #6c757d;
+            --light-gray: #e9ecef; --shadow: 0 4px 6px rgba(0,0,0,0.1);
+            --shadow-lg: 0 10px 25px rgba(0,0,0,0.1); --radius: 8px;
+            --transition: all 0.3s ease;
+        }
+        body { font-family: 'Open Sans', sans-serif; line-height: 1.6; color: var(--dark); background: var(--light); }
+        h1,h2,h3,h4,h5,h6 { font-family: 'Poppins', sans-serif; font-weight: 600; line-height: 1.3; }
+        a { text-decoration: none; color: inherit; }
+        
+        /* Navigation */
+        .navbar { background: white; box-shadow: var(--shadow); position: sticky; top: 0; z-index: 1000; }
+        .nav-container { max-width: 1200px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center; padding: 1rem 2rem; }
+        .logo { display: flex; align-items: center; gap: 10px; font-size: 1.5rem; font-weight: 700; color: var(--primary); }
+        .logo i { font-size: 1.8rem; }
+        .nav-menu { display: flex; list-style: none; gap: 2rem; align-items: center; }
+        .nav-menu a { color: var(--dark); font-weight: 500; padding: 0.5rem 1rem; border-radius: var(--radius); transition: var(--transition); display: flex; align-items: center; gap: 8px; }
+        .nav-menu a:hover { color: var(--primary); background: var(--light-gray); }
+        .nav-menu a.active { color: var(--primary); background: rgba(74, 111, 165, 0.1); }
+        .btn-login { background: var(--primary); color: white !important; padding: 0.5rem 1.5rem !important; }
+        .btn-login:hover { background: var(--primary-dark) !important; }
+        .hamburger { display: none; flex-direction: column; gap: 4px; cursor: pointer; }
+        .hamburger span { width: 25px; height: 3px; background: var(--dark); border-radius: 2px; transition: var(--transition); }
+        
+        /* Dashboard Specific */
+        .dashboard-container { max-width: 1200px; margin: 2rem auto; padding: 0 2rem; }
+        .dashboard-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem; }
+        .dashboard-header h1 { font-size: 2.5rem; }
+        .user-info { display: flex; align-items: center; gap: 1rem; }
+        .user-avatar { width: 50px; height: 50px; background: var(--primary); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-weight: 600; }
+        
+        .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1.5rem; margin-bottom: 2rem; }
+        .stat-card { background: white; padding: 1.5rem; border-radius: var(--radius); box-shadow: var(--shadow); }
+        .stat-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; }
+        .stat-number { font-size: 2.5rem; font-weight: 700; color: var(--primary); }
+        .stat-change { color: #28a745; font-size: 0.9rem; }
+        
+        .dashboard-grid { display: grid; grid-template-columns: 2fr 1fr; gap: 2rem; }
+        .main-content { display: grid; gap: 2rem; }
+        .sidebar { display: grid; gap: 2rem; }
+        
+        .card { background: white; border-radius: var(--radius); padding: 1.5rem; box-shadow: var(--shadow); }
+        .card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; }
+        
+        .recent-activity { list-style: none; }
+        .activity-item { display: flex; align-items: center; gap: 1rem; padding: 1rem 0; border-bottom: 1px solid var(--light-gray); }
+        .activity-icon { width: 40px; height: 40px; background: var(--light-gray); border-radius: 50%; display: flex; align-items: center; justify-content: center; }
+        
+        .upcoming-events { list-style: none; }
+        .event-item { padding: 1rem 0; border-bottom: 1px solid var(--light-gray); }
+        .event-time { color: var(--primary); font-weight: 600; }
+        
+        /* Footer */
+        .footer { background: var(--dark); color: white; padding-top: 3rem; margin-top: 3rem; }
+        .footer-content { max-width: 1200px; margin: 0 auto; padding: 0 2rem 3rem; display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 3rem; }
+        .footer-section .logo { color: white; margin-bottom: 1rem; }
+        .social-icons { display: flex; gap: 1rem; }
+        .social-icons a { width: 40px; height: 40px; background: rgba(255,255,255,0.1); border-radius: 50%; display: flex; align-items: center; justify-content: center; transition: var(--transition); }
+        .social-icons a:hover { background: var(--primary); transform: translateY(-3px); }
+        .footer-bottom { border-top: 1px solid rgba(255,255,255,0.1); padding: 1.5rem 0; text-align: center; color: rgba(255,255,255,0.6); }
+        
+        /* Responsive */
+        @media (max-width: 992px) {
+            .dashboard-grid { grid-template-columns: 1fr; }
+        }
+        @media (max-width: 768px) {
+            .nav-menu { position: fixed; left: -100%; top: 70px; flex-direction: column; background: white; width: 100%; text-align: center; transition: 0.3s; box-shadow: var(--shadow); padding: 2rem 0; gap: 0; }
+            .nav-menu.active { left: 0; }
+            .nav-menu li { width: 100%; }
+            .nav-menu a { padding: 1rem; justify-content: center; }
+            .hamburger { display: flex; }
+            .dashboard-header { flex-direction: column; gap: 1rem; align-items: flex-start; }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="logo">
+                <i class="fas fa-church"></i>
+                <span>WorshipFlow</span>
+            </div>
+            <ul class="nav-menu">
+                <li><a href="index.html"><i class="fas fa-home"></i> Home</a></li>
+                <li><a href="live.html"><i class="fas fa-broadcast-tower"></i> Live Stream</a></li>
+                <li><a href="songs.html"><i class="fas fa-music"></i> Songs</a></li>
+                <li><a href="bible.html"><i class="fas fa-bible"></i> Bible</a></li>
+                <li><a href="events.html"><i class="fas fa-calendar-alt"></i> Events</a></li>
+                <li><a href="dashboard.html" class="btn-login active"><i class="fas fa-user"></i> Dashboard</a></li>
+            </ul>
+            <div class="hamburger">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Dashboard Content -->
+    <div class="dashboard-container">
+        <div class="dashboard-header">
+            <h1><i class="fas fa-tachometer-alt"></i> Worship Dashboard</h1>
+            <div class="user-info">
+                <div class="user-avatar">AJ</div>
+                <div>
+                    <strong>Admin User</strong>
+                    <p style="font-size: 0.9rem; color: var(--gray);">Last login: Today</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-header">
+                    <h3>Total Viewers</h3>
+                    <i class="fas fa-eye" style="color: var(--primary); font-size: 1.5rem;"></i>
+                </div>
+                <div class="stat-number" id="viewerCount">1,234</div>
+                <div class="stat-change">+12% from last week</div>
+            </div>
+            
+            <div class="stat-card">
+                <div class="stat-header">
+                    <h3>Songs in Library</h3>
+                    <i class="fas fa-music" style="color: var(--primary); font-size: 1.5rem;"></i>
+                </div>
+                <div class="stat-number" id="songCount">128</div>
+                <div class="stat-change">+5 this month</div>
+            </div>
+            
+            <div class="stat-card">
+                <div class="stat-header">
+                    <h3>Upcoming Events</h3>
+                    <i class="fas fa-calendar" style="color: var(--primary); font-size: 1.5rem;"></i>
+                </div>
+                <div class="stat-number" id="eventCount">8</div>
+                <div class="stat-change">2 this week</div>
+            </div>
+            
+            <div class="stat-card">
+                <div class="stat-header">
+                    <h3>Team Members</h3>
+                    <i class="fas fa-users" style="color: var(--primary); font-size: 1.5rem;"></i>
+                </div>
+                <div class="stat-number" id="teamCount">24</div>
+                <div class="stat-change">+2 this month</div>
+            </div>
+        </div>
+        
+        <div class="dashboard-grid">
+            <div class="main-content">
+                <div class="card">
+                    <div class="card-header">
+                        <h3>Quick Actions</h3>
+                    </div>
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 1rem;">
+                        <a href="live.html" style="background: var(--light-gray); padding: 1.5rem; border-radius: var(--radius); text-align: center; transition: var(--transition);">
+                            <i class="fas fa-broadcast-tower" style="font-size: 2rem; color: var(--primary); margin-bottom: 0.5rem;"></i>
+                            <div>Go Live</div>
+                        </a>
+                        <a href="songs.html" style="background: var(--light-gray); padding: 1.5rem; border-radius: var(--radius); text-align: center; transition: var(--transition);">
+                            <i class="fas fa-plus" style="font-size: 2rem; color: var(--primary); margin-bottom: 0.5rem;"></i>
+                            <div>Add Song</div>
+                        </a>
+                        <a href="events.html" style="background: var(--light-gray); padding: 1.5rem; border-radius: var(--radius); text-align: center; transition: var(--transition);">
+                            <i class="fas fa-calendar-plus" style="font-size: 2rem; color: var(--primary); margin-bottom: 0.5rem;"></i>
+                            <div>Schedule Event</div>
+                        </a>
+                        <a href="#" style="background: var(--light-gray); padding: 1.5rem; border-radius: var(--radius); text-align: center; transition: var(--transition);">
+                            <i class="fas fa-chart-bar" style="font-size: 2rem; color: var(--primary); margin-bottom: 0.5rem;"></i>
+                            <div>View Reports</div>
+                        </a>
+                    </div>
+                </div>
+                
+                <div class="card">
+                    <div class="card-header">
+                        <h3>Recent Activity</h3>
+                        <a href="#" style="color: var(--primary); font-size: 0.9rem;">View All</a>
+                    </div>
+                    <ul class="recent-activity">
+                        <li class="activity-item">
+                            <div class="activity-icon">
+                                <i class="fas fa-broadcast-tower"></i>
+                            </div>
+                            <div>
+                                <strong>Live stream started</strong>
+                                <p style="font-size: 0.9rem; color: var(--gray);">Sunday service is now live</p>
+                            </div>
+                            <span style="margin-left: auto; font-size: 0.9rem; color: var(--gray);">10 min ago</span>
+                        </li>
+                        <li class="activity-item">
+                            <div class="activity-icon">
+                                <i class="fas fa-music"></i>
+                            </div>
+                            <div>
+                                <strong>New song added</strong>
+                                <p style="font-size: 0.9rem; color: var(--gray);">"Build My Life" added to library</p>
+                            </div>
+                            <span style="margin-left: auto; font-size: 0.9rem; color: var(--gray);">2 hours ago</span>
+                        </li>
+                        <li class="activity-item">
+                            <div class="activity-icon">
+                                <i class="fas fa-user-plus"></i>
+                            </div>
+                            <div>
+                                <strong>New team member</strong>
+                                <p style="font-size: 0.9rem; color: var(--gray);">Sarah joined as worship leader</p>
+                            </div>
+                            <span style="margin-left: auto; font-size: 0.9rem; color: var(--gray);">Yesterday</span>
+                        </li>
+                        <li class="activity-item">
+                            <div class="activity-icon">
+                                <i class="fas fa-calendar-check"></i>
+                            </div>
+                            <div>
+                                <strong>Event created</strong>
+                                <p style="font-size: 0.9rem; color: var(--gray);">Youth night scheduled</p>
+                            </div>
+                            <span style="margin-left: auto; font-size: 0.9rem; color: var(--gray);">2 days ago</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="sidebar">
+                <div class="card">
+                    <div class="card-header">
+                        <h3>Upcoming Events</h3>
+                        <a href="events.html" style="color: var(--primary); font-size: 0.9rem;">View All</a>
+                    </div>
+                    <ul class="upcoming-events">
+                        <li class="event-item">
+                            <div class="event-time">Today, 7:00 PM</div>
+                            <strong>Prayer Meeting</strong>
+                            <p style="font-size: 0.9rem; color: var(--gray);">Main Sanctuary</p>
+                        </li>
+                        <li class="event-item">
+                            <div class="event-time">Tomorrow, 6:30 PM</div>
+                            <strong>Worship Team Rehearsal</strong>
+                            <p style="font-size: 0.9rem; color: var(--gray);">Choir Room</p>
+                        </li>
+                        <li class="event-item">
+                            <div class="event-time">Friday, 7:00 PM</div>
+                            <strong>Youth Night</strong>
+                            <p style="font-size: 0.9rem; color: var(--gray);">Youth Center</p>
+                        </li>
+                        <li class="event-item">
+                            <div class="event-time">Sunday, 10:00 AM</div>
+                            <strong>Sunday Service</strong>
+                            <p style="font-size: 0.9rem; color: var(--gray);">Main Sanctuary</p>
+                        </li>
+                    </ul>
+                </div>
+                
+                <div class="card">
+                    <div class="card-header">
+                        <h3>Stream Health</h3>
+                        <i class="fas fa-check-circle" style="color: #28a745;"></i>
+                    </div>
+                    <div style="margin: 1rem 0;">
+                        <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem;">
+                            <span>Connection Quality</span>
+                            <span style="color: #28a745; font-weight: 600;">Excellent</span>
+                        </div>
+                        <div style="height: 8px; background: var(--light-gray); border-radius: 4px;">
+                            <div style="width: 95%; height: 100%; background: #28a745; border-radius: 4px;"></div>
+                        </div>
+                    </div>
+                    <div>
+                        <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem;">
+                            <span>Viewer Engagement</span>
+                            <span style="color: #28a745; font-weight: 600;">High</span>
+                        </div>
+                        <div style="height: 8px; background: var(--light-gray); border-radius: 4px;">
+                            <div style="width: 88%; height: 100%; background: #28a745; border-radius: 4px;"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-content">
+            <div class="footer-section">
+                <div class="logo">
+                    <i class="fas fa-church"></i>
+                    <span>WorshipFlow</span>
+                </div>
+                <p>Professional worship software for modern churches.</p>
+                <div class="social-icons">
+                    <a href="#"><i class="fab fa-facebook"></i></a>
+                    <a href="#"><i class="fab fa-youtube"></i></a>
+                    <a href="#"><i class="fab fa-twitter"></i></a>
+                    <a href="#"><i class="fab fa-instagram"></i></a>
+                </div>
+            </div>
+            
+            <div class="footer-section">
+                <h4>Quick Links</h4>
+                <ul>
+                    <li><a href="index.html">Home</a></li>
+                    <li><a href="live.html">Live Stream</a></li>
+                    <li><a href="songs.html">Songs</a></li>
+                    <li><a href="bible.html">Bible</a></li>
+                </ul>
+            </div>
+            
+            <div class="footer-section">
+                <h4>Resources</h4>
+                <ul>
+                    <li><a href="#">Documentation</a></li>
+                    <li><a href="#">Support</a></li>
+                    <li><a href="#">Privacy Policy</a></li>
+                    <li><a href="#">Terms of Service</a></li>
+                </ul>
+            </div>
+            
+            <div class="footer-section">
+                <h4>Contact</h4>
+                <p><i class="fas fa-envelope"></i> support@worshipflow.com</p>
+                <p><i class="fas fa-phone"></i> (555) 123-4567</p>
+            </div>
+        </div>
+        
+        <div class="footer-bottom">
+            <p>&copy; 2024 WorshipFlow. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script>
+        // Mobile Navigation
+        const hamburger = document.querySelector('.hamburger');
+        const navMenu = document.querySelector('.nav-menu');
+        
+        if (hamburger) {
+            hamburger.addEventListener('click', () => {
+                hamburger.classList.toggle('active');
+                navMenu.classList.toggle('active');
+            });
+            
+            document.querySelectorAll('.nav-menu a').forEach(link => {
+                link.addEventListener('click', () => {
+                    hamburger.classList.remove('active');
+                    navMenu.classList.remove('active');
+                });
+            });
+        }
+        
+        // Update statistics
+        function updateStats() {
+            const stats = {
+                viewers: { element: document.getElementById('viewerCount'), value: Math.floor(Math.random() * 100) + 1234 },
+                songs: { element: document.getElementById('songCount'), value: Math.floor(Math.random() * 5) + 128 },
+                events: { element: document.getElementById('eventCount'), value: Math.floor(Math.random() * 3) + 8 },
+                team: { element: document.getElementById('teamCount'), value: Math.floor(Math.random() * 2) + 24 }
+            };
+            
+            Object.values(stats).forEach(stat => {
+                if (stat.element) {
+                    stat.element.textContent = stat.value.toLocaleString();
+                }
+            });
+        }
+        
+        // Update stats every 10 seconds
+        setInterval(updateStats, 10000);
+        updateStats();
+        
+        // Quick action hover effects
+        document.querySelectorAll('.main-content a').forEach(link => {
+            link.addEventListener('mouseenter', function() {
+                this.style.transform = 'translateY(-5px)';
+                this.style.boxShadow = 'var(--shadow-lg)';
+            });
+            
+            link.addEventListener('mouseleave', function() {
+                this.style.transform = 'translateY(0)';
+                this.style.boxShadow = 'none';
+            });
+        });
+        
+        // Update current page active status
+        document.addEventListener('DOMContentLoaded', () => {
+            const navLinks = document.querySelectorAll('.nav-menu a');
+            navLinks.forEach(link => {
+                if (link.getAttribute('href') === 'dashboard.html') {
+                    link.classList.add('active');
+                }
+            });
+        });
+    </script>
+</body>
+</html>
