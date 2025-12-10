@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Camera & Media Setup - WorshipFlow PRO</title>
+    <title>Camera Setup - WorshipFlow PRO</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         :root {
@@ -15,126 +15,130 @@
             --transition: all 0.2s ease;
         }
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif; background: var(--primary); color: var(--text); }
+        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif; background: var(--primary); color: var(--text); min-height: 100vh; }
         
         .container {
             max-width: 1200px;
             margin: 0 auto;
-            padding: 20px;
+            padding: 30px 20px;
         }
         
         .header {
             text-align: center;
             margin-bottom: 40px;
-            padding-bottom: 20px;
-            border-bottom: 2px solid var(--accent);
         }
         
         .header h1 {
-            font-size: 2.5rem;
+            font-size: 2.8rem;
             margin-bottom: 10px;
-            color: var(--text);
+            background: linear-gradient(45deg, var(--program), var(--accent));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
         }
         
         .header p {
             color: var(--text-secondary);
-            font-size: 1.1rem;
+            font-size: 1.2rem;
+            max-width: 600px;
+            margin: 0 auto;
         }
         
-        .setup-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 30px;
-            margin-bottom: 40px;
-        }
-        
-        .setup-card {
+        .setup-wizard {
             background: var(--secondary);
             border-radius: var(--radius);
-            padding: 25px;
+            padding: 30px;
             box-shadow: var(--shadow);
-            transition: var(--transition);
+            margin-bottom: 30px;
         }
         
-        .setup-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 10px 25px rgba(0,0,0,0.4);
+        .wizard-step {
+            display: none;
         }
         
-        .setup-title {
+        .wizard-step.active {
+            display: block;
+            animation: fadeIn 0.5s ease;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .step-title {
+            font-size: 1.5rem;
+            margin-bottom: 25px;
             display: flex;
             align-items: center;
             gap: 10px;
-            margin-bottom: 20px;
-            font-size: 1.3rem;
             color: var(--text);
         }
         
-        .setup-title i {
+        .step-title i {
             color: var(--program);
-            font-size: 1.5rem;
         }
         
-        .video-preview {
+        .camera-preview-container {
             width: 100%;
-            height: 250px;
+            max-width: 800px;
+            margin: 0 auto 30px;
             background: var(--control);
             border-radius: var(--radius);
-            margin-bottom: 20px;
             overflow: hidden;
             position: relative;
+            aspect-ratio: 16/9;
         }
         
-        .video-feed {
+        .camera-preview {
             width: 100%;
             height: 100%;
             object-fit: cover;
+            display: none;
         }
         
-        .controls {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-            gap: 10px;
-            margin-top: 15px;
-        }
-        
-        .control-btn {
-            padding: 12px;
-            background: var(--control);
-            border: none;
-            border-radius: var(--radius);
-            color: var(--text);
-            cursor: pointer;
+        .camera-placeholder {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
             display: flex;
             align-items: center;
-            gap: 8px;
             justify-content: center;
-            transition: var(--transition);
+            flex-direction: column;
+            color: var(--text-secondary);
         }
         
-        .control-btn:hover {
-            background: var(--accent);
+        .camera-placeholder i {
+            font-size: 4rem;
+            margin-bottom: 20px;
         }
         
-        .control-btn.active {
-            background: var(--program);
+        .controls-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
         }
         
-        .slider-group {
-            margin: 15px 0;
+        .control-group {
+            background: var(--control);
+            border-radius: var(--radius);
+            padding: 20px;
         }
         
-        .slider-label {
+        .control-label {
             display: flex;
             justify-content: space-between;
-            margin-bottom: 8px;
+            align-items: center;
+            margin-bottom: 10px;
             color: var(--text-secondary);
         }
         
         input[type="range"] {
             width: 100%;
             height: 6px;
-            background: var(--control);
+            background: rgba(255,255,255,0.1);
             border-radius: 3px;
             outline: none;
             -webkit-appearance: none;
@@ -147,20 +151,19 @@
             background: var(--program);
             border-radius: 50%;
             cursor: pointer;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
         }
         
-        .media-library {
+        .camera-selector {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
             gap: 15px;
-            margin-top: 20px;
-            max-height: 400px;
-            overflow-y: auto;
-            padding: 10px;
+            margin: 20px 0;
         }
         
-        .media-item {
+        .camera-option {
             background: var(--control);
+            border: 2px solid transparent;
             border-radius: var(--radius);
             padding: 15px;
             text-align: center;
@@ -168,86 +171,23 @@
             transition: var(--transition);
         }
         
-        .media-item:hover {
-            background: var(--accent);
-            transform: scale(1.05);
-        }
-        
-        .media-icon {
-            font-size: 2rem;
-            margin-bottom: 10px;
-            color: var(--program);
-        }
-        
-        .streaming-config {
-            grid-column: 1 / -1;
-        }
-        
-        .platform-configs {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 20px;
-            margin-top: 20px;
-        }
-        
-        .platform-config {
-            background: var(--control);
-            border-radius: var(--radius);
-            padding: 20px;
-        }
-        
-        .config-group {
-            margin-bottom: 15px;
-        }
-        
-        .config-group label {
-            display: block;
-            margin-bottom: 5px;
-            color: var(--text-secondary);
-        }
-        
-        .config-group input {
-            width: 100%;
-            padding: 10px;
-            background: rgba(255,255,255,0.1);
-            border: 1px solid var(--accent);
-            border-radius: var(--radius);
-            color: var(--text);
-        }
-        
-        .test-btn {
-            width: 100%;
-            padding: 12px;
-            background: var(--program);
-            color: white;
-            border: none;
-            border-radius: var(--radius);
-            cursor: pointer;
-            font-weight: 600;
-            margin-top: 10px;
-            transition: var(--transition);
-        }
-        
-        .test-btn:hover {
+        .camera-option:hover {
             background: var(--accent);
         }
         
-        .footer {
-            text-align: center;
-            margin-top: 40px;
-            padding-top: 20px;
-            border-top: 1px solid var(--accent);
-            color: var(--text-secondary);
+        .camera-option.active {
+            border-color: var(--program);
+            background: rgba(67, 97, 238, 0.1);
         }
         
         .action-buttons {
             display: flex;
             gap: 15px;
             justify-content: center;
-            margin-top: 30px;
+            margin-top: 40px;
         }
         
-        .action-btn {
+        .btn {
             padding: 15px 30px;
             border: none;
             border-radius: var(--radius);
@@ -260,27 +200,100 @@
             transition: var(--transition);
         }
         
-        .action-btn.primary {
+        .btn-primary {
             background: linear-gradient(45deg, var(--program), var(--accent));
             color: white;
         }
         
-        .action-btn.secondary {
+        .btn-secondary {
             background: var(--control);
             color: var(--text);
         }
         
-        .action-btn:hover {
+        .btn:hover {
             transform: translateY(-3px);
             box-shadow: 0 10px 20px rgba(0,0,0,0.2);
         }
         
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        .wizard-navigation {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid rgba(255,255,255,0.1);
+        }
+        
+        .status-bar {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            margin-top: 20px;
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+        
+        .status-indicator {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--danger);
+        }
+        
+        .status-dot.active {
+            background: var(--success);
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+        
+        .filter-preview {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+            margin-top: 15px;
+        }
+        
+        .filter-option {
+            padding: 10px;
+            background: var(--control);
+            border-radius: var(--radius);
+            text-align: center;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+        
+        .filter-option:hover {
+            background: var(--accent);
+        }
+        
+        .filter-option.active {
+            background: var(--program);
+        }
+        
         @media (max-width: 768px) {
-            .setup-grid {
+            .controls-grid {
                 grid-template-columns: 1fr;
             }
             .action-buttons {
                 flex-direction: column;
+            }
+            .btn {
+                justify-content: center;
             }
         }
     </style>
@@ -288,501 +301,557 @@
 <body>
     <div class="container">
         <div class="header">
-            <h1><i class="fas fa-sliders-h"></i> Camera & Media Setup</h1>
-            <p>Configure your cameras, audio, and streaming platforms for professional worship production</p>
+            <h1><i class="fas fa-video"></i> Camera Setup Wizard</h1>
+            <p>Configure your cameras for professional worship streaming. Follow these simple steps to get started.</p>
         </div>
         
-        <div class="setup-grid">
-            <!-- Camera Setup -->
-            <div class="setup-card">
-                <div class="setup-title">
-                    <i class="fas fa-video"></i>
-                    <h2>Camera Configuration</h2>
+        <div class="setup-wizard">
+            <!-- Step 1: Camera Detection -->
+            <div class="wizard-step active" id="step1">
+                <div class="step-title">
+                    <i class="fas fa-search"></i>
+                    <h2>Step 1: Camera Detection</h2>
                 </div>
                 
-                <div class="video-preview" id="cameraPreview">
-                    <div style="text-align: center; padding: 40px; color: var(--text-secondary);">
-                        <i class="fas fa-video-slash" style="font-size: 3rem; margin-bottom: 15px;"></i>
-                        <p>Camera Preview</p>
-                        <p style="font-size: 0.9rem;">Click "Start Camera" to begin</p>
+                <div class="camera-preview-container">
+                    <div class="camera-placeholder" id="cameraPlaceholder">
+                        <i class="fas fa-video-slash"></i>
+                        <p>No camera selected</p>
+                        <p style="font-size: 0.9rem; margin-top: 10px;">Click "Detect Cameras" to begin</p>
                     </div>
+                    <video class="camera-preview" id="cameraPreview" autoplay muted playsinline></video>
                 </div>
                 
-                <div class="controls">
-                    <button class="control-btn" id="startCamera">
-                        <i class="fas fa-play"></i> Start Camera
+                <div class="camera-selector" id="cameraSelector">
+                    <!-- Camera options will be added here -->
+                </div>
+                
+                <div class="action-buttons">
+                    <button class="btn btn-primary" id="detectCamerasBtn">
+                        <i class="fas fa-search"></i> Detect Cameras
                     </button>
-                    <button class="control-btn" id="stopCamera" disabled>
-                        <i class="fas fa-stop"></i> Stop Camera
-                    </button>
-                    <button class="control-btn" id="switchCamera">
-                        <i class="fas fa-sync-alt"></i> Switch Camera
-                    </button>
-                    <button class="control-btn" id="takeSnapshot">
-                        <i class="fas fa-camera"></i> Snapshot
+                    <button class="btn btn-secondary" id="nextStep1" disabled>
+                        Next Step <i class="fas fa-arrow-right"></i>
                     </button>
                 </div>
                 
-                <div class="slider-group">
-                    <div class="slider-label">
-                        <span>Brightness</span>
-                        <span id="brightnessValue">50%</span>
+                <div class="status-bar">
+                    <div class="status-indicator">
+                        <div class="status-dot active"></div>
+                        <span>Camera detection ready</span>
                     </div>
-                    <input type="range" id="brightnessSlider" min="0" max="100" value="50">
-                </div>
-                
-                <div class="slider-group">
-                    <div class="slider-label">
-                        <span>Contrast</span>
-                        <span id="contrastValue">50%</span>
-                    </div>
-                    <input type="range" id="contrastSlider" min="0" max="100" value="50">
-                </div>
-                
-                <div class="slider-group">
-                    <div class="slider-label">
-                        <span>Saturation</span>
-                        <span id="saturationValue">50%</span>
-                    </div>
-                    <input type="range" id="saturationSlider" min="0" max="100" value="50">
                 </div>
             </div>
             
-            <!-- Audio Setup -->
-            <div class="setup-card">
-                <div class="setup-title">
+            <!-- Step 2: Camera Settings -->
+            <div class="wizard-step" id="step2">
+                <div class="step-title">
+                    <i class="fas fa-sliders-h"></i>
+                    <h2>Step 2: Camera Settings</h2>
+                </div>
+                
+                <div class="controls-grid">
+                    <div class="control-group">
+                        <div class="control-label">
+                            <span>Brightness</span>
+                            <span id="brightnessValue">100%</span>
+                        </div>
+                        <input type="range" id="brightnessSlider" min="0" max="200" value="100">
+                    </div>
+                    
+                    <div class="control-group">
+                        <div class="control-label">
+                            <span>Contrast</span>
+                            <span id="contrastValue">100%</span>
+                        </div>
+                        <input type="range" id="contrastSlider" min="0" max="200" value="100">
+                    </div>
+                    
+                    <div class="control-group">
+                        <div class="control-label">
+                            <span>Saturation</span>
+                            <span id="saturationValue">100%</span>
+                        </div>
+                        <input type="range" id="saturationSlider" min="0" max="200" value="100">
+                    </div>
+                    
+                    <div class="control-group">
+                        <div class="control-label">
+                            <span>Zoom Level</span>
+                            <span id="zoomValue">100%</span>
+                        </div>
+                        <input type="range" id="zoomSlider" min="100" max="300" value="100">
+                    </div>
+                </div>
+                
+                <div style="margin-top: 30px;">
+                    <div class="step-title" style="font-size: 1.2rem; margin-bottom: 15px;">
+                        <i class="fas fa-filter"></i>
+                        <h3>Video Filters</h3>
+                    </div>
+                    <div class="filter-preview">
+                        <div class="filter-option active" data-filter="none">None</div>
+                        <div class="filter-option" data-filter="brightness">Bright</div>
+                        <div class="filter-option" data-filter="contrast">Contrast</div>
+                        <div class="filter-option" data-filter="saturation">Vibrant</div>
+                        <div class="filter-option" data-filter="sepia">Sepia</div>
+                        <div class="filter-option" data-filter="grayscale">Black & White</div>
+                        <div class="filter-option" data-filter="blur">Soft Focus</div>
+                        <div class="filter-option" data-filter="hue">Color Shift</div>
+                    </div>
+                </div>
+                
+                <div class="wizard-navigation">
+                    <button class="btn btn-secondary" id="prevStep2">
+                        <i class="fas fa-arrow-left"></i> Previous
+                    </button>
+                    <button class="btn btn-primary" id="nextStep2">
+                        Next Step <i class="fas fa-arrow-right"></i>
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Step 3: Audio Setup -->
+            <div class="wizard-step" id="step3">
+                <div class="step-title">
                     <i class="fas fa-volume-up"></i>
-                    <h2>Audio Configuration</h2>
+                    <h2>Step 3: Audio Setup</h2>
                 </div>
                 
-                <div class="slider-group">
-                    <div class="slider-label">
-                        <span>Microphone Level</span>
-                        <span id="micLevel">75%</span>
+                <div class="controls-grid">
+                    <div class="control-group">
+                        <div class="control-label">
+                            <span>Microphone Level</span>
+                            <span id="micLevel">75%</span>
+                        </div>
+                        <input type="range" id="micSlider" min="0" max="100" value="75">
+                        <div style="margin-top: 10px;">
+                            <div style="height: 20px; background: rgba(255,255,255,0.1); border-radius: var(--radius); overflow: hidden;">
+                                <div id="micMeter" style="height: 100%; width: 75%; background: var(--program); transition: width 0.1s;"></div>
+                            </div>
+                        </div>
                     </div>
-                    <input type="range" id="micSlider" min="0" max="100" value="75">
-                    <div style="margin-top: 5px;">
-                        <div style="height: 20px; background: var(--control); border-radius: var(--radius); overflow: hidden;">
-                            <div id="micMeter" style="height: 100%; width: 75%; background: var(--program); transition: width 0.1s;"></div>
+                    
+                    <div class="control-group">
+                        <div class="control-label">
+                            <span>Music Volume</span>
+                            <span id="musicLevel">60%</span>
+                        </div>
+                        <input type="range" id="musicSlider" min="0" max="100" value="60">
+                    </div>
+                </div>
+                
+                <div style="margin-top: 30px;">
+                    <div class="step-title" style="font-size: 1.2rem; margin-bottom: 15px;">
+                        <i class="fas fa-microphone"></i>
+                        <h3>Audio Sources</h3>
+                    </div>
+                    <div class="camera-selector">
+                        <div class="camera-option active" data-audio="microphone">
+                            <i class="fas fa-microphone" style="font-size: 1.5rem; margin-bottom: 5px;"></i>
+                            <div>Microphone</div>
+                        </div>
+                        <div class="camera-option" data-audio="system">
+                            <i class="fas fa-desktop" style="font-size: 1.5rem; margin-bottom: 5px;"></i>
+                            <div>System Audio</div>
+                        </div>
+                        <div class="camera-option" data-audio="both">
+                            <i class="fas fa-wave-square" style="font-size: 1.5rem; margin-bottom: 5px;"></i>
+                            <div>Both</div>
                         </div>
                     </div>
                 </div>
                 
-                <div class="slider-group">
-                    <div class="slider-label">
-                        <span>Music Level</span>
-                        <span id="musicLevel">60%</span>
-                    </div>
-                    <input type="range" id="musicSlider" min="0" max="100" value="60">
-                </div>
-                
-                <div class="slider-group">
-                    <div class="slider-label">
-                        <span>System Audio</span>
-                        <span id="systemLevel">40%</span>
-                    </div>
-                    <input type="range" id="systemSlider" min="0" max="100" value="40">
-                </div>
-                
-                <div style="margin-top: 20px;">
-                    <label style="display: block; margin-bottom: 10px; color: var(--text-secondary);">Audio Sources</label>
-                    <div class="controls">
-                        <button class="control-btn active" data-audio="mic">
-                            <i class="fas fa-microphone"></i> Microphone
-                        </button>
-                        <button class="control-btn" data-audio="system">
-                            <i class="fas fa-desktop"></i> System Audio
-                        </button>
-                        <button class="control-btn" data-audio="both">
-                            <i class="fas fa-wave-square"></i> Both
-                        </button>
-                    </div>
-                </div>
-                
-                <div style="margin-top: 20px;">
-                    <button class="test-btn" id="testAudio">
-                        <i class="fas fa-play-circle"></i> Test Audio
+                <div class="wizard-navigation">
+                    <button class="btn btn-secondary" id="prevStep3">
+                        <i class="fas fa-arrow-left"></i> Previous
+                    </button>
+                    <button class="btn btn-primary" id="nextStep3">
+                        Next Step <i class="fas fa-arrow-right"></i>
                     </button>
                 </div>
             </div>
             
-            <!-- Media Library -->
-            <div class="setup-card">
-                <div class="setup-title">
-                    <i class="fas fa-photo-video"></i>
-                    <h2>Media Library</h2>
+            <!-- Step 4: Testing -->
+            <div class="wizard-step" id="step4">
+                <div class="step-title">
+                    <i class="fas fa-check-circle"></i>
+                    <h2>Step 4: Test & Complete</h2>
                 </div>
                 
-                <div class="controls">
-                    <button class="control-btn" id="uploadMedia">
-                        <i class="fas fa-upload"></i> Upload Media
-                    </button>
-                    <button class="control-btn" id="addScripture">
-                        <i class="fas fa-bible"></i> Add Scripture
-                    </button>
-                    <button class="control-btn" id="createSlide">
-                        <i class="fas fa-plus"></i> Create Slide
-                    </button>
-                </div>
-                
-                <div class="media-library" id="mediaLibrary">
-                    <!-- Media items will be added here -->
-                </div>
-            </div>
-            
-            <!-- Streaming Configuration -->
-            <div class="setup-card streaming-config">
-                <div class="setup-title">
-                    <i class="fas fa-broadcast-tower"></i>
-                    <h2>Streaming Platform Setup</h2>
-                </div>
-                
-                <div class="platform-configs">
-                    <!-- YouTube -->
-                    <div class="platform-config">
-                        <h3 style="margin-bottom: 15px; color: var(--text);">
-                            <i class="fab fa-youtube" style="color: #ff0000;"></i> YouTube Live
-                        </h3>
-                        <div class="config-group">
-                            <label>Stream Key</label>
-                            <input type="password" id="youtubeKey" placeholder="Enter YouTube stream key">
-                        </div>
-                        <div class="config-group">
-                            <label>Stream Title</label>
-                            <input type="text" id="youtubeTitle" placeholder="Sunday Worship Service">
-                        </div>
-                        <div class="config-group">
-                            <label>Description</label>
-                            <input type="text" id="youtubeDesc" placeholder="Join us for worship">
-                        </div>
-                        <button class="test-btn" data-platform="youtube">
-                            <i class="fas fa-wifi"></i> Test Connection
+                <div style="text-align: center; padding: 40px 20px;">
+                    <i class="fas fa-video" style="font-size: 4rem; color: var(--success); margin-bottom: 20px;"></i>
+                    <h3 style="margin-bottom: 15px;">Camera Setup Complete!</h3>
+                    <p style="color: var(--text-secondary); margin-bottom: 30px; max-width: 600px; margin-left: auto; margin-right: auto;">
+                        Your camera is now configured and ready for use in the production dashboard.
+                        Click "Test Camera" to verify everything is working properly.
+                    </p>
+                    
+                    <div class="action-buttons">
+                        <button class="btn btn-primary" id="testCameraBtn">
+                            <i class="fas fa-play-circle"></i> Test Camera
+                        </button>
+                        <button class="btn btn-secondary" id="goToProductionBtn">
+                            <i class="fas fa-rocket"></i> Go to Production
                         </button>
                     </div>
-                    
-                    <!-- Facebook -->
-                    <div class="platform-config">
-                        <h3 style="margin-bottom: 15px; color: var(--text);">
-                            <i class="fab fa-facebook" style="color: #1877f2;"></i> Facebook Live
-                        </h3>
-                        <div class="config-group">
-                            <label>Stream Key</label>
-                            <input type="password" id="facebookKey" placeholder="Enter Facebook stream key">
-                        </div>
-                        <div class="config-group">
-                            <label>Page/Profile</label>
-                            <input type="text" id="facebookPage" placeholder="Select page">
-                        </div>
-                        <div class="config-group">
-                            <label>Privacy</label>
-                            <select style="width: 100%; padding: 10px; background: rgba(255,255,255,0.1); border: 1px solid var(--accent); border-radius: var(--radius); color: var(--text);">
-                                <option>Public</option>
-                                <option>Friends</option>
-                                <option>Specific Groups</option>
-                            </select>
-                        </div>
-                        <button class="test-btn" data-platform="facebook">
-                            <i class="fas fa-wifi"></i> Test Connection
-                        </button>
-                    </div>
-                    
-                    <!-- RTMP Custom -->
-                    <div class="platform-config">
-                        <h3 style="margin-bottom: 15px; color: var(--text);">
-                            <i class="fas fa-server"></i> Custom RTMP
-                        </h3>
-                        <div class="config-group">
-                            <label>Server URL</label>
-                            <input type="text" id="rtmpUrl" placeholder="rtmp://server.url/live">
-                        </div>
-                        <div class="config-group">
-                            <label>Stream Key</label>
-                            <input type="password" id="rtmpKey" placeholder="Enter stream key">
-                        </div>
-                        <div class="config-group">
-                            <label>Backup Server</label>
-                            <input type="text" id="rtmpBackup" placeholder="Backup server URL">
-                        </div>
-                        <button class="test-btn" data-platform="rtmp">
-                            <i class="fas fa-wifi"></i> Test Connection
-                        </button>
+                </div>
+                
+                <div class="status-bar" style="justify-content: center;">
+                    <div class="status-indicator">
+                        <div class="status-dot active"></div>
+                        <span>Ready for production</span>
                     </div>
                 </div>
             </div>
-        </div>
-        
-        <div class="action-buttons">
-            <button class="action-btn primary" onclick="goToProduction()">
-                <i class="fas fa-rocket"></i> Launch Production Dashboard
-            </button>
-            <button class="action-btn secondary" onclick="saveSettings()">
-                <i class="fas fa-save"></i> Save Settings
-            </button>
-        </div>
-        
-        <div class="footer">
-            <p>WorshipFlow PRO - Professional Worship Production Software</p>
-            <p style="margin-top: 10px; font-size: 0.9rem;">
-                Need help? <a href="#" style="color: var(--program);">View documentation</a> or 
-                <a href="#" style="color: var(--program);">contact support</a>
-            </p>
         </div>
     </div>
 
     <script>
-        // Media library data
-        const mediaItems = [
-            { id: 1, name: 'Welcome Slide', type: 'image', icon: 'fa-image', color: '#4361ee' },
-            { id: 2, name: 'Amazing Grace Lyrics', type: 'lyrics', icon: 'fa-music', color: '#4cc9f0' },
-            { id: 3, name: 'John 3:16 Scripture', type: 'scripture', icon: 'fa-bible', color: '#e94560' },
-            { id: 4, name: 'Announcements', type: 'text', icon: 'fa-newspaper', color: '#fbbf24' },
-            { id: 5, name: 'Countdown Timer', type: 'timer', icon: 'fa-clock', color: '#4ade80' },
-            { id: 6, name: 'Offering Slide', type: 'image', icon: 'fa-hand-holding-usd', color: '#9146ff' },
-            { id: 7, name: 'Church Logo', type: 'image', icon: 'fa-church', color: '#ff416c' },
-            { id: 8, name: 'Closing Prayer', type: 'text', icon: 'fa-pray', color: '#1a2980' }
-        ];
+        // Camera Setup State
+        const setupState = {
+            cameras: [],
+            currentCamera: null,
+            currentStream: null,
+            audioStream: null,
+            settings: {
+                brightness: 100,
+                contrast: 100,
+                saturation: 100,
+                zoom: 100,
+                filter: 'none',
+                micLevel: 75,
+                musicLevel: 60,
+                audioSource: 'microphone'
+            },
+            currentStep: 1
+        };
 
-        // Initialize setup
-        function initializeSetup() {
-            populateMediaLibrary();
-            setupCameraControls();
-            setupAudioControls();
-            setupStreamingControls();
+        // Initialize Setup
+        async function initializeSetup() {
+            setupEventListeners();
+            updateStep();
             
-            // Simulate audio meter
-            simulateAudioMeter();
+            // Try to detect cameras automatically
+            setTimeout(async () => {
+                await detectCameras();
+            }, 1000);
         }
 
-        // Populate media library
-        function populateMediaLibrary() {
-            const mediaLibrary = document.getElementById('mediaLibrary');
-            mediaLibrary.innerHTML = '';
+        // Setup event listeners
+        function setupEventListeners() {
+            // Navigation buttons
+            document.getElementById('nextStep1').addEventListener('click', () => goToStep(2));
+            document.getElementById('prevStep2').addEventListener('click', () => goToStep(1));
+            document.getElementById('nextStep2').addEventListener('click', () => goToStep(3));
+            document.getElementById('prevStep3').addEventListener('click', () => goToStep(2));
+            document.getElementById('nextStep3').addEventListener('click', () => goToStep(4));
             
-            mediaItems.forEach(item => {
-                const mediaItem = document.createElement('div');
-                mediaItem.className = 'media-item';
-                mediaItem.innerHTML = `
-                    <div class="media-icon">
-                        <i class="fas ${item.icon}" style="color: ${item.color}"></i>
-                    </div>
-                    <div style="font-size: 0.9rem;">${item.name}</div>
-                `;
-                mediaItem.addEventListener('click', () => selectMedia(item));
-                mediaLibrary.appendChild(mediaItem);
-            });
-        }
-
-        // Setup camera controls
-        function setupCameraControls() {
-            const startBtn = document.getElementById('startCamera');
-            const stopBtn = document.getElementById('stopCamera');
-            const switchBtn = document.getElementById('switchCamera');
-            const snapshotBtn = document.getElementById('takeSnapshot');
+            // Action buttons
+            document.getElementById('detectCamerasBtn').addEventListener('click', detectCameras);
+            document.getElementById('testCameraBtn').addEventListener('click', testCamera);
+            document.getElementById('goToProductionBtn').addEventListener('click', goToProduction);
             
-            let cameraStream = null;
-            let currentCameraIndex = 0;
-            const cameras = ['User Camera', 'Back Camera', 'External Camera'];
-            
-            startBtn.addEventListener('click', async () => {
-                try {
-                    // In a real app, this would access the webcam
-                    // For demo, we simulate camera access
-                    cameraStream = true;
-                    startBtn.disabled = true;
-                    stopBtn.disabled = false;
-                    
-                    const preview = document.getElementById('cameraPreview');
-                    preview.innerHTML = `
-                        <div style="position: relative; width: 100%; height: 100%;">
-                            <div style="text-align: center; padding: 40px; color: white;">
-                                <i class="fas fa-video" style="font-size: 3rem; margin-bottom: 15px; color: var(--success);"></i>
-                                <p>${cameras[currentCameraIndex]}</p>
-                                <p style="font-size: 0.9rem;">Simulated Camera Feed</p>
-                            </div>
-                            <div style="position: absolute; bottom: 10px; right: 10px; background: rgba(0,0,0,0.7); color: white; padding: 5px 10px; border-radius: var(--radius); font-size: 0.8rem;">
-                                1920x1080 @ 60fps
-                            </div>
-                        </div>
-                    `;
-                    
-                    showNotification('Camera started successfully');
-                } catch (error) {
-                    showNotification('Error accessing camera: ' + error.message, 'error');
-                }
-            });
-            
-            stopBtn.addEventListener('click', () => {
-                if (cameraStream) {
-                    cameraStream = null;
-                    startBtn.disabled = false;
-                    stopBtn.disabled = true;
-                    
-                    const preview = document.getElementById('cameraPreview');
-                    preview.innerHTML = `
-                        <div style="text-align: center; padding: 40px; color: var(--text-secondary);">
-                            <i class="fas fa-video-slash" style="font-size: 3rem; margin-bottom: 15px;"></i>
-                            <p>Camera Preview</p>
-                            <p style="font-size: 0.9rem;">Click "Start Camera" to begin</p>
-                        </div>
-                    `;
-                    
-                    showNotification('Camera stopped');
-                }
-            });
-            
-            switchBtn.addEventListener('click', () => {
-                currentCameraIndex = (currentCameraIndex + 1) % cameras.length;
-                if (cameraStream) {
-                    const preview = document.getElementById('cameraPreview');
-                    preview.innerHTML = `
-                        <div style="position: relative; width: 100%; height: 100%;">
-                            <div style="text-align: center; padding: 40px; color: white;">
-                                <i class="fas fa-video" style="font-size: 3rem; margin-bottom: 15px; color: var(--success);"></i>
-                                <p>${cameras[currentCameraIndex]}</p>
-                                <p style="font-size: 0.9rem;">Switched camera</p>
-                            </div>
-                        </div>
-                    `;
-                    showNotification(`Switched to ${cameras[currentCameraIndex]}`);
-                }
-            });
-            
-            snapshotBtn.addEventListener('click', () => {
-                if (cameraStream) {
-                    showNotification('Snapshot captured and saved to media library');
-                }
-            });
-            
-            // Setup sliders
-            const sliders = ['brightness', 'contrast', 'saturation'];
+            // Camera settings sliders
+            const sliders = ['brightness', 'contrast', 'saturation', 'zoom'];
             sliders.forEach(slider => {
                 const sliderEl = document.getElementById(`${slider}Slider`);
                 const valueEl = document.getElementById(`${slider}Value`);
                 
                 sliderEl.addEventListener('input', function() {
                     valueEl.textContent = `${this.value}%`;
-                    // In real app, apply to camera
-                });
-            });
-        }
-
-        // Setup audio controls
-        function setupAudioControls() {
-            // Level sliders
-            const audioSliders = ['mic', 'music', 'system'];
-            audioSliders.forEach(slider => {
-                const sliderEl = document.getElementById(`${slider}Slider`);
-                const valueEl = document.getElementById(`${slider}Level`);
-                
-                sliderEl.addEventListener('input', function() {
-                    valueEl.textContent = `${this.value}%`;
+                    setupState.settings[slider] = parseInt(this.value);
+                    applyCameraSettings();
                 });
             });
             
-            // Audio source buttons
-            document.querySelectorAll('[data-audio]').forEach(btn => {
-                btn.addEventListener('click', function() {
-                    document.querySelectorAll('[data-audio]').forEach(b => b.classList.remove('active'));
+            // Audio sliders
+            document.getElementById('micSlider').addEventListener('input', function() {
+                document.getElementById('micLevel').textContent = `${this.value}%`;
+                setupState.settings.micLevel = parseInt(this.value);
+            });
+            
+            document.getElementById('musicSlider').addEventListener('input', function() {
+                document.getElementById('musicLevel').textContent = `${this.value}%`;
+                setupState.settings.musicLevel = parseInt(this.value);
+            });
+            
+            // Filter options
+            document.querySelectorAll('.filter-option').forEach(option => {
+                option.addEventListener('click', function() {
+                    document.querySelectorAll('.filter-option').forEach(o => o.classList.remove('active'));
                     this.classList.add('active');
-                    showNotification(`Audio source: ${this.dataset.audio}`);
+                    setupState.settings.filter = this.dataset.filter;
+                    applyCameraSettings();
                 });
             });
             
-            // Test audio button
-            document.getElementById('testAudio').addEventListener('click', () => {
-                showNotification('Playing test audio tone...');
-                
-                // Simulate audio test
-                const meter = document.getElementById('micMeter');
-                let level = 0;
-                const interval = setInterval(() => {
-                    level = Math.min(100, level + Math.random() * 20);
-                    meter.style.width = `${level}%`;
-                    meter.style.background = level > 90 ? 'var(--danger)' : 'var(--program)';
-                    
-                    if (level >= 100) {
-                        clearInterval(interval);
-                        setTimeout(() => {
-                            meter.style.width = '75%';
-                            meter.style.background = 'var(--program)';
-                        }, 1000);
-                    }
-                }, 100);
+            // Audio source options
+            document.querySelectorAll('.camera-option[data-audio]').forEach(option => {
+                option.addEventListener('click', function() {
+                    document.querySelectorAll('.camera-option[data-audio]').forEach(o => o.classList.remove('active'));
+                    this.classList.add('active');
+                    setupState.settings.audioSource = this.dataset.audio;
+                });
             });
         }
 
-        // Setup streaming controls
-        function setupStreamingControls() {
-            // Test connection buttons
-            document.querySelectorAll('.test-btn[data-platform]').forEach(btn => {
-                btn.addEventListener('click', function() {
-                    const platform = this.dataset.platform;
-                    const originalText = this.innerHTML;
+        // Detect cameras
+        async function detectCameras() {
+            try {
+                const detectBtn = document.getElementById('detectCamerasBtn');
+                detectBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Detecting...';
+                detectBtn.disabled = true;
+                
+                // Request camera access first
+                await navigator.mediaDevices.getUserMedia({ video: true });
+                
+                // Enumerate devices
+                const devices = await navigator.mediaDevices.enumerateDevices();
+                const videoDevices = devices.filter(device => device.kind === 'videoinput');
+                
+                setupState.cameras = videoDevices;
+                
+                // Update camera selector
+                updateCameraSelector();
+                
+                // Enable next button if cameras found
+                if (videoDevices.length > 0) {
+                    document.getElementById('nextStep1').disabled = false;
                     
-                    // Show testing state
-                    this.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Testing...';
-                    this.disabled = true;
-                    
-                    // Simulate connection test
-                    setTimeout(() => {
-                        this.innerHTML = '<i class="fas fa-check"></i> Connected!';
-                        this.style.background = 'var(--success)';
-                        showNotification(`${platform.toUpperCase()} connection successful`);
-                        
-                        // Reset after 2 seconds
-                        setTimeout(() => {
-                            this.innerHTML = originalText;
-                            this.style.background = '';
-                            this.disabled = false;
-                        }, 2000);
-                    }, 1500);
-                });
+                    // Select first camera by default
+                    selectCamera(videoDevices[0].deviceId);
+                }
+                
+                detectBtn.innerHTML = '<i class="fas fa-search"></i> Detect Cameras';
+                detectBtn.disabled = false;
+                
+                showNotification(`Detected ${videoDevices.length} camera(s)`);
+                
+            } catch (error) {
+                console.error('Error detecting cameras:', error);
+                document.getElementById('detectCamerasBtn').innerHTML = '<i class="fas fa-search"></i> Detect Cameras';
+                document.getElementById('detectCamerasBtn').disabled = false;
+                
+                showNotification('Camera access denied. Please allow camera access and try again.', 'error');
+            }
+        }
+
+        // Update camera selector
+        function updateCameraSelector() {
+            const cameraSelector = document.getElementById('cameraSelector');
+            cameraSelector.innerHTML = '';
+            
+            setupState.cameras.forEach((device, index) => {
+                const cameraOption = document.createElement('div');
+                cameraOption.className = 'camera-option';
+                if (setupState.currentCamera === device.deviceId) {
+                    cameraOption.classList.add('active');
+                }
+                cameraOption.dataset.deviceId = device.deviceId;
+                cameraOption.innerHTML = `
+                    <i class="fas fa-video" style="font-size: 1.5rem; margin-bottom: 5px;"></i>
+                    <div style="font-size: 0.9rem;">${device.label || `Camera ${index + 1}`}</div>
+                `;
+                cameraOption.addEventListener('click', () => selectCamera(device.deviceId));
+                cameraSelector.appendChild(cameraOption);
             });
+        }
+
+        // Select camera
+        async function selectCamera(deviceId) {
+            try {
+                // Stop previous stream
+                if (setupState.currentStream) {
+                    setupState.currentStream.getTracks().forEach(track => track.stop());
+                }
+                
+                // Start new stream
+                const constraints = {
+                    video: {
+                        deviceId: { exact: deviceId },
+                        width: { ideal: 1280 },
+                        height: { ideal: 720 }
+                    }
+                };
+                
+                const stream = await navigator.mediaDevices.getUserMedia(constraints);
+                setupState.currentStream = stream;
+                setupState.currentCamera = deviceId;
+                
+                // Update video element
+                const video = document.getElementById('cameraPreview');
+                const placeholder = document.getElementById('cameraPlaceholder');
+                
+                video.srcObject = stream;
+                video.style.display = 'block';
+                placeholder.style.display = 'none';
+                
+                // Update camera selector highlights
+                document.querySelectorAll('.camera-option').forEach(option => {
+                    option.classList.remove('active');
+                    if (option.dataset.deviceId === deviceId) {
+                        option.classList.add('active');
+                    }
+                });
+                
+                // Apply current settings
+                applyCameraSettings();
+                
+                showNotification('Camera activated');
+                
+            } catch (error) {
+                console.error('Error selecting camera:', error);
+                showNotification(`Error activating camera: ${error.message}`, 'error');
+            }
+        }
+
+        // Apply camera settings
+        function applyCameraSettings() {
+            const video = document.getElementById('cameraPreview');
+            if (!video) return;
+            
+            // Apply filter
+            video.className = `camera-preview filter-${setupState.settings.filter}`;
+            
+            // Apply other settings via CSS filter
+            const brightness = setupState.settings.brightness / 100;
+            const contrast = setupState.settings.contrast / 100;
+            const saturation = setupState.settings.saturation / 100;
+            
+            let filter = `brightness(${brightness}) contrast(${contrast}) saturate(${saturation})`;
+            
+            // Add specific filter if not 'none'
+            if (setupState.settings.filter !== 'none') {
+                switch(setupState.settings.filter) {
+                    case 'sepia':
+                        filter += ' sepia(1)';
+                        break;
+                    case 'grayscale':
+                        filter += ' grayscale(1)';
+                        break;
+                    case 'blur':
+                        filter += ' blur(2px)';
+                        break;
+                    case 'hue':
+                        filter += ' hue-rotate(90deg)';
+                        break;
+                }
+            }
+            
+            video.style.filter = filter;
+            
+            // Apply zoom via transform
+            const zoom = setupState.settings.zoom / 100;
+            video.style.transform = `scale(${zoom})`;
+            video.style.transformOrigin = 'center center';
+        }
+
+        // Go to step
+        function goToStep(step) {
+            // Hide all steps
+            document.querySelectorAll('.wizard-step').forEach(stepEl => {
+                stepEl.classList.remove('active');
+            });
+            
+            // Show target step
+            document.getElementById(`step${step}`).classList.add('active');
+            setupState.currentStep = step;
+            
+            // Update step indicator
+            updateStep();
+        }
+
+        // Update step indicator
+        function updateStep() {
+            // In a full implementation, update step indicators
+            console.log(`Current step: ${setupState.currentStep}`);
+        }
+
+        // Test camera
+        async function testCamera() {
+            try {
+                // Start audio for testing
+                if (!setupState.audioStream) {
+                    setupState.audioStream = await navigator.mediaDevices.getUserMedia({
+                        audio: {
+                            echoCancellation: true,
+                            noiseSuppression: true,
+                            autoGainControl: true
+                        }
+                    });
+                }
+                
+                // Create test recording (simulated)
+                const testBtn = document.getElementById('testCameraBtn');
+                const originalText = testBtn.innerHTML;
+                
+                testBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Testing...';
+                testBtn.disabled = true;
+                
+                // Simulate test recording
+                setTimeout(() => {
+                    testBtn.innerHTML = '<i class="fas fa-check"></i> Test Successful!';
+                    testBtn.style.background = 'var(--success)';
+                    
+                    showNotification('Camera test completed successfully');
+                    
+                    // Reset button after 2 seconds
+                    setTimeout(() => {
+                        testBtn.innerHTML = originalText;
+                        testBtn.style.background = '';
+                        testBtn.disabled = false;
+                    }, 2000);
+                }, 2000);
+                
+                // Simulate audio meter
+                simulateAudioMeter();
+                
+            } catch (error) {
+                console.error('Error testing camera:', error);
+                showNotification('Camera test failed', 'error');
+            }
         }
 
         // Simulate audio meter
         function simulateAudioMeter() {
             const meter = document.getElementById('micMeter');
+            let level = 0;
             let goingUp = true;
-            let level = 75;
             
-            setInterval(() => {
+            const interval = setInterval(() => {
                 if (goingUp) {
-                    level += Math.random() * 5;
-                    if (level > 95) goingUp = false;
+                    level += Math.random() * 10;
+                    if (level > 90) goingUp = false;
                 } else {
-                    level -= Math.random() * 5;
-                    if (level < 30) goingUp = true;
+                    level -= Math.random() * 10;
+                    if (level < 20) goingUp = true;
                 }
                 
                 level = Math.max(20, Math.min(95, level));
                 meter.style.width = `${level}%`;
                 
                 // Change color based on level
-                if (level > 90) {
+                if (level > 85) {
                     meter.style.background = 'var(--danger)';
-                } else if (level > 75) {
+                } else if (level > 70) {
                     meter.style.background = 'var(--warning)';
                 } else {
                     meter.style.background = 'var(--program)';
                 }
-            }, 200);
-        }
-
-        // Select media
-        function selectMedia(media) {
-            showNotification(`Selected: ${media.name}`);
+            }, 100);
             
-            // Highlight selected media
-            document.querySelectorAll('.media-item').forEach(item => {
-                item.style.border = 'none';
-            });
-            event.currentTarget.style.border = `2px solid ${media.color}`;
+            // Stop after 5 seconds
+            setTimeout(() => {
+                clearInterval(interval);
+                meter.style.width = `${setupState.settings.micLevel}%`;
+                meter.style.background = 'var(--program)';
+            }, 5000);
         }
 
-        // Go to production dashboard
+        // Go to production
         function goToProduction() {
-            // Save settings first
+            // Save settings
             saveSettings();
             
             // Redirect to production page
@@ -791,42 +860,32 @@
 
         // Save settings
         function saveSettings() {
-            // Collect all settings
-            const settings = {
-                camera: {
-                    brightness: document.getElementById('brightnessSlider').value,
-                    contrast: document.getElementById('contrastSlider').value,
-                    saturation: document.getElementById('saturationSlider').value
-                },
-                audio: {
-                    micLevel: document.getElementById('micSlider').value,
-                    musicLevel: document.getElementById('musicSlider').value,
-                    systemLevel: document.getElementById('systemSlider').value
-                },
-                streaming: {
-                    youtube: document.getElementById('youtubeKey').value ? 'configured' : 'not configured',
-                    facebook: document.getElementById('facebookKey').value ? 'configured' : 'not configured',
-                    rtmp: document.getElementById('rtmpUrl').value ? 'configured' : 'not configured'
-                }
-            };
-            
             // Save to localStorage
-            localStorage.setItem('worshipflowSettings', JSON.stringify(settings));
+            localStorage.setItem('worshipflowCameraSettings', JSON.stringify(setupState.settings));
             
-            showNotification('Settings saved successfully!', 'success');
+            // If we have a camera selected, save it
+            if (setupState.currentCamera) {
+                const camera = setupState.cameras.find(c => c.deviceId === setupState.currentCamera);
+                if (camera) {
+                    localStorage.setItem('worshipflowActiveCamera', JSON.stringify({
+                        deviceId: camera.deviceId,
+                        label: camera.label
+                    }));
+                }
+            }
             
-            return true;
+            showNotification('Settings saved successfully');
         }
 
         // Show notification
-        function showNotification(message, type = 'info') {
-            // Create notification element
+        function showNotification(message, type = 'success') {
+            // Create notification
             const notification = document.createElement('div');
             notification.style.cssText = `
                 position: fixed;
                 top: 20px;
                 right: 20px;
-                background: ${type === 'error' ? 'var(--danger)' : type === 'success' ? 'var(--success)' : 'var(--program)'};
+                background: ${type === 'error' ? 'var(--danger)' : 'var(--success)'};
                 color: white;
                 padding: 15px 20px;
                 border-radius: var(--radius);
@@ -836,7 +895,7 @@
             `;
             notification.innerHTML = `
                 <div style="display: flex; align-items: center; gap: 10px;">
-                    <i class="fas ${type === 'error' ? 'fa-exclamation-circle' : type === 'success' ? 'fa-check-circle' : 'fa-info-circle'}"></i>
+                    <i class="fas ${type === 'error' ? 'fa-exclamation-circle' : 'fa-check-circle'}"></i>
                     <span>${message}</span>
                 </div>
             `;
@@ -849,7 +908,7 @@
                 setTimeout(() => notification.remove(), 300);
             }, 3000);
             
-            // Add CSS for animations
+            // Add CSS for animations if not already added
             if (!document.getElementById('notification-styles')) {
                 const style = document.createElement('style');
                 style.id = 'notification-styles';
@@ -870,82 +929,19 @@
         // Initialize on load
         document.addEventListener('DOMContentLoaded', initializeSetup);
         
-        // Handle upload media button
-        document.getElementById('uploadMedia').addEventListener('click', () => {
-            // Create file input
-            const fileInput = document.createElement('input');
-            fileInput.type = 'file';
-            fileInput.accept = 'image/*,video/*,.pdf,.ppt,.pptx';
-            fileInput.multiple = true;
-            fileInput.style.display = 'none';
-            
-            fileInput.addEventListener('change', (e) => {
-                const files = Array.from(e.target.files);
-                files.forEach((file, index) => {
-                    // Add to media library
-                    const newMedia = {
-                        id: mediaItems.length + index + 1,
-                        name: file.name,
-                        type: file.type.startsWith('image') ? 'image' : 
-                              file.type.startsWith('video') ? 'video' : 'document',
-                        icon: file.type.startsWith('image') ? 'fa-image' : 
-                              file.type.startsWith('video') ? 'fa-video' : 'fa-file',
-                        color: '#4361ee'
-                    };
-                    
-                    mediaItems.push(newMedia);
-                });
-                
-                populateMediaLibrary();
-                showNotification(`Uploaded ${files.length} file(s)`);
-                
-                fileInput.remove();
-            });
-            
-            document.body.appendChild(fileInput);
-            fileInput.click();
-        });
-        
-        // Add scripture button
-        document.getElementById('addScripture').addEventListener('click', () => {
-            const book = prompt('Enter Bible book:');
-            const chapter = prompt('Enter chapter:');
-            const verse = prompt('Enter verse(s):');
-            
-            if (book && chapter && verse) {
-                const newScripture = {
-                    id: mediaItems.length + 1,
-                    name: `${book} ${chapter}:${verse}`,
-                    type: 'scripture',
-                    icon: 'fa-bible',
-                    color: '#e94560'
-                };
-                
-                mediaItems.push(newScripture);
-                populateMediaLibrary();
-                showNotification('Scripture added to library');
-            }
-        });
-        
-        // Create slide button
-        document.getElementById('createSlide').addEventListener('click', () => {
-            const title = prompt('Enter slide title:');
-            const text = prompt('Enter slide text:');
-            
-            if (title) {
-                const newSlide = {
-                    id: mediaItems.length + 1,
-                    name: title,
-                    type: 'text',
-                    icon: 'fa-file-alt',
-                    color: '#fbbf24'
-                };
-                
-                mediaItems.push(newSlide);
-                populateMediaLibrary();
-                showNotification('Slide created and added to library');
-            }
-        });
+        // Add CSS for filters
+        const filterStyles = document.createElement('style');
+        filterStyles.textContent = `
+            .filter-none { filter: none; }
+            .filter-brightness { filter: brightness(1.5); }
+            .filter-contrast { filter: contrast(1.5); }
+            .filter-saturation { filter: saturate(2); }
+            .filter-sepia { filter: sepia(1); }
+            .filter-grayscale { filter: grayscale(1); }
+            .filter-blur { filter: blur(2px); }
+            .filter-hue { filter: hue-rotate(90deg); }
+        `;
+        document.head.appendChild(filterStyles);
     </script>
 </body>
 </html>
