@@ -82,11 +82,17 @@
         .camera-source.live { border-color: var(--program); }
         .camera-preview {
             height: 100px;
-            background: linear-gradient(45deg, #1a2980, #26d0ce);
+            background: var(--control);
             display: flex;
             align-items: center;
             justify-content: center;
             position: relative;
+            overflow: hidden;
+        }
+        .camera-preview video {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
         }
         .camera-label {
             padding: 8px;
@@ -147,6 +153,12 @@
             align-items: center;
             justify-content: center;
             position: relative;
+            overflow: hidden;
+        }
+        .monitor-content video {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
         }
         .live-overlay {
             position: absolute;
@@ -360,19 +372,27 @@
         
         /* Scripture Display */
         .scripture-display {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
             background: rgba(0,0,0,0.9);
             color: white;
             padding: 30px;
-            border-radius: var(--radius);
-            max-width: 90%;
-            max-height: 90%;
-            overflow: auto;
             display: none;
             z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+        .scripture-container {
+            background: var(--secondary);
+            border-radius: var(--radius);
+            padding: 30px;
+            max-width: 800px;
+            max-height: 90vh;
+            overflow-y: auto;
+            width: 90%;
         }
         .scripture-header {
             display: flex;
@@ -387,6 +407,50 @@
             font-size: 1.5rem;
             cursor: pointer;
         }
+        
+        /* Webcam Modal */
+        .webcam-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.9);
+            display: none;
+            z-index: 2000;
+            align-items: center;
+            justify-content: center;
+        }
+        .webcam-container {
+            background: var(--secondary);
+            border-radius: var(--radius);
+            padding: 30px;
+            width: 90%;
+            max-width: 800px;
+            text-align: center;
+        }
+        .webcam-video {
+            width: 100%;
+            max-height: 400px;
+            background: var(--control);
+            border-radius: var(--radius);
+            margin: 20px 0;
+        }
+        
+        /* Camera Filters */
+        .camera-filter {
+            filter: none;
+            transition: filter 0.3s ease;
+        }
+        .filter-none { filter: none; }
+        .filter-brightness { filter: brightness(1.5); }
+        .filter-contrast { filter: contrast(1.5); }
+        .filter-saturation { filter: saturate(2); }
+        .filter-sepia { filter: sepia(1); }
+        .filter-grayscale { filter: grayscale(1); }
+        .filter-blur { filter: blur(2px); }
+        .filter-hue { filter: hue-rotate(90deg); }
+        .filter-invert { filter: invert(1); }
         
         /* Responsive */
         @media (max-width: 1400px) {
@@ -429,10 +493,10 @@
                     <span>REC</span>
                 </div>
                 <div class="status-item">
-                    <span>BITRATE: <span id="bitrate">4500</span> kbps</span>
+                    <span>CAMERAS: <span id="activeCameras">0</span>/<span id="totalCameras">0</span></span>
                 </div>
                 <div class="status-item">
-                    <span>CPU: <span id="cpuUsage">24</span>%</span>
+                    <span>FPS: <span id="fpsCounter">--</span></span>
                 </div>
             </div>
         </div>
@@ -444,12 +508,54 @@
                 <div class="camera-grid" id="cameraGrid">
                     <!-- Cameras will be dynamically added -->
                 </div>
+                <div style="margin-top: 10px;">
+                    <button class="control-btn" id="addCameraBtn" style="width: 100%; border-radius: var(--radius); padding: 10px;">
+                        <i class="fas fa-plus"></i> Add Camera
+                    </button>
+                </div>
+            </div>
+            
+            <div>
+                <div class="panel-title">CAMERA FILTERS</div>
+                <div class="effects-grid">
+                    <button class="effect-btn" data-filter="none">None</button>
+                    <button class="effect-btn" data-filter="brightness">Bright</button>
+                    <button class="effect-btn" data-filter="contrast">Contrast</button>
+                    <button class="effect-btn" data-filter="saturation">Saturated</button>
+                    <button class="effect-btn" data-filter="sepia">Sepia</button>
+                    <button class="effect-btn" data-filter="grayscale">B&W</button>
+                    <button class="effect-btn" data-filter="blur">Blur</button>
+                    <button class="effect-btn" data-filter="hue">Color Shift</button>
+                </div>
             </div>
             
             <div>
                 <div class="panel-title">MEDIA SOURCES</div>
                 <div class="media-grid" id="mediaGrid">
-                    <!-- Media sources will be dynamically added -->
+                    <div class="media-source" data-media="scripture">
+                        <div class="media-icon">
+                            <i class="fas fa-bible"></i>
+                        </div>
+                        <div style="font-size: 0.8rem;">Scripture</div>
+                    </div>
+                    <div class="media-source" data-media="lyrics">
+                        <div class="media-icon">
+                            <i class="fas fa-music"></i>
+                        </div>
+                        <div style="font-size: 0.8rem;">Lyrics</div>
+                    </div>
+                    <div class="media-source" data-media="announcement">
+                        <div class="media-icon">
+                            <i class="fas fa-newspaper"></i>
+                        </div>
+                        <div style="font-size: 0.8rem;">Announcement</div>
+                    </div>
+                    <div class="media-source" data-media="countdown">
+                        <div class="media-icon">
+                            <i class="fas fa-clock"></i>
+                        </div>
+                        <div style="font-size: 0.8rem;">Countdown</div>
+                    </div>
                 </div>
             </div>
             
@@ -468,13 +574,14 @@
                     <div class="monitor-header">
                         <div class="monitor-label">PREVIEW</div>
                         <div class="monospace" style="font-size: 0.8rem;">
-                            <i class="fas fa-video"></i> <span id="previewSource">Camera 1</span>
+                            <i class="fas fa-video"></i> <span id="previewSource">None</span>
                         </div>
                     </div>
                     <div class="monitor-content" id="previewMonitor">
-                        <div style="text-align: center;">
-                            <i class="fas fa-video" style="font-size: 3rem; color: var(--text-secondary); margin-bottom: 10px;"></i>
+                        <div style="text-align: center; padding: 20px;">
+                            <i class="fas fa-eye" style="font-size: 3rem; color: var(--preview); margin-bottom: 10px;"></i>
                             <p>Preview Monitor</p>
+                            <p style="color: var(--text-secondary); font-size: 0.9rem;">Select a source to preview</p>
                         </div>
                     </div>
                 </div>
@@ -483,13 +590,13 @@
                     <div class="monitor-header">
                         <div class="monitor-label">PROGRAM</div>
                         <div class="monospace" style="font-size: 0.8rem; color: var(--live);">
-                            <i class="fas fa-circle"></i> LIVE
+                            <i class="fas fa-circle"></i> <span id="programStatus">STANDBY</span>
                         </div>
                     </div>
                     <div class="monitor-content" id="programMonitor">
-                        <div class="live-overlay">LIVE</div>
-                        <div style="text-align: center;">
-                            <i class="fas fa-broadcast-tower" style="font-size: 3rem; color: var(--live); margin-bottom: 10px;"></i>
+                        <div class="live-overlay">STANDBY</div>
+                        <div style="text-align: center; padding: 20px;">
+                            <i class="fas fa-broadcast-tower" style="font-size: 3rem; color: var(--text-secondary); margin-bottom: 10px;"></i>
                             <p>Program Output</p>
                         </div>
                     </div>
@@ -512,11 +619,11 @@
                     <button class="control-btn" id="pauseMedia">
                         <i class="fas fa-pause"></i>
                     </button>
-                    <button class="control-btn" id="nextMedia">
-                        <i class="fas fa-forward"></i>
-                    </button>
                     <button class="control-btn" id="fullscreenMedia">
                         <i class="fas fa-expand"></i>
+                    </button>
+                    <button class="control-btn" onclick="showScripture()">
+                        <i class="fas fa-bible"></i>
                     </button>
                 </div>
             </div>
@@ -543,7 +650,7 @@
                 </div>
                 
                 <button class="take-button" id="takeButton">
-                    <i class="fas fa-exchange-alt"></i> TAKE
+                    <i class="fas fa-exchange-alt"></i> TAKE TO PROGRAM
                 </button>
             </div>
             
@@ -553,11 +660,16 @@
                 <div id="mixerControls">
                     <!-- Audio mixer controls -->
                 </div>
+                <div style="margin-top: 15px;">
+                    <button class="control-btn" id="testAudio" style="width: 100%; border-radius: var(--radius);">
+                        <i class="fas fa-volume-up"></i> Test Audio
+                    </button>
+                </div>
             </div>
             
             <!-- Streaming Panel -->
             <div class="streaming-panel">
-                <div class="panel-title">STREAMING PLATFORMS</div>
+                <div class="panel-title">STREAMING</div>
                 <div class="platform-grid">
                     <button class="platform-btn" data-platform="youtube">
                         <i class="fab fa-youtube" style="color: #ff0000;"></i> YouTube
@@ -565,24 +677,18 @@
                     <button class="platform-btn" data-platform="facebook">
                         <i class="fab fa-facebook" style="color: #1877f2;"></i> Facebook
                     </button>
-                    <button class="platform-btn" data-platform="twitch">
-                        <i class="fab fa-twitch" style="color: #9146ff;"></i> Twitch
+                    <button class="platform-btn active" data-platform="webrtc">
+                        <i class="fas fa-wifi"></i> WebRTC Test
                     </button>
-                    <button class="platform-btn" data-platform="tiktok">
-                        <i class="fab fa-tiktok"></i> TikTok
-                    </button>
-                    <button class="platform-btn" data-platform="rtmp">
-                        <i class="fas fa-server"></i> Custom RTMP
-                    </button>
-                    <button class="platform-btn" data-platform="multistream">
-                        <i class="fas fa-satellite-dish"></i> Multi-Stream
+                    <button class="platform-btn" data-platform="record">
+                        <i class="fas fa-record-vinyl"></i> Record
                     </button>
                 </div>
                 <div style="margin-top: 15px;">
                     <button class="take-button" id="startStream" style="background: var(--live);">
                         <i class="fas fa-broadcast-tower"></i> START STREAM
                     </button>
-                    <button class="take-button" id="stopStream" style="background: var(--control); margin-top: 10px;">
+                    <button class="take-button" id="stopStream" style="background: var(--control); margin-top: 10px; display: none;">
                         <i class="fas fa-stop"></i> STOP STREAM
                     </button>
                 </div>
@@ -590,16 +696,16 @@
             
             <!-- Effects Panel -->
             <div class="effects-panel">
-                <div class="panel-title">VIDEO EFFECTS</div>
+                <div class="panel-title">OVERLAYS</div>
                 <div class="effects-grid">
                     <button class="effect-btn" data-effect="lowerthird">Lower Third</button>
                     <button class="effect-btn" data-effect="countdown">Countdown</button>
                     <button class="effect-btn" data-effect="logo">Logo</button>
-                    <button class="effect-btn" data-effect="text">Text Overlay</button>
-                    <button class="effect-btn" data-effect="blur">Blur</button>
-                    <button class="effect-btn" data-effect="sepia">Sepia</button>
-                    <button class="effect-btn" data-effect="bw">Black & White</button>
-                    <button class="effect-btn" data-effect="vignette">Vignette</button>
+                    <button class="effect-btn" data-effect="title">Title</button>
+                    <button class="effect-btn" data-effect="social">Social Media</button>
+                    <button class="effect-btn" data-effect="clock">Clock</button>
+                    <button class="effect-btn" data-effect="watermark">Watermark</button>
+                    <button class="effect-btn" data-effect="clear">Clear All</button>
                 </div>
             </div>
         </div>
@@ -607,18 +713,18 @@
         <!-- Footer -->
         <div class="footer">
             <div class="monospace">
-                <i class="fas fa-microchip"></i> SYSTEM: <span id="systemStatus">READY</span>
+                <i class="fas fa-microchip"></i> SYSTEM: <span id="systemStatus">INITIALIZING</span>
             </div>
             <div>
-                <span>FPS: <span id="fpsCounter">60</span></span>
-                <span style="margin-left: 20px;">RES: <span id="resolution">1920x1080</span></span>
+                <span>RES: <span id="resolution">--x--</span></span>
+                <span style="margin-left: 20px;">BITRATE: <span id="bitrate">--</span> kbps</span>
             </div>
             <div>
-                <button class="control-btn" style="width: 30px; height: 30px;" onclick="showScripture()">
-                    <i class="fas fa-bible"></i>
-                </button>
-                <button class="control-btn" style="width: 30px; height: 30px; margin-left: 10px;" onclick="showSettings()">
+                <button class="control-btn" style="width: 30px; height: 30px;" onclick="showWebcamSettings()">
                     <i class="fas fa-cog"></i>
+                </button>
+                <button class="control-btn" style="width: 30px; height: 30px; margin-left: 10px;" onclick="fullscreenProgram()">
+                    <i class="fas fa-expand"></i>
                 </button>
             </div>
         </div>
@@ -626,77 +732,113 @@
     
     <!-- Scripture Display Modal -->
     <div class="scripture-display" id="scriptureModal">
-        <div class="scripture-header">
-            <h2>Scripture Display</h2>
-            <button class="scripture-close" onclick="hideScripture()">&times;</button>
-        </div>
-        <div style="margin-bottom: 20px;">
-            <select id="bibleBook" style="padding: 8px; margin-right: 10px; background: var(--control); color: white; border: none; border-radius: var(--radius);">
-                <option>Genesis</option>
-                <option>Exodus</option>
-                <option selected>John</option>
-                <option>Romans</option>
-                <option>Psalms</option>
-            </select>
-            <input type="number" id="bibleChapter" placeholder="Chapter" value="3" style="padding: 8px; width: 80px; background: var(--control); color: white; border: none; border-radius: var(--radius);">
-            <input type="number" id="bibleVerse" placeholder="Verse" value="16" style="padding: 8px; width: 80px; background: var(--control); color: white; border: none; border-radius: var(--radius);">
-            <button onclick="loadScripture()" style="padding: 8px 15px; background: var(--program); color: white; border: none; border-radius: var(--radius); margin-left: 10px; cursor: pointer;">Load</button>
-        </div>
-        <div id="scriptureText" style="font-size: 1.8rem; line-height: 1.6; text-align: center; padding: 20px; background: rgba(255,255,255,0.1); border-radius: var(--radius);">
-            For God so loved the world that he gave his one and only Son, that whoever believes in him shall not perish but have eternal life.
-        </div>
-        <div style="margin-top: 20px; display: flex; gap: 10px;">
-            <button onclick="sendToProgram('scripture')" style="flex: 1; padding: 12px; background: var(--program); color: white; border: none; border-radius: var(--radius); cursor: pointer;">
-                <i class="fas fa-broadcast-tower"></i> Send to Program
-            </button>
-            <button onclick="sendToPreview('scripture')" style="flex: 1; padding: 12px; background: var(--preview); color: white; border: none; border-radius: var(--radius); cursor: pointer;">
-                <i class="fas fa-eye"></i> Send to Preview
-            </button>
+        <div class="scripture-container">
+            <div class="scripture-header">
+                <h2>Scripture Display</h2>
+                <button class="scripture-close" onclick="hideScripture()">&times;</button>
+            </div>
+            <div style="margin-bottom: 20px;">
+                <div style="display: flex; gap: 10px; margin-bottom: 15px;">
+                    <select id="bibleBook" style="flex: 1; padding: 10px; background: var(--control); color: white; border: none; border-radius: var(--radius);">
+                        <option>Genesis</option>
+                        <option>Exodus</option>
+                        <option selected>John</option>
+                        <option>Romans</option>
+                        <option>Psalms</option>
+                    </select>
+                    <input type="number" id="bibleChapter" placeholder="Chapter" value="3" style="width: 100px; padding: 10px; background: var(--control); color: white; border: none; border-radius: var(--radius);">
+                    <input type="number" id="bibleVerse" placeholder="Verse" value="16" style="width: 100px; padding: 10px; background: var(--control); color: white; border: none; border-radius: var(--radius);">
+                </div>
+                <button onclick="loadScripture()" style="width: 100%; padding: 12px; background: var(--program); color: white; border: none; border-radius: var(--radius); margin-bottom: 15px; cursor: pointer;">
+                    <i class="fas fa-book"></i> Load Scripture
+                </button>
+            </div>
+            <div id="scriptureText" style="font-size: 1.8rem; line-height: 1.6; text-align: center; padding: 30px; background: rgba(255,255,255,0.05); border-radius: var(--radius); min-height: 200px; display: flex; align-items: center; justify-content: center;">
+                "For God so loved the world that he gave his one and only Son, that whoever believes in him shall not perish but have eternal life."
+            </div>
+            <div style="margin-top: 20px; display: flex; gap: 10px;">
+                <button onclick="sendToPreview('scripture')" style="flex: 1; padding: 12px; background: var(--preview); color: white; border: none; border-radius: var(--radius); cursor: pointer;">
+                    <i class="fas fa-eye"></i> Preview
+                </button>
+                <button onclick="sendToProgram('scripture')" style="flex: 1; padding: 12px; background: var(--program); color: white; border: none; border-radius: var(--radius); cursor: pointer;">
+                    <i class="fas fa-broadcast-tower"></i> Program
+                </button>
+                <button onclick="sendFullscreen('scripture')" style="flex: 1; padding: 12px; background: var(--live); color: white; border: none; border-radius: var(--radius); cursor: pointer;">
+                    <i class="fas fa-expand"></i> Fullscreen
+                </button>
+            </div>
         </div>
     </div>
     
-    <!-- Settings Modal -->
-    <div class="scripture-display" id="settingsModal" style="display: none;">
-        <div class="scripture-header">
-            <h2>Production Settings</h2>
-            <button class="scripture-close" onclick="hideSettings()">&times;</button>
-        </div>
-        <div style="display: grid; gap: 15px;">
-            <div>
-                <label style="display: block; margin-bottom: 5px;">Stream Settings</label>
-                <select style="width: 100%; padding: 8px; background: var(--control); color: white; border: none; border-radius: var(--radius);">
-                    <option>1920x1080 @ 60fps</option>
-                    <option>1280x720 @ 60fps</option>
-                    <option>1920x1080 @ 30fps</option>
-                    <option>1280x720 @ 30fps</option>
-                </select>
+    <!-- Webcam Settings Modal -->
+    <div class="webcam-modal" id="webcamModal">
+        <div class="webcam-container">
+            <div class="scripture-header">
+                <h2>Camera Settings</h2>
+                <button class="scripture-close" onclick="hideWebcamSettings()">&times;</button>
             </div>
-            <div>
-                <label style="display: block; margin-bottom: 5px;">Bitrate (kbps)</label>
-                <input type="range" min="1000" max="10000" value="4500" style="width: 100%;">
-            </div>
-            <div>
-                <label style="display: block; margin-bottom: 5px;">Audio Sample Rate</label>
-                <select style="width: 100%; padding: 8px; background: var(--control); color: white; border: none; border-radius: var(--radius);">
-                    <option>44.1 kHz</option>
-                    <option>48 kHz</option>
-                    <option>96 kHz</option>
-                </select>
-            </div>
-            <div>
-                <label style="display: block; margin-bottom: 5px;">Camera Sources</label>
-                <div style="display: flex; gap: 10px; margin-top: 10px;">
-                    <button class="control-btn" onclick="addCamera()">
-                        <i class="fas fa-plus"></i> Add Camera
-                    </button>
-                    <button class="control-btn" onclick="detectCameras()">
-                        <i class="fas fa-search"></i> Detect Cameras
-                    </button>
+            
+            <div id="webcamPreview" class="webcam-video">
+                <div style="text-align: center; padding: 40px;">
+                    <i class="fas fa-video-slash" style="font-size: 3rem; color: var(--text-secondary); margin-bottom: 15px;"></i>
+                    <p>Camera Preview</p>
                 </div>
             </div>
-            <div style="margin-top: 20px;">
-                <button style="width: 100%; padding: 12px; background: var(--program); color: white; border: none; border-radius: var(--radius); cursor: pointer;">
-                    Save Settings
+            
+            <div style="margin: 20px 0;">
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                    <div>
+                        <label style="display: block; margin-bottom: 5px; color: var(--text-secondary);">Camera</label>
+                        <select id="cameraSelect" style="width: 100%; padding: 10px; background: var(--control); color: white; border: none; border-radius: var(--radius);">
+                            <option>Select Camera</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label style="display: block; margin-bottom: 5px; color: var(--text-secondary);">Resolution</label>
+                        <select id="resolutionSelect" style="width: 100%; padding: 10px; background: var(--control); color: white; border: none; border-radius: var(--radius);">
+                            <option value="640x480">640x480 (SD)</option>
+                            <option value="1280x720" selected>1280x720 (HD)</option>
+                            <option value="1920x1080">1920x1080 (Full HD)</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+            
+            <div style="margin: 20px 0;">
+                <div class="slider-group">
+                    <div class="slider-label">
+                        <span>Brightness</span>
+                        <span id="webcamBrightness">100%</span>
+                    </div>
+                    <input type="range" id="webcamBrightnessSlider" min="0" max="200" value="100" style="width: 100%;">
+                </div>
+                
+                <div class="slider-group">
+                    <div class="slider-label">
+                        <span>Contrast</span>
+                        <span id="webcamContrast">100%</span>
+                    </div>
+                    <input type="range" id="webcamContrastSlider" min="0" max="200" value="100" style="width: 100%;">
+                </div>
+                
+                <div class="slider-group">
+                    <div class="slider-label">
+                        <span>Saturation</span>
+                        <span id="webcamSaturation">100%</span>
+                    </div>
+                    <input type="range" id="webcamSaturationSlider" min="0" max="200" value="100" style="width: 100%;">
+                </div>
+            </div>
+            
+            <div style="display: flex; gap: 10px;">
+                <button onclick="startWebcam()" style="flex: 1; padding: 12px; background: var(--program); color: white; border: none; border-radius: var(--radius); cursor: pointer;">
+                    <i class="fas fa-play"></i> Start Camera
+                </button>
+                <button onclick="stopWebcam()" style="flex: 1; padding: 12px; background: var(--control); color: white; border: none; border-radius: var(--radius); cursor: pointer;">
+                    <i class="fas fa-stop"></i> Stop Camera
+                </button>
+                <button onclick="addAsSource()" style="flex: 1; padding: 12px; background: var(--success); color: white; border: none; border-radius: var(--radius); cursor: pointer;">
+                    <i class="fas fa-plus"></i> Add as Source
                 </button>
             </div>
         </div>
@@ -704,56 +846,40 @@
 
     <script>
         // Production State
-        let productionState = {
-            preview: 'camera1',
-            program: 'camera1',
+        const productionState = {
+            cameras: [],
+            streams: {},
+            activeFilter: 'none',
+            previewSource: null,
+            programSource: null,
             transition: 'cut',
             transitionDuration: 1.0,
             isStreaming: false,
             isRecording: false,
-            cameras: [
-                { id: 'camera1', name: 'Camera 1 (Main)', type: 'camera', active: true },
-                { id: 'camera2', name: 'Camera 2 (Wide)', type: 'camera', active: true },
-                { id: 'camera3', name: 'Camera 3 (Stage)', type: 'camera', active: false },
-                { id: 'camera4', name: 'Camera 4 (Audience)', type: 'camera', active: true }
-            ],
-            media: [
-                { id: 'song1', name: 'Amazing Grace', type: 'lyrics', icon: 'fa-music' },
-                { id: 'song2', name: 'How Great Is Our God', type: 'lyrics', icon: 'fa-music' },
-                { id: 'song3', name: 'Scripture: John 3:16', type: 'scripture', icon: 'fa-bible' },
-                { id: 'video1', name: 'Welcome Video', type: 'video', icon: 'fa-video' },
-                { id: 'image1', name: 'Church Logo', type: 'image', icon: 'fa-image' },
-                { id: 'countdown', name: 'Countdown Timer', type: 'timer', icon: 'fa-clock' },
-                { id: 'announcement', name: 'Announcement Slide', type: 'text', icon: 'fa-newspaper' },
-                { id: 'lowerthird', name: 'Lower Third Template', type: 'overlay', icon: 'fa-window-restore' }
-            ],
-            audioChannels: [
-                { id: 'master', name: 'Master', level: 0.8, mute: false },
-                { id: 'music', name: 'Music', level: 0.7, mute: false },
-                { id: 'pastor', name: 'Pastor Mic', level: 0.9, mute: false },
-                { id: 'worship', name: 'Worship Leader', level: 0.8, mute: false },
-                { id: 'system', name: 'System Audio', level: 0.5, mute: false },
-                { id: 'playback', name: 'Playback', level: 0.6, mute: true }
-            ],
-            streamingPlatforms: ['youtube', 'facebook'],
+            audioContext: null,
+            audioStream: null,
+            mediaRecorder: null,
             currentMedia: null,
-            effects: []
+            overlays: []
         };
 
         // Initialize Production
-        function initializeProduction() {
+        async function initializeProduction() {
             updateTime();
-            generateCameraGrid();
-            generateMediaGrid();
-            generateAudioMixer();
             setupEventListeners();
+            generateAudioMixer();
             updateStatus();
             
-            // Simulate camera feeds
-            simulateCameraFeeds();
+            // Detect available cameras
+            await detectCameras();
             
             // Start system monitoring
             startSystemMonitoring();
+            
+            // Request microphone access for audio
+            await initializeAudio();
+            
+            logActivity('Production system initialized');
         }
 
         // Update time
@@ -764,6 +890,167 @@
             setTimeout(updateTime, 1000);
         }
 
+        // Detect available cameras
+        async function detectCameras() {
+            try {
+                const devices = await navigator.mediaDevices.enumerateDevices();
+                const videoDevices = devices.filter(device => device.kind === 'videoinput');
+                
+                // Update camera select in modal
+                const cameraSelect = document.getElementById('cameraSelect');
+                cameraSelect.innerHTML = '<option>Select Camera</option>';
+                
+                videoDevices.forEach((device, index) => {
+                    const option = document.createElement('option');
+                    option.value = device.deviceId;
+                    option.text = device.label || `Camera ${index + 1}`;
+                    cameraSelect.appendChild(option);
+                });
+                
+                document.getElementById('totalCameras').textContent = videoDevices.length;
+                logActivity(`Detected ${videoDevices.length} camera(s)`);
+                
+                return videoDevices;
+            } catch (error) {
+                console.error('Error detecting cameras:', error);
+                logActivity('Camera detection failed', 'error');
+                return [];
+            }
+        }
+
+        // Initialize audio
+        async function initializeAudio() {
+            try {
+                // Request microphone access
+                productionState.audioStream = await navigator.mediaDevices.getUserMedia({
+                    audio: {
+                        echoCancellation: true,
+                        noiseSuppression: true,
+                        autoGainControl: true
+                    }
+                });
+                
+                // Create audio context for processing
+                productionState.audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                const source = productionState.audioContext.createMediaStreamSource(productionState.audioStream);
+                
+                logActivity('Audio system initialized');
+            } catch (error) {
+                console.error('Error initializing audio:', error);
+                logActivity('Audio initialization failed - some features disabled', 'warning');
+            }
+        }
+
+        // Start webcam
+        async function startWebcam() {
+            const cameraSelect = document.getElementById('cameraSelect');
+            const resolutionSelect = document.getElementById('resolutionSelect');
+            
+            if (cameraSelect.value === 'Select Camera') {
+                alert('Please select a camera first');
+                return;
+            }
+            
+            try {
+                const constraints = {
+                    video: {
+                        deviceId: { exact: cameraSelect.value },
+                        width: { ideal: 1280 },
+                        height: { ideal: 720 }
+                    }
+                };
+                
+                // Parse resolution
+                const res = resolutionSelect.value.split('x');
+                if (res.length === 2) {
+                    constraints.video.width = { ideal: parseInt(res[0]) };
+                    constraints.video.height = { ideal: parseInt(res[1]) };
+                }
+                
+                const stream = await navigator.mediaDevices.getUserMedia(constraints);
+                
+                // Display in preview
+                const preview = document.getElementById('webcamPreview');
+                preview.innerHTML = '';
+                const video = document.createElement('video');
+                video.srcObject = stream;
+                video.autoplay = true;
+                video.muted = true;
+                video.style.width = '100%';
+                video.style.height = '100%';
+                video.style.objectFit = 'cover';
+                preview.appendChild(video);
+                
+                // Store stream
+                productionState.tempStream = stream;
+                
+                logActivity('Camera started successfully');
+                
+            } catch (error) {
+                console.error('Error starting camera:', error);
+                alert(`Error starting camera: ${error.message}`);
+                logActivity('Failed to start camera', 'error');
+            }
+        }
+
+        // Stop webcam
+        function stopWebcam() {
+            if (productionState.tempStream) {
+                productionState.tempStream.getTracks().forEach(track => track.stop());
+                productionState.tempStream = null;
+                
+                const preview = document.getElementById('webcamPreview');
+                preview.innerHTML = `
+                    <div style="text-align: center; padding: 40px;">
+                        <i class="fas fa-video-slash" style="font-size: 3rem; color: var(--text-secondary); margin-bottom: 15px;"></i>
+                        <p>Camera Preview</p>
+                    </div>
+                `;
+                
+                logActivity('Camera stopped');
+            }
+        }
+
+        // Add camera as source
+        function addAsSource() {
+            if (!productionState.tempStream) {
+                alert('Please start a camera first');
+                return;
+            }
+            
+            const cameraSelect = document.getElementById('cameraSelect');
+            const cameraName = cameraSelect.options[cameraSelect.selectedIndex].text;
+            
+            // Create new camera source
+            const cameraId = `camera${productionState.cameras.length + 1}`;
+            const camera = {
+                id: cameraId,
+                name: cameraName,
+                stream: productionState.tempStream,
+                active: true,
+                filter: 'none',
+                settings: {
+                    brightness: 100,
+                    contrast: 100,
+                    saturation: 100
+                }
+            };
+            
+            productionState.cameras.push(camera);
+            productionState.streams[cameraId] = productionState.tempStream;
+            
+            // Generate camera grid
+            generateCameraGrid();
+            
+            // Select this camera
+            selectSource(cameraId);
+            
+            logActivity(`Added ${cameraName} as camera source`);
+            
+            // Close modal
+            hideWebcamSettings();
+        }
+
         // Generate camera grid
         function generateCameraGrid() {
             const cameraGrid = document.getElementById('cameraGrid');
@@ -771,43 +1058,179 @@
             
             productionState.cameras.forEach(camera => {
                 const cameraDiv = document.createElement('div');
-                cameraDiv.className = `camera-source ${camera.id === productionState.preview ? 'active' : ''} ${camera.id === productionState.program ? 'live' : ''}`;
+                cameraDiv.className = `camera-source ${camera.id === productionState.previewSource ? 'active' : ''} ${camera.id === productionState.programSource ? 'live' : ''}`;
                 cameraDiv.dataset.cameraId = camera.id;
                 cameraDiv.innerHTML = `
                     <div class="camera-preview" id="preview-${camera.id}">
-                        <div style="text-align: center; color: white;">
-                            <i class="fas fa-video" style="font-size: 1.5rem; margin-bottom: 5px;"></i>
-                            <div style="font-size: 0.8rem;">${camera.active ? 'ACTIVE' : 'OFFLINE'}</div>
-                        </div>
+                        <video autoplay muted playsinline></video>
                     </div>
                     <div class="camera-label">
                         <span>${camera.name}</span>
                         <i class="fas fa-circle" style="color: ${camera.active ? 'var(--success)' : 'var(--danger)'}; font-size: 0.6rem;"></i>
                     </div>
                 `;
-                cameraDiv.addEventListener('click', () => selectCamera(camera.id));
+                
+                // Set up video stream
+                const video = cameraDiv.querySelector('video');
+                video.srcObject = camera.stream;
+                
+                // Apply current filter
+                video.className = `camera-filter filter-${camera.filter}`;
+                
+                cameraDiv.addEventListener('click', () => selectSource(camera.id));
                 cameraGrid.appendChild(cameraDiv);
             });
+            
+            document.getElementById('activeCameras').textContent = productionState.cameras.length;
+            document.getElementById('totalCameras').textContent = productionState.cameras.length;
         }
 
-        // Generate media grid
-        function generateMediaGrid() {
-            const mediaGrid = document.getElementById('mediaGrid');
-            mediaGrid.innerHTML = '';
+        // Select source
+        function selectSource(sourceId) {
+            const camera = productionState.cameras.find(c => c.id === sourceId);
+            if (!camera) return;
             
-            productionState.media.forEach(item => {
-                const mediaDiv = document.createElement('div');
-                mediaDiv.className = 'media-source';
-                mediaDiv.dataset.mediaId = item.id;
-                mediaDiv.innerHTML = `
-                    <div class="media-icon">
-                        <i class="fas ${item.icon}"></i>
-                    </div>
-                    <div style="font-size: 0.8rem;">${item.name}</div>
-                `;
-                mediaDiv.addEventListener('click', () => selectMedia(item));
-                mediaGrid.appendChild(mediaDiv);
+            productionState.previewSource = sourceId;
+            document.getElementById('previewSource').textContent = camera.name;
+            
+            // Update camera grid highlights
+            document.querySelectorAll('.camera-source').forEach(cam => {
+                cam.classList.remove('active');
+                if (cam.dataset.cameraId === sourceId) {
+                    cam.classList.add('active');
+                }
             });
+            
+            // Update preview monitor
+            updatePreviewMonitor();
+        }
+
+        // Update preview monitor
+        function updatePreviewMonitor() {
+            const previewMonitor = document.getElementById('previewMonitor');
+            const sourceId = productionState.previewSource;
+            
+            if (!sourceId) {
+                previewMonitor.innerHTML = `
+                    <div style="text-align: center; padding: 20px;">
+                        <i class="fas fa-eye" style="font-size: 3rem; color: var(--preview); margin-bottom: 10px;"></i>
+                        <p>Preview Monitor</p>
+                        <p style="color: var(--text-secondary); font-size: 0.9rem;">Select a source to preview</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            const camera = productionState.cameras.find(c => c.id === sourceId);
+            if (!camera) return;
+            
+            previewMonitor.innerHTML = '';
+            const video = document.createElement('video');
+            video.srcObject = camera.stream;
+            video.autoplay = true;
+            video.muted = true;
+            video.style.width = '100%';
+            video.style.height = '100%';
+            video.style.objectFit = 'cover';
+            video.className = `camera-filter filter-${camera.filter}`;
+            previewMonitor.appendChild(video);
+        }
+
+        // Update program monitor
+        function updateProgramMonitor() {
+            const programMonitor = document.getElementById('programMonitor');
+            const sourceId = productionState.programSource;
+            
+            if (!sourceId) {
+                programMonitor.innerHTML = `
+                    <div class="live-overlay">STANDBY</div>
+                    <div style="text-align: center; padding: 20px;">
+                        <i class="fas fa-broadcast-tower" style="font-size: 3rem; color: var(--text-secondary); margin-bottom: 10px;"></i>
+                        <p>Program Output</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            const camera = productionState.cameras.find(c => c.id === sourceId);
+            if (!camera) return;
+            
+            programMonitor.innerHTML = '';
+            const video = document.createElement('video');
+            video.srcObject = camera.stream;
+            video.autoplay = true;
+            video.muted = true;
+            video.style.width = '100%';
+            video.style.height = '100%';
+            video.style.objectFit = 'cover';
+            video.className = `camera-filter filter-${camera.filter}`;
+            
+            // Add overlays
+            productionState.overlays.forEach(overlay => {
+                const overlayDiv = document.createElement('div');
+                overlayDiv.style.cssText = overlay.style;
+                overlayDiv.innerHTML = overlay.content;
+                programMonitor.appendChild(overlayDiv);
+            });
+            
+            // Add live overlay if streaming
+            if (productionState.isStreaming) {
+                const liveOverlay = document.createElement('div');
+                liveOverlay.className = 'live-overlay';
+                liveOverlay.textContent = 'LIVE';
+                programMonitor.appendChild(liveOverlay);
+                document.getElementById('programStatus').textContent = 'LIVE';
+            } else {
+                document.getElementById('programStatus').textContent = 'PROGRAM';
+            }
+            
+            programMonitor.appendChild(video);
+        }
+
+        // Take transition
+        function takeTransition() {
+            if (!productionState.previewSource) {
+                alert('Please select a preview source first');
+                return;
+            }
+            
+            const preview = productionState.previewSource;
+            const program = productionState.programSource;
+            
+            if (preview !== program) {
+                productionState.programSource = preview;
+                
+                // Update program monitor
+                updateProgramMonitor();
+                
+                // Update camera grid highlights
+                document.querySelectorAll('.camera-source').forEach(cam => {
+                    cam.classList.remove('live');
+                    if (cam.dataset.cameraId === preview) {
+                        cam.classList.add('live');
+                    }
+                });
+                
+                // Show transition effect
+                showTransitionEffect();
+                
+                // Log the transition
+                logActivity(`Transition: ${program || 'None'} → ${preview} (${productionState.transition})`);
+            }
+        }
+
+        // Show transition effect
+        function showTransitionEffect() {
+            const programMonitor = document.getElementById('programMonitor');
+            const effect = productionState.transition;
+            
+            // Add transition class
+            programMonitor.classList.add(`transition-${effect}`);
+            
+            // Remove after duration
+            setTimeout(() => {
+                programMonitor.classList.remove(`transition-${effect}`);
+            }, productionState.transitionDuration * 1000);
         }
 
         // Generate audio mixer
@@ -815,7 +1238,14 @@
             const mixerControls = document.getElementById('mixerControls');
             mixerControls.innerHTML = '';
             
-            productionState.audioChannels.forEach(channel => {
+            const channels = [
+                { id: 'master', name: 'Master', level: 0.8, mute: false },
+                { id: 'mic', name: 'Microphone', level: 0.7, mute: false },
+                { id: 'music', name: 'Music', level: 0.6, mute: false },
+                { id: 'system', name: 'System', level: 0.5, mute: false }
+            ];
+            
+            channels.forEach(channel => {
                 const channelDiv = document.createElement('div');
                 channelDiv.className = 'channel';
                 channelDiv.innerHTML = `
@@ -857,220 +1287,105 @@
                     channel.mute = !channel.mute;
                     const icon = channelDiv.querySelector('i');
                     icon.className = channel.mute ? 'fas fa-volume-mute' : 'fas fa-volume-up';
+                    logActivity(`${channel.name} ${channel.mute ? 'muted' : 'unmuted'}`);
                 });
             });
-        }
-
-        // Select camera
-        function selectCamera(cameraId) {
-            productionState.preview = cameraId;
-            document.getElementById('previewSource').textContent = 
-                productionState.cameras.find(c => c.id === cameraId).name;
-            
-            // Update camera grid highlights
-            document.querySelectorAll('.camera-source').forEach(cam => {
-                cam.classList.remove('active');
-                if (cam.dataset.cameraId === cameraId) {
-                    cam.classList.add('active');
-                }
-            });
-            
-            // Update preview monitor
-            updatePreviewMonitor();
-        }
-
-        // Select media
-        function selectMedia(media) {
-            productionState.currentMedia = media;
-            const mediaDisplay = document.getElementById('mediaDisplay');
-            
-            switch(media.type) {
-                case 'lyrics':
-                    mediaDisplay.innerHTML = `
-                        <div style="text-align: center; padding: 20px;">
-                            <h3 style="margin-bottom: 15px;">${media.name}</h3>
-                            <div style="font-size: 1.2rem; line-height: 1.8;">
-                                Amazing grace, how sweet the sound<br>
-                                That saved a wretch like me<br>
-                                I once was lost, but now am found<br>
-                                Was blind, but now I see
-                            </div>
-                        </div>
-                    `;
-                    break;
-                case 'scripture':
-                    mediaDisplay.innerHTML = `
-                        <div style="text-align: center; padding: 20px;">
-                            <h3 style="margin-bottom: 15px;">${media.name}</h3>
-                            <div style="font-size: 1.5rem; line-height: 1.6; font-weight: 600;">
-                                "For God so loved the world that he gave his one and only Son..."
-                            </div>
-                        </div>
-                    `;
-                    break;
-                case 'video':
-                    mediaDisplay.innerHTML = `
-                        <div style="text-align: center; padding: 20px;">
-                            <i class="fas fa-play-circle" style="font-size: 3rem; color: var(--program); margin-bottom: 10px;"></i>
-                            <h3>${media.name}</h3>
-                            <p style="color: var(--text-secondary);">Ready to play</p>
-                        </div>
-                    `;
-                    break;
-                default:
-                    mediaDisplay.innerHTML = `
-                        <div style="text-align: center; padding: 20px;">
-                            <i class="fas ${media.icon}" style="font-size: 3rem; color: var(--program); margin-bottom: 10px;"></i>
-                            <h3>${media.name}</h3>
-                        </div>
-                    `;
-            }
-        }
-
-        // Take transition
-        function takeTransition() {
-            const preview = productionState.preview;
-            const program = productionState.program;
-            
-            if (preview !== program) {
-                productionState.program = preview;
-                
-                // Update program monitor
-                updateProgramMonitor();
-                
-                // Update camera grid highlights
-                document.querySelectorAll('.camera-source').forEach(cam => {
-                    cam.classList.remove('live');
-                    if (cam.dataset.cameraId === preview) {
-                        cam.classList.add('live');
-                    }
-                });
-                
-                // Show transition effect
-                showTransitionEffect();
-                
-                // Log the transition
-                logActivity(`Transition: ${program} → ${preview} (${productionState.transition})`);
-            }
-        }
-
-        // Show transition effect
-        function showTransitionEffect() {
-            const programMonitor = document.getElementById('programMonitor');
-            const effect = productionState.transition;
-            
-            // Add transition class
-            programMonitor.classList.add(`transition-${effect}`);
-            
-            // Remove after duration
-            setTimeout(() => {
-                programMonitor.classList.remove(`transition-${effect}`);
-            }, productionState.transitionDuration * 1000);
-        }
-
-        // Update preview monitor
-        function updatePreviewMonitor() {
-            const previewMonitor = document.getElementById('previewMonitor');
-            const camera = productionState.cameras.find(c => c.id === productionState.preview);
-            
-            previewMonitor.innerHTML = `
-                <div style="text-align: center; padding: 20px;">
-                    <i class="fas fa-video" style="font-size: 3rem; color: ${camera.active ? 'var(--preview)' : 'var(--danger)'}; margin-bottom: 10px;"></i>
-                    <h3 style="margin-bottom: 5px;">${camera.name}</h3>
-                    <p style="color: var(--text-secondary); font-size: 0.9rem;">
-                        ${camera.active ? 'Ready for broadcast' : 'Camera offline'}
-                    </p>
-                </div>
-            `;
-        }
-
-        // Update program monitor
-        function updateProgramMonitor() {
-            const programMonitor = document.getElementById('programMonitor');
-            const camera = productionState.cameras.find(c => c.id === productionState.program);
-            
-            programMonitor.innerHTML = `
-                <div class="live-overlay">LIVE</div>
-                <div style="text-align: center; padding: 20px;">
-                    <i class="fas fa-broadcast-tower" style="font-size: 3rem; color: var(--live); margin-bottom: 10px;"></i>
-                    <h3 style="margin-bottom: 5px;">${camera.name}</h3>
-                    <p style="color: var(--text-secondary); font-size: 0.9rem;">
-                        ${productionState.isStreaming ? 'Streaming LIVE' : 'Program Output'}
-                    </p>
-                </div>
-            `;
         }
 
         // Start/Stop streaming
-        function toggleStreaming() {
-            productionState.isStreaming = !productionState.isStreaming;
-            
-            const startBtn = document.getElementById('startStream');
-            const stopBtn = document.getElementById('stopStream');
-            
-            if (productionState.isStreaming) {
-                startBtn.style.display = 'none';
-                stopBtn.style.display = 'block';
-                logActivity('Streaming started on all platforms');
-                simulateStreaming();
+        async function toggleStreaming() {
+            if (!productionState.isStreaming) {
+                // Start streaming
+                try {
+                    const programSource = productionState.programSource;
+                    if (!programSource) {
+                        alert('Please select a program source first');
+                        return;
+                    }
+                    
+                    const camera = productionState.cameras.find(c => c.id === programSource);
+                    if (!camera) return;
+                    
+                    // Combine video and audio streams
+                    const audioStream = productionState.audioStream;
+                    const videoStream = camera.stream;
+                    
+                    if (audioStream && videoStream) {
+                        const combinedStream = new MediaStream([
+                            ...videoStream.getVideoTracks(),
+                            ...audioStream.getAudioTracks()
+                        ]);
+                        
+                        // For WebRTC testing, we'll create a simple peer connection
+                        productionState.peerConnection = new RTCPeerConnection();
+                        combinedStream.getTracks().forEach(track => {
+                            productionState.peerConnection.addTrack(track, combinedStream);
+                        });
+                        
+                        productionState.isStreaming = true;
+                        document.getElementById('startStream').style.display = 'none';
+                        document.getElementById('stopStream').style.display = 'block';
+                        
+                        // Update program monitor
+                        updateProgramMonitor();
+                        
+                        logActivity('Streaming started (WebRTC test mode)');
+                        
+                        // Simulate streaming stats
+                        simulateStreamStats();
+                    }
+                } catch (error) {
+                    console.error('Error starting stream:', error);
+                    logActivity('Failed to start stream', 'error');
+                }
             } else {
-                startBtn.style.display = 'block';
-                stopBtn.style.display = 'none';
+                // Stop streaming
+                if (productionState.peerConnection) {
+                    productionState.peerConnection.close();
+                    productionState.peerConnection = null;
+                }
+                
+                productionState.isStreaming = false;
+                document.getElementById('startStream').style.display = 'block';
+                document.getElementById('stopStream').style.display = 'none';
+                
+                updateProgramMonitor();
                 logActivity('Streaming stopped');
             }
-            
-            updateProgramMonitor();
         }
 
-        // Simulate streaming data
-        function simulateStreaming() {
+        // Simulate streaming stats
+        function simulateStreamStats() {
             if (productionState.isStreaming) {
                 // Update bitrate
-                const bitrate = 4500 + Math.floor(Math.random() * 1000) - 500;
+                const bitrate = 2500 + Math.floor(Math.random() * 2000);
                 document.getElementById('bitrate').textContent = bitrate;
                 
-                // Update viewer count
-                const viewers = Math.floor(Math.random() * 100) + 1200;
-                document.getElementById('viewerCount').textContent = viewers;
+                // Update resolution
+                const resolutions = ['640x480', '1280x720', '1920x1080'];
+                const randomRes = resolutions[Math.floor(Math.random() * resolutions.length)];
+                document.getElementById('resolution').textContent = randomRes;
                 
-                setTimeout(simulateStreaming, 3000);
+                // Update FPS
+                const fps = 55 + Math.floor(Math.random() * 10);
+                document.getElementById('fpsCounter').textContent = fps;
+                
+                setTimeout(simulateStreamStats, 2000);
             }
-        }
-
-        // Simulate camera feeds
-        function simulateCameraFeeds() {
-            productionState.cameras.forEach(camera => {
-                if (camera.active) {
-                    const preview = document.getElementById(`preview-${camera.id}`);
-                    if (preview) {
-                        // Simulate camera feed changes
-                        setInterval(() => {
-                            const colors = ['#1a2980', '#26d0ce', '#ff416c', '#ff4b2b'];
-                            const randomColor = colors[Math.floor(Math.random() * colors.length)];
-                            preview.style.background = `linear-gradient(45deg, ${randomColor}, ${colors[Math.floor(Math.random() * colors.length)]})`;
-                        }, 5000);
-                    }
-                }
-            });
         }
 
         // System monitoring
         function startSystemMonitoring() {
             setInterval(() => {
-                // Update CPU usage
-                const cpu = 20 + Math.floor(Math.random() * 20);
-                document.getElementById('cpuUsage').textContent = cpu;
-                
-                // Update FPS
-                const fps = 55 + Math.floor(Math.random() * 10);
-                document.getElementById('fpsCounter').textContent = fps;
+                // Update CPU usage (simulated)
+                const cpu = 20 + Math.floor(Math.random() * 30);
                 
                 // Update system status
                 const status = cpu > 70 ? 'HIGH LOAD' : 'OK';
                 document.getElementById('systemStatus').textContent = status;
                 document.getElementById('systemStatus').style.color = 
                     cpu > 70 ? 'var(--warning)' : 'var(--success)';
-            }, 2000);
+            }, 3000);
         }
 
         // Setup event listeners
@@ -1081,6 +1396,7 @@
                     document.querySelectorAll('.transition-btn').forEach(b => b.classList.remove('active'));
                     this.classList.add('active');
                     productionState.transition = this.dataset.transition;
+                    logActivity(`Transition set to: ${this.dataset.transition}`);
                 });
             });
             
@@ -1095,97 +1411,200 @@
             // Take button
             document.getElementById('takeButton').addEventListener('click', takeTransition);
             
-            // Media player controls
-            document.getElementById('playMedia').addEventListener('click', () => {
-                logActivity('Media playback started');
+            // Add camera button
+            document.getElementById('addCameraBtn').addEventListener('click', showWebcamSettings);
+            
+            // Filter buttons
+            document.querySelectorAll('.effect-btn[data-filter]').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const filter = this.dataset.filter;
+                    applyFilterToAll(filter);
+                    logActivity(`Applied filter: ${filter}`);
+                });
             });
             
-            document.getElementById('fullscreenMedia').addEventListener('click', () => {
-                logActivity('Media sent to fullscreen');
-                sendToProgram('media');
+            // Effect buttons
+            document.querySelectorAll('.effect-btn[data-effect]').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const effect = this.dataset.effect;
+                    if (effect === 'clear') {
+                        productionState.overlays = [];
+                        updateProgramMonitor();
+                        logActivity('Cleared all overlays');
+                    } else {
+                        applyOverlay(effect);
+                    }
+                });
+            });
+            
+            // Media source buttons
+            document.querySelectorAll('.media-source').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const mediaType = this.dataset.media;
+                    handleMediaSource(mediaType);
+                });
             });
             
             // Streaming controls
             document.getElementById('startStream').addEventListener('click', toggleStreaming);
             document.getElementById('stopStream').addEventListener('click', toggleStreaming);
             
-            // Platform buttons
-            document.querySelectorAll('.platform-btn').forEach(btn => {
-                btn.addEventListener('click', function() {
-                    const platform = this.dataset.platform;
-                    this.classList.toggle('active');
+            // Test audio button
+            document.getElementById('testAudio').addEventListener('click', () => {
+                // Play test tone
+                if (productionState.audioContext) {
+                    const oscillator = productionState.audioContext.createOscillator();
+                    const gainNode = productionState.audioContext.createGain();
                     
-                    if (this.classList.contains('active')) {
-                        if (!productionState.streamingPlatforms.includes(platform)) {
-                            productionState.streamingPlatforms.push(platform);
-                        }
-                    } else {
-                        const index = productionState.streamingPlatforms.indexOf(platform);
-                        if (index > -1) {
-                            productionState.streamingPlatforms.splice(index, 1);
-                        }
-                    }
+                    oscillator.connect(gainNode);
+                    gainNode.connect(productionState.audioContext.destination);
                     
-                    logActivity(`${platform.charAt(0).toUpperCase() + platform.slice(1)} ${this.classList.contains('active') ? 'enabled' : 'disabled'}`);
-                });
+                    oscillator.frequency.value = 440; // A4 note
+                    gainNode.gain.value = 0.1;
+                    
+                    oscillator.start();
+                    setTimeout(() => oscillator.stop(), 500);
+                    
+                    logActivity('Played test tone');
+                }
             });
             
-            // Effect buttons
-            document.querySelectorAll('.effect-btn').forEach(btn => {
-                btn.addEventListener('click', function() {
-                    const effect = this.dataset.effect;
-                    applyEffect(effect);
+            // Webcam settings sliders
+            const webcamSliders = ['brightness', 'contrast', 'saturation'];
+            webcamSliders.forEach(slider => {
+                const sliderEl = document.getElementById(`webcam${slider.charAt(0).toUpperCase() + slider.slice(1)}Slider`);
+                const valueEl = document.getElementById(`webcam${slider.charAt(0).toUpperCase() + slider.slice(1)}`);
+                
+                sliderEl.addEventListener('input', function() {
+                    valueEl.textContent = `${this.value}%`;
+                    applyWebcamFilter();
                 });
             });
         }
 
-        // Apply video effect
-        function applyEffect(effect) {
-            const programMonitor = document.getElementById('programMonitor');
+        // Apply filter to all cameras
+        function applyFilterToAll(filter) {
+            productionState.activeFilter = filter;
             
-            switch(effect) {
+            // Update all camera videos
+            document.querySelectorAll('.camera-preview video').forEach(video => {
+                video.className = `camera-filter filter-${filter}`;
+            });
+            
+            // Update preview and program if they're cameras
+            updatePreviewMonitor();
+            updateProgramMonitor();
+        }
+
+        // Apply webcam filter in settings
+        function applyWebcamFilter() {
+            const brightness = document.getElementById('webcamBrightnessSlider').value / 100;
+            const contrast = document.getElementById('webcamContrastSlider').value / 100;
+            const saturation = document.getElementById('webcamSaturationSlider').value / 100;
+            
+            const video = document.querySelector('#webcamPreview video');
+            if (video) {
+                video.style.filter = `brightness(${brightness}) contrast(${contrast}) saturate(${saturation})`;
+            }
+        }
+
+        // Apply overlay
+        function applyOverlay(type) {
+            let overlay = null;
+            
+            switch(type) {
                 case 'lowerthird':
-                    programMonitor.innerHTML += `
-                        <div style="position: absolute; bottom: 20px; left: 20px; right: 20px; background: rgba(0,0,0,0.8); color: white; padding: 15px; border-radius: var(--radius);">
-                            <div style="font-size: 1.2rem; font-weight: 600;">Pastor John Doe</div>
-                            <div style="color: var(--text-secondary);">Senior Pastor, Grace Church</div>
-                        </div>
-                    `;
+                    overlay = {
+                        content: `
+                            <div style="padding: 15px; background: linear-gradient(90deg, rgba(0,0,0,0.8), rgba(67,97,238,0.8));">
+                                <div style="font-size: 1.2rem; font-weight: bold;">Pastor John Smith</div>
+                                <div style="font-size: 0.9rem; opacity: 0.9;">Senior Pastor</div>
+                            </div>
+                        `,
+                        style: 'position: absolute; bottom: 20px; left: 20px; right: 20px; color: white; border-radius: var(--radius);'
+                    };
                     break;
                 case 'countdown':
                     let count = 10;
-                    const countdownDiv = document.createElement('div');
-                    countdownDiv.style.cssText = `
-                        position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
-                        font-size: 6rem; font-weight: 800; color: var(--live); z-index: 100;
-                    `;
-                    countdownDiv.textContent = count;
-                    programMonitor.appendChild(countdownDiv);
+                    overlay = {
+                        content: `<div style="font-size: 4rem; font-weight: bold; text-align: center;">${count}</div>`,
+                        style: 'position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); color: var(--live);'
+                    };
                     
+                    // Animate countdown
                     const interval = setInterval(() => {
                         count--;
-                        countdownDiv.textContent = count;
-                        if (count <= 0) {
+                        if (count >= 0) {
+                            overlay.content = `<div style="font-size: 4rem; font-weight: bold; text-align: center;">${count}</div>`;
+                            // Update overlays
+                            const index = productionState.overlays.findIndex(o => o === overlay);
+                            if (index !== -1) {
+                                productionState.overlays[index] = overlay;
+                                updateProgramMonitor();
+                            }
+                        } else {
                             clearInterval(interval);
-                            countdownDiv.remove();
+                            // Remove countdown overlay
+                            productionState.overlays = productionState.overlays.filter(o => o !== overlay);
+                            updateProgramMonitor();
                         }
                     }, 1000);
                     break;
                 case 'logo':
-                    programMonitor.innerHTML += `
-                        <div style="position: absolute; top: 20px; right: 20px; background: rgba(0,0,0,0.7); padding: 10px; border-radius: var(--radius);">
-                            <i class="fas fa-church" style="font-size: 2rem; color: white;"></i>
-                        </div>
-                    `;
+                    overlay = {
+                        content: `<i class="fas fa-church" style="font-size: 2rem;"></i>`,
+                        style: 'position: absolute; top: 20px; right: 20px; background: rgba(0,0,0,0.7); padding: 10px; border-radius: 50%; color: white;'
+                    };
+                    break;
+                case 'title':
+                    overlay = {
+                        content: `<div style="text-align: center; font-size: 1.5rem; font-weight: bold;">Sunday Worship Service</div>`,
+                        style: 'position: absolute; top: 20px; left: 20px; right: 20px; background: rgba(0,0,0,0.7); color: white; padding: 10px; border-radius: var(--radius); text-align: center;'
+                    };
+                    break;
+                case 'clock':
+                    overlay = {
+                        content: `<div id="overlayClock">${new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</div>`,
+                        style: 'position: absolute; top: 20px; left: 20px; background: rgba(0,0,0,0.7); color: white; padding: 10px 15px; border-radius: var(--radius); font-family: monospace; font-size: 1.1rem;'
+                    };
+                    // Update clock every minute
+                    setInterval(() => {
+                        const clockDiv = document.getElementById('overlayClock');
+                        if (clockDiv) {
+                            clockDiv.textContent = new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+                        }
+                    }, 60000);
                     break;
             }
             
-            logActivity(`Effect applied: ${effect}`);
+            if (overlay) {
+                productionState.overlays.push(overlay);
+                updateProgramMonitor();
+                logActivity(`Added ${type} overlay`);
+            }
+        }
+
+        // Handle media source
+        function handleMediaSource(type) {
+            switch(type) {
+                case 'scripture':
+                    showScripture();
+                    break;
+                case 'lyrics':
+                    showLyrics();
+                    break;
+                case 'announcement':
+                    showAnnouncement();
+                    break;
+                case 'countdown':
+                    applyOverlay('countdown');
+                    break;
+            }
         }
 
         // Scripture display
         function showScripture() {
-            document.getElementById('scriptureModal').style.display = 'block';
+            document.getElementById('scriptureModal').style.display = 'flex';
         }
 
         function hideScripture() {
@@ -1197,92 +1616,158 @@
             const chapter = document.getElementById('bibleChapter').value;
             const verse = document.getElementById('bibleVerse').value;
             
-            document.getElementById('scriptureText').innerHTML = `
+            const scriptureText = document.getElementById('scriptureText');
+            scriptureText.innerHTML = `
                 <div style="margin-bottom: 10px; color: var(--text-secondary); font-size: 1rem;">
                     ${book} ${chapter}:${verse}
                 </div>
                 "For God so loved the world that he gave his one and only Son, 
                 that whoever believes in him shall not perish but have eternal life."
+                <div style="margin-top: 20px; font-size: 1rem; color: var(--text-secondary);">
+                    - New International Version
+                </div>
             `;
-        }
-
-        function sendToProgram(type) {
-            if (type === 'scripture') {
-                const mediaDisplay = document.getElementById('mediaDisplay');
-                mediaDisplay.innerHTML = document.getElementById('scriptureText').innerHTML;
-                logActivity('Scripture sent to program');
-            }
+            
+            logActivity(`Loaded scripture: ${book} ${chapter}:${verse}`);
         }
 
         function sendToPreview(type) {
+            const mediaDisplay = document.getElementById('mediaDisplay');
             if (type === 'scripture') {
-                const previewMonitor = document.getElementById('previewMonitor');
-                previewMonitor.innerHTML = `
-                    <div style="text-align: center; padding: 20px;">
-                        <i class="fas fa-bible" style="font-size: 3rem; color: var(--preview); margin-bottom: 10px;"></i>
-                        <h3>Scripture</h3>
-                        <p>Ready for broadcast</p>
-                    </div>
-                `;
+                mediaDisplay.innerHTML = document.getElementById('scriptureText').innerHTML;
                 logActivity('Scripture sent to preview');
             }
         }
 
-        // Settings
-        function showSettings() {
-            document.getElementById('settingsModal').style.display = 'block';
+        function sendToProgram(type) {
+            if (type === 'scripture') {
+                // Create scripture overlay
+                const scriptureText = document.getElementById('scriptureText').innerHTML;
+                const overlay = {
+                    content: `
+                        <div style="padding: 30px; text-align: center; background: rgba(0,0,0,0.9); color: white;">
+                            ${scriptureText}
+                        </div>
+                    `,
+                    style: 'position: absolute; top: 0; left: 0; width: 100%; height: 100%; display: flex; align-items: center; justify-content: center;'
+                };
+                
+                productionState.overlays.push(overlay);
+                updateProgramMonitor();
+                logActivity('Scripture sent to program');
+                hideScripture();
+            }
         }
 
-        function hideSettings() {
-            document.getElementById('settingsModal').style.display = 'none';
+        function sendFullscreen(type) {
+            if (type === 'scripture') {
+                const scriptureText = document.getElementById('scriptureText').innerHTML;
+                const fullscreenDiv = document.createElement('div');
+                fullscreenDiv.style.cssText = `
+                    position: fixed;
+                    top: 0;
+                    left: 0;
+                    width: 100vw;
+                    height: 100vh;
+                    background: black;
+                    color: white;
+                    z-index: 3000;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    padding: 40px;
+                    text-align: center;
+                    font-size: 2.5rem;
+                    line-height: 1.6;
+                `;
+                fullscreenDiv.innerHTML = scriptureText;
+                
+                fullscreenDiv.addEventListener('click', () => fullscreenDiv.remove());
+                document.body.appendChild(fullscreenDiv);
+                
+                logActivity('Scripture sent to fullscreen');
+                hideScripture();
+            }
         }
 
-        // Add camera
-        function addCamera() {
-            const newId = `camera${productionState.cameras.length + 1}`;
-            productionState.cameras.push({
-                id: newId,
-                name: `Camera ${productionState.cameras.length + 1}`,
-                type: 'camera',
-                active: true
-            });
-            generateCameraGrid();
-            logActivity(`Camera ${productionState.cameras.length} added`);
+        // Lyrics display
+        function showLyrics() {
+            const lyrics = `
+                <div style="text-align: center; padding: 20px;">
+                    <h3 style="margin-bottom: 20px; color: var(--program);">Amazing Grace</h3>
+                    <div style="font-size: 1.5rem; line-height: 1.8;">
+                        Amazing grace, how sweet the sound<br>
+                        That saved a wretch like me<br>
+                        I once was lost, but now am found<br>
+                        Was blind, but now I see
+                    </div>
+                    <div style="margin-top: 30px; display: flex; gap: 10px; justify-content: center;">
+                        <button onclick="sendToProgram('lyrics')" style="padding: 10px 20px; background: var(--program); color: white; border: none; border-radius: var(--radius); cursor: pointer;">
+                            Send to Program
+                        </button>
+                        <button onclick="sendFullscreen('lyrics')" style="padding: 10px 20px; background: var(--live); color: white; border: none; border-radius: var(--radius); cursor: pointer;">
+                            Fullscreen
+                        </button>
+                    </div>
+                </div>
+            `;
+            
+            document.getElementById('mediaDisplay').innerHTML = lyrics;
+            logActivity('Loaded lyrics: Amazing Grace');
         }
 
-        // Detect cameras (simulated)
-        function detectCameras() {
-            alert('Camera detection would access your webcam in a real implementation.\n\nIn this demo, cameras are simulated.');
+        // Announcement display
+        function showAnnouncement() {
+            const announcement = `
+                <div style="text-align: center; padding: 20px;">
+                    <h3 style="margin-bottom: 20px; color: var(--warning);">Announcements</h3>
+                    <div style="font-size: 1.2rem; line-height: 1.6; text-align: left;">
+                        <p>• Bible Study: Wednesday 7 PM</p>
+                        <p>• Youth Night: Friday 6 PM</p>
+                        <p>• Food Drive: This Saturday</p>
+                        <p>• Prayer Meeting: Daily 6 AM</p>
+                    </div>
+                    <div style="margin-top: 30px; display: flex; gap: 10px; justify-content: center;">
+                        <button onclick="sendToProgram('announcement')" style="padding: 10px 20px; background: var(--program); color: white; border: none; border-radius: var(--radius); cursor: pointer;">
+                            Send to Program
+                        </button>
+                    </div>
+                </div>
+            `;
+            
+            document.getElementById('mediaDisplay').innerHTML = announcement;
+            logActivity('Loaded announcements');
+        }
+
+        // Webcam settings
+        function showWebcamSettings() {
+            document.getElementById('webcamModal').style.display = 'flex';
+        }
+
+        function hideWebcamSettings() {
+            document.getElementById('webcamModal').style.display = 'none';
+        }
+
+        // Fullscreen program
+        function fullscreenProgram() {
+            const programMonitor = document.getElementById('programMonitor');
+            if (!document.fullscreenElement) {
+                programMonitor.requestFullscreen().catch(err => {
+                    console.log(`Error attempting to enable fullscreen: ${err.message}`);
+                });
+            } else {
+                document.exitFullscreen();
+            }
         }
 
         // Log activity
-        function logActivity(message) {
-            const activityList = document.querySelector('.activity-list');
-            if (activityList) {
-                const activityItem = document.createElement('div');
-                activityItem.className = 'activity-item';
-                activityItem.innerHTML = `
-                    <div class="activity-icon" style="background: var(--program)20; color: var(--program)">
-                        <i class="fas fa-info-circle"></i>
-                    </div>
-                    <div class="activity-details">
-                        <div>${message}</div>
-                        <div class="activity-time">Just now</div>
-                    </div>
-                `;
-                
-                // Add to top
-                if (activityList.firstChild) {
-                    activityList.insertBefore(activityItem, activityList.firstChild);
-                } else {
-                    activityList.appendChild(activityItem);
-                }
-                
-                // Limit to 5 items
-                while (activityList.children.length > 5) {
-                    activityList.removeChild(activityList.lastChild);
-                }
-            }
+        function logActivity(message, type = 'info') {
+            console.log(`[${type.toUpperCase()}] ${message}`);
+            
+            // In a full implementation, this would add to activity log
+            const now = new Date();
+            const time = now.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit', second:'2-digit'});
+            console.log(`[${time}] ${message}`);
         }
 
         // Update status
@@ -1291,7 +1776,10 @@
             const style = document.createElement('style');
             style.textContent = `
                 .transition-fade { animation: fadeIn ${productionState.transitionDuration}s; }
-                .transition-wipe { animation: wipe ${productionState.transitionDuration}s; }
+                .transition-wipe { 
+                    animation: wipe ${productionState.transitionDuration}s;
+                    clip-path: inset(0 0 0 0);
+                }
                 .transition-zoom { animation: zoom ${productionState.transitionDuration}s; }
                 .transition-slide { animation: slide ${productionState.transitionDuration}s; }
                 .transition-cube { animation: cube ${productionState.transitionDuration}s; }
@@ -1331,7 +1819,7 @@
             if (e.code >= 'Digit1' && e.code <= 'Digit4') {
                 const cameraIndex = parseInt(e.code[5]) - 1;
                 if (cameraIndex < productionState.cameras.length) {
-                    selectCamera(productionState.cameras[cameraIndex].id);
+                    selectSource(productionState.cameras[cameraIndex].id);
                 }
             }
             // T for transition type
@@ -1342,6 +1830,12 @@
                 transitions[currentIndex].classList.remove('active');
                 transitions[nextIndex].classList.add('active');
                 productionState.transition = transitions[nextIndex].dataset.transition;
+                logActivity(`Transition set to: ${productionState.transition}`);
+            }
+            // Escape to close modals
+            if (e.code === 'Escape') {
+                hideScripture();
+                hideWebcamSettings();
             }
         });
     </script>
