@@ -1,0 +1,1349 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WorshipFlow PRO - Production Control</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Roboto+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #1a1a2e; --secondary: #16213e; --accent: #0f3460;
+            --live: #e94560; --preview: #4cc9f0; --program: #4361ee;
+            --control: #2d3748; --text: #f8f9fa; --text-secondary: #a0aec0;
+            --success: #4ade80; --warning: #fbbf24; --danger: #ef4444;
+            --shadow: 0 4px 6px rgba(0,0,0,0.3); --radius: 8px;
+            --transition: all 0.2s ease;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Poppins', sans-serif; background: var(--primary); color: var(--text); overflow: hidden; }
+        .monospace { font-family: 'Roboto Mono', monospace; }
+        
+        /* Layout */
+        .production-container {
+            display: grid;
+            grid-template-columns: 300px 1fr 400px;
+            grid-template-rows: auto 1fr auto;
+            height: 100vh;
+            gap: 10px;
+            padding: 10px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+        }
+        
+        /* Header */
+        .header {
+            grid-column: 1 / -1;
+            background: var(--secondary);
+            padding: 15px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 2px solid var(--accent);
+            box-shadow: var(--shadow);
+        }
+        .logo { display: flex; align-items: center; gap: 12px; }
+        .logo i { color: var(--live); font-size: 1.8rem; }
+        .logo h1 { font-size: 1.5rem; font-weight: 700; }
+        .logo .pro-badge { background: var(--live); color: white; padding: 2px 8px; border-radius: 4px; font-size: 0.7rem; margin-left: 5px; }
+        
+        .status-bar { display: flex; gap: 20px; }
+        .status-item { display: flex; align-items: center; gap: 8px; }
+        .status-dot { width: 10px; height: 10px; border-radius: 50%; }
+        .status-dot.live { background: var(--live); animation: pulse 2s infinite; }
+        .status-dot.recording { background: var(--danger); animation: pulse 1s infinite; }
+        @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
+        
+        /* Camera & Input Sources Panel */
+        .sources-panel {
+            background: var(--secondary);
+            border-radius: var(--radius);
+            padding: 15px;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            overflow-y: auto;
+        }
+        .panel-title { font-size: 1rem; font-weight: 600; margin-bottom: 10px; color: var(--text-secondary); }
+        
+        .camera-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+        .camera-source {
+            background: var(--control);
+            border-radius: var(--radius);
+            overflow: hidden;
+            border: 2px solid transparent;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+        .camera-source.active { border-color: var(--preview); }
+        .camera-source.live { border-color: var(--program); }
+        .camera-preview {
+            height: 100px;
+            background: linear-gradient(45deg, #1a2980, #26d0ce);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+        .camera-label {
+            padding: 8px;
+            font-size: 0.8rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        /* Media Sources */
+        .media-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+            gap: 10px;
+        }
+        .media-source {
+            background: var(--control);
+            border-radius: var(--radius);
+            padding: 10px;
+            text-align: center;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+        .media-source:hover { background: var(--accent); }
+        .media-icon { font-size: 1.5rem; margin-bottom: 5px; color: var(--text-secondary); }
+        
+        /* Preview & Program */
+        .video-wall {
+            display: grid;
+            grid-template-rows: 1fr 200px;
+            gap: 10px;
+        }
+        .preview-program {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+        .video-monitor {
+            background: var(--control);
+            border-radius: var(--radius);
+            overflow: hidden;
+            position: relative;
+        }
+        .monitor-header {
+            background: var(--secondary);
+            padding: 10px 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .monitor-label {
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+        .monitor-content {
+            height: calc(100% - 45px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+        .live-overlay {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            background: var(--live);
+            color: white;
+            padding: 5px 10px;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            z-index: 10;
+        }
+        
+        /* Media Player */
+        .media-player {
+            background: var(--secondary);
+            border-radius: var(--radius);
+            padding: 15px;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+        .player-controls {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+        }
+        .control-btn {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: var(--control);
+            border: none;
+            color: var(--text);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: var(--transition);
+        }
+        .control-btn:hover { background: var(--accent); transform: scale(1.1); }
+        .control-btn.active { background: var(--program); }
+        
+        /* Switcher Panel */
+        .switcher-panel {
+            background: var(--secondary);
+            border-radius: var(--radius);
+            padding: 15px;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+        .transition-controls {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+        }
+        .transition-btn {
+            padding: 10px;
+            background: var(--control);
+            border: none;
+            border-radius: var(--radius);
+            color: var(--text);
+            cursor: pointer;
+            text-align: center;
+            transition: var(--transition);
+        }
+        .transition-btn:hover { background: var(--accent); }
+        .transition-btn.active { background: var(--program); }
+        
+        .take-button {
+            background: linear-gradient(45deg, var(--live), #ff2e63);
+            color: white;
+            border: none;
+            padding: 15px;
+            border-radius: var(--radius);
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            margin-top: 10px;
+        }
+        .take-button:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 20px rgba(233, 69, 96, 0.5);
+        }
+        
+        /* Audio Mixer */
+        .audio-mixer {
+            background: var(--secondary);
+            border-radius: var(--radius);
+            padding: 15px;
+        }
+        .mixer-channels {
+            display: grid;
+            gap: 15px;
+            margin-top: 15px;
+        }
+        .channel {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .channel-label {
+            width: 80px;
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+        }
+        .channel-slider {
+            flex: 1;
+            height: 30px;
+            position: relative;
+        }
+        .slider-track {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 100%;
+            height: 4px;
+            background: var(--control);
+            border-radius: 2px;
+        }
+        .slider-fill {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            height: 4px;
+            background: var(--program);
+            border-radius: 2px;
+            width: 70%;
+        }
+        .slider-handle {
+            position: absolute;
+            top: 50%;
+            transform: translate(-50%, -50%);
+            width: 20px;
+            height: 20px;
+            background: var(--text);
+            border-radius: 50%;
+            cursor: pointer;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+        }
+        
+        /* Streaming Panel */
+        .streaming-panel {
+            background: var(--secondary);
+            border-radius: var(--radius);
+            padding: 15px;
+            margin-top: 10px;
+        }
+        .platform-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+            margin: 15px 0;
+        }
+        .platform-btn {
+            padding: 10px;
+            background: var(--control);
+            border: none;
+            border-radius: var(--radius);
+            color: var(--text);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            transition: var(--transition);
+        }
+        .platform-btn:hover { background: var(--accent); }
+        .platform-btn.active { background: var(--program); }
+        
+        /* Footer */
+        .footer {
+            grid-column: 1 / -1;
+            background: var(--secondary);
+            padding: 10px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-top: 2px solid var(--accent);
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+        }
+        
+        /* Effects & Overlays */
+        .effects-panel {
+            background: var(--secondary);
+            border-radius: var(--radius);
+            padding: 15px;
+            margin-top: 10px;
+        }
+        .effects-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+            margin-top: 10px;
+        }
+        .effect-btn {
+            padding: 8px;
+            background: var(--control);
+            border: none;
+            border-radius: var(--radius);
+            color: var(--text);
+            cursor: pointer;
+            font-size: 0.8rem;
+            text-align: center;
+            transition: var(--transition);
+        }
+        .effect-btn:hover { background: var(--accent); }
+        
+        /* Scripture Display */
+        .scripture-display {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(0,0,0,0.9);
+            color: white;
+            padding: 30px;
+            border-radius: var(--radius);
+            max-width: 90%;
+            max-height: 90%;
+            overflow: auto;
+            display: none;
+            z-index: 1000;
+        }
+        .scripture-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        .scripture-close {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 1.5rem;
+            cursor: pointer;
+        }
+        
+        /* Responsive */
+        @media (max-width: 1400px) {
+            .production-container {
+                grid-template-columns: 250px 1fr 350px;
+            }
+        }
+        @media (max-width: 1200px) {
+            .production-container {
+                grid-template-columns: 1fr;
+                grid-template-rows: auto auto 1fr auto auto;
+            }
+            .sources-panel, .switcher-panel {
+                grid-column: 1;
+            }
+            .video-wall {
+                grid-row: 3;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="production-container">
+        <!-- Header -->
+        <div class="header">
+            <div class="logo">
+                <i class="fas fa-broadcast-tower"></i>
+                <h1>WorshipFlow <span class="pro-badge">PRO</span></h1>
+                <div class="monospace" style="margin-left: 20px; color: var(--text-secondary);">
+                    <i class="fas fa-clock"></i> <span id="currentTime">--:--:--</span>
+                </div>
+            </div>
+            <div class="status-bar">
+                <div class="status-item">
+                    <div class="status-dot live"></div>
+                    <span>LIVE</span>
+                </div>
+                <div class="status-item">
+                    <div class="status-dot recording"></div>
+                    <span>REC</span>
+                </div>
+                <div class="status-item">
+                    <span>BITRATE: <span id="bitrate">4500</span> kbps</span>
+                </div>
+                <div class="status-item">
+                    <span>CPU: <span id="cpuUsage">24</span>%</span>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Sources Panel -->
+        <div class="sources-panel">
+            <div>
+                <div class="panel-title">CAMERA SOURCES</div>
+                <div class="camera-grid" id="cameraGrid">
+                    <!-- Cameras will be dynamically added -->
+                </div>
+            </div>
+            
+            <div>
+                <div class="panel-title">MEDIA SOURCES</div>
+                <div class="media-grid" id="mediaGrid">
+                    <!-- Media sources will be dynamically added -->
+                </div>
+            </div>
+            
+            <div>
+                <div class="panel-title">AUDIO INPUTS</div>
+                <div class="mixer-channels" id="audioChannels">
+                    <!-- Audio channels will be dynamically added -->
+                </div>
+            </div>
+        </div>
+        
+        <!-- Preview & Program -->
+        <div class="video-wall">
+            <div class="preview-program">
+                <div class="video-monitor">
+                    <div class="monitor-header">
+                        <div class="monitor-label">PREVIEW</div>
+                        <div class="monospace" style="font-size: 0.8rem;">
+                            <i class="fas fa-video"></i> <span id="previewSource">Camera 1</span>
+                        </div>
+                    </div>
+                    <div class="monitor-content" id="previewMonitor">
+                        <div style="text-align: center;">
+                            <i class="fas fa-video" style="font-size: 3rem; color: var(--text-secondary); margin-bottom: 10px;"></i>
+                            <p>Preview Monitor</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="video-monitor">
+                    <div class="monitor-header">
+                        <div class="monitor-label">PROGRAM</div>
+                        <div class="monospace" style="font-size: 0.8rem; color: var(--live);">
+                            <i class="fas fa-circle"></i> LIVE
+                        </div>
+                    </div>
+                    <div class="monitor-content" id="programMonitor">
+                        <div class="live-overlay">LIVE</div>
+                        <div style="text-align: center;">
+                            <i class="fas fa-broadcast-tower" style="font-size: 3rem; color: var(--live); margin-bottom: 10px;"></i>
+                            <p>Program Output</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Media Player -->
+            <div class="media-player">
+                <div class="panel-title">MEDIA PLAYER</div>
+                <div id="mediaDisplay">
+                    <div style="text-align: center; color: var(--text-secondary); padding: 20px;">
+                        <i class="fas fa-photo-video" style="font-size: 2rem; margin-bottom: 10px;"></i>
+                        <p>No media playing</p>
+                    </div>
+                </div>
+                <div class="player-controls">
+                    <button class="control-btn" id="playMedia">
+                        <i class="fas fa-play"></i>
+                    </button>
+                    <button class="control-btn" id="pauseMedia">
+                        <i class="fas fa-pause"></i>
+                    </button>
+                    <button class="control-btn" id="nextMedia">
+                        <i class="fas fa-forward"></i>
+                    </button>
+                    <button class="control-btn" id="fullscreenMedia">
+                        <i class="fas fa-expand"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Switcher Panel -->
+        <div class="switcher-panel">
+            <div>
+                <div class="panel-title">SWITCHER CONTROLS</div>
+                <div class="transition-controls">
+                    <button class="transition-btn active" data-transition="cut">CUT</button>
+                    <button class="transition-btn" data-transition="fade">FADE</button>
+                    <button class="transition-btn" data-transition="wipe">WIPE</button>
+                    <button class="transition-btn" data-transition="zoom">ZOOM</button>
+                    <button class="transition-btn" data-transition="slide">SLIDE</button>
+                    <button class="transition-btn" data-transition="cube">CUBE</button>
+                </div>
+                
+                <div style="margin: 15px 0;">
+                    <label style="display: block; margin-bottom: 5px; color: var(--text-secondary); font-size: 0.9rem;">
+                        Transition Duration: <span id="transitionDuration">1.0</span>s
+                    </label>
+                    <input type="range" id="transitionSlider" min="0" max="5" step="0.1" value="1" style="width: 100%;">
+                </div>
+                
+                <button class="take-button" id="takeButton">
+                    <i class="fas fa-exchange-alt"></i> TAKE
+                </button>
+            </div>
+            
+            <!-- Audio Mixer -->
+            <div class="audio-mixer">
+                <div class="panel-title">AUDIO MIXER</div>
+                <div id="mixerControls">
+                    <!-- Audio mixer controls -->
+                </div>
+            </div>
+            
+            <!-- Streaming Panel -->
+            <div class="streaming-panel">
+                <div class="panel-title">STREAMING PLATFORMS</div>
+                <div class="platform-grid">
+                    <button class="platform-btn" data-platform="youtube">
+                        <i class="fab fa-youtube" style="color: #ff0000;"></i> YouTube
+                    </button>
+                    <button class="platform-btn" data-platform="facebook">
+                        <i class="fab fa-facebook" style="color: #1877f2;"></i> Facebook
+                    </button>
+                    <button class="platform-btn" data-platform="twitch">
+                        <i class="fab fa-twitch" style="color: #9146ff;"></i> Twitch
+                    </button>
+                    <button class="platform-btn" data-platform="tiktok">
+                        <i class="fab fa-tiktok"></i> TikTok
+                    </button>
+                    <button class="platform-btn" data-platform="rtmp">
+                        <i class="fas fa-server"></i> Custom RTMP
+                    </button>
+                    <button class="platform-btn" data-platform="multistream">
+                        <i class="fas fa-satellite-dish"></i> Multi-Stream
+                    </button>
+                </div>
+                <div style="margin-top: 15px;">
+                    <button class="take-button" id="startStream" style="background: var(--live);">
+                        <i class="fas fa-broadcast-tower"></i> START STREAM
+                    </button>
+                    <button class="take-button" id="stopStream" style="background: var(--control); margin-top: 10px;">
+                        <i class="fas fa-stop"></i> STOP STREAM
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Effects Panel -->
+            <div class="effects-panel">
+                <div class="panel-title">VIDEO EFFECTS</div>
+                <div class="effects-grid">
+                    <button class="effect-btn" data-effect="lowerthird">Lower Third</button>
+                    <button class="effect-btn" data-effect="countdown">Countdown</button>
+                    <button class="effect-btn" data-effect="logo">Logo</button>
+                    <button class="effect-btn" data-effect="text">Text Overlay</button>
+                    <button class="effect-btn" data-effect="blur">Blur</button>
+                    <button class="effect-btn" data-effect="sepia">Sepia</button>
+                    <button class="effect-btn" data-effect="bw">Black & White</button>
+                    <button class="effect-btn" data-effect="vignette">Vignette</button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Footer -->
+        <div class="footer">
+            <div class="monospace">
+                <i class="fas fa-microchip"></i> SYSTEM: <span id="systemStatus">READY</span>
+            </div>
+            <div>
+                <span>FPS: <span id="fpsCounter">60</span></span>
+                <span style="margin-left: 20px;">RES: <span id="resolution">1920x1080</span></span>
+            </div>
+            <div>
+                <button class="control-btn" style="width: 30px; height: 30px;" onclick="showScripture()">
+                    <i class="fas fa-bible"></i>
+                </button>
+                <button class="control-btn" style="width: 30px; height: 30px; margin-left: 10px;" onclick="showSettings()">
+                    <i class="fas fa-cog"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Scripture Display Modal -->
+    <div class="scripture-display" id="scriptureModal">
+        <div class="scripture-header">
+            <h2>Scripture Display</h2>
+            <button class="scripture-close" onclick="hideScripture()">&times;</button>
+        </div>
+        <div style="margin-bottom: 20px;">
+            <select id="bibleBook" style="padding: 8px; margin-right: 10px; background: var(--control); color: white; border: none; border-radius: var(--radius);">
+                <option>Genesis</option>
+                <option>Exodus</option>
+                <option selected>John</option>
+                <option>Romans</option>
+                <option>Psalms</option>
+            </select>
+            <input type="number" id="bibleChapter" placeholder="Chapter" value="3" style="padding: 8px; width: 80px; background: var(--control); color: white; border: none; border-radius: var(--radius);">
+            <input type="number" id="bibleVerse" placeholder="Verse" value="16" style="padding: 8px; width: 80px; background: var(--control); color: white; border: none; border-radius: var(--radius);">
+            <button onclick="loadScripture()" style="padding: 8px 15px; background: var(--program); color: white; border: none; border-radius: var(--radius); margin-left: 10px; cursor: pointer;">Load</button>
+        </div>
+        <div id="scriptureText" style="font-size: 1.8rem; line-height: 1.6; text-align: center; padding: 20px; background: rgba(255,255,255,0.1); border-radius: var(--radius);">
+            For God so loved the world that he gave his one and only Son, that whoever believes in him shall not perish but have eternal life.
+        </div>
+        <div style="margin-top: 20px; display: flex; gap: 10px;">
+            <button onclick="sendToProgram('scripture')" style="flex: 1; padding: 12px; background: var(--program); color: white; border: none; border-radius: var(--radius); cursor: pointer;">
+                <i class="fas fa-broadcast-tower"></i> Send to Program
+            </button>
+            <button onclick="sendToPreview('scripture')" style="flex: 1; padding: 12px; background: var(--preview); color: white; border: none; border-radius: var(--radius); cursor: pointer;">
+                <i class="fas fa-eye"></i> Send to Preview
+            </button>
+        </div>
+    </div>
+    
+    <!-- Settings Modal -->
+    <div class="scripture-display" id="settingsModal" style="display: none;">
+        <div class="scripture-header">
+            <h2>Production Settings</h2>
+            <button class="scripture-close" onclick="hideSettings()">&times;</button>
+        </div>
+        <div style="display: grid; gap: 15px;">
+            <div>
+                <label style="display: block; margin-bottom: 5px;">Stream Settings</label>
+                <select style="width: 100%; padding: 8px; background: var(--control); color: white; border: none; border-radius: var(--radius);">
+                    <option>1920x1080 @ 60fps</option>
+                    <option>1280x720 @ 60fps</option>
+                    <option>1920x1080 @ 30fps</option>
+                    <option>1280x720 @ 30fps</option>
+                </select>
+            </div>
+            <div>
+                <label style="display: block; margin-bottom: 5px;">Bitrate (kbps)</label>
+                <input type="range" min="1000" max="10000" value="4500" style="width: 100%;">
+            </div>
+            <div>
+                <label style="display: block; margin-bottom: 5px;">Audio Sample Rate</label>
+                <select style="width: 100%; padding: 8px; background: var(--control); color: white; border: none; border-radius: var(--radius);">
+                    <option>44.1 kHz</option>
+                    <option>48 kHz</option>
+                    <option>96 kHz</option>
+                </select>
+            </div>
+            <div>
+                <label style="display: block; margin-bottom: 5px;">Camera Sources</label>
+                <div style="display: flex; gap: 10px; margin-top: 10px;">
+                    <button class="control-btn" onclick="addCamera()">
+                        <i class="fas fa-plus"></i> Add Camera
+                    </button>
+                    <button class="control-btn" onclick="detectCameras()">
+                        <i class="fas fa-search"></i> Detect Cameras
+                    </button>
+                </div>
+            </div>
+            <div style="margin-top: 20px;">
+                <button style="width: 100%; padding: 12px; background: var(--program); color: white; border: none; border-radius: var(--radius); cursor: pointer;">
+                    Save Settings
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Production State
+        let productionState = {
+            preview: 'camera1',
+            program: 'camera1',
+            transition: 'cut',
+            transitionDuration: 1.0,
+            isStreaming: false,
+            isRecording: false,
+            cameras: [
+                { id: 'camera1', name: 'Camera 1 (Main)', type: 'camera', active: true },
+                { id: 'camera2', name: 'Camera 2 (Wide)', type: 'camera', active: true },
+                { id: 'camera3', name: 'Camera 3 (Stage)', type: 'camera', active: false },
+                { id: 'camera4', name: 'Camera 4 (Audience)', type: 'camera', active: true }
+            ],
+            media: [
+                { id: 'song1', name: 'Amazing Grace', type: 'lyrics', icon: 'fa-music' },
+                { id: 'song2', name: 'How Great Is Our God', type: 'lyrics', icon: 'fa-music' },
+                { id: 'song3', name: 'Scripture: John 3:16', type: 'scripture', icon: 'fa-bible' },
+                { id: 'video1', name: 'Welcome Video', type: 'video', icon: 'fa-video' },
+                { id: 'image1', name: 'Church Logo', type: 'image', icon: 'fa-image' },
+                { id: 'countdown', name: 'Countdown Timer', type: 'timer', icon: 'fa-clock' },
+                { id: 'announcement', name: 'Announcement Slide', type: 'text', icon: 'fa-newspaper' },
+                { id: 'lowerthird', name: 'Lower Third Template', type: 'overlay', icon: 'fa-window-restore' }
+            ],
+            audioChannels: [
+                { id: 'master', name: 'Master', level: 0.8, mute: false },
+                { id: 'music', name: 'Music', level: 0.7, mute: false },
+                { id: 'pastor', name: 'Pastor Mic', level: 0.9, mute: false },
+                { id: 'worship', name: 'Worship Leader', level: 0.8, mute: false },
+                { id: 'system', name: 'System Audio', level: 0.5, mute: false },
+                { id: 'playback', name: 'Playback', level: 0.6, mute: true }
+            ],
+            streamingPlatforms: ['youtube', 'facebook'],
+            currentMedia: null,
+            effects: []
+        };
+
+        // Initialize Production
+        function initializeProduction() {
+            updateTime();
+            generateCameraGrid();
+            generateMediaGrid();
+            generateAudioMixer();
+            setupEventListeners();
+            updateStatus();
+            
+            // Simulate camera feeds
+            simulateCameraFeeds();
+            
+            // Start system monitoring
+            startSystemMonitoring();
+        }
+
+        // Update time
+        function updateTime() {
+            const now = new Date();
+            document.getElementById('currentTime').textContent = 
+                now.toLocaleTimeString([], { hour12: false });
+            setTimeout(updateTime, 1000);
+        }
+
+        // Generate camera grid
+        function generateCameraGrid() {
+            const cameraGrid = document.getElementById('cameraGrid');
+            cameraGrid.innerHTML = '';
+            
+            productionState.cameras.forEach(camera => {
+                const cameraDiv = document.createElement('div');
+                cameraDiv.className = `camera-source ${camera.id === productionState.preview ? 'active' : ''} ${camera.id === productionState.program ? 'live' : ''}`;
+                cameraDiv.dataset.cameraId = camera.id;
+                cameraDiv.innerHTML = `
+                    <div class="camera-preview" id="preview-${camera.id}">
+                        <div style="text-align: center; color: white;">
+                            <i class="fas fa-video" style="font-size: 1.5rem; margin-bottom: 5px;"></i>
+                            <div style="font-size: 0.8rem;">${camera.active ? 'ACTIVE' : 'OFFLINE'}</div>
+                        </div>
+                    </div>
+                    <div class="camera-label">
+                        <span>${camera.name}</span>
+                        <i class="fas fa-circle" style="color: ${camera.active ? 'var(--success)' : 'var(--danger)'}; font-size: 0.6rem;"></i>
+                    </div>
+                `;
+                cameraDiv.addEventListener('click', () => selectCamera(camera.id));
+                cameraGrid.appendChild(cameraDiv);
+            });
+        }
+
+        // Generate media grid
+        function generateMediaGrid() {
+            const mediaGrid = document.getElementById('mediaGrid');
+            mediaGrid.innerHTML = '';
+            
+            productionState.media.forEach(item => {
+                const mediaDiv = document.createElement('div');
+                mediaDiv.className = 'media-source';
+                mediaDiv.dataset.mediaId = item.id;
+                mediaDiv.innerHTML = `
+                    <div class="media-icon">
+                        <i class="fas ${item.icon}"></i>
+                    </div>
+                    <div style="font-size: 0.8rem;">${item.name}</div>
+                `;
+                mediaDiv.addEventListener('click', () => selectMedia(item));
+                mediaGrid.appendChild(mediaDiv);
+            });
+        }
+
+        // Generate audio mixer
+        function generateAudioMixer() {
+            const mixerControls = document.getElementById('mixerControls');
+            mixerControls.innerHTML = '';
+            
+            productionState.audioChannels.forEach(channel => {
+                const channelDiv = document.createElement('div');
+                channelDiv.className = 'channel';
+                channelDiv.innerHTML = `
+                    <div class="channel-label">${channel.name}</div>
+                    <div class="channel-slider">
+                        <div class="slider-track"></div>
+                        <div class="slider-fill" style="width: ${channel.level * 100}%"></div>
+                        <div class="slider-handle" style="left: ${channel.level * 100}%"></div>
+                    </div>
+                    <button class="control-btn" style="width: 30px; height: 30px;" data-channel="${channel.id}">
+                        <i class="fas ${channel.mute ? 'fa-volume-mute' : 'fa-volume-up'}"></i>
+                    </button>
+                `;
+                mixerControls.appendChild(channelDiv);
+                
+                // Add slider interaction
+                const slider = channelDiv.querySelector('.slider-handle');
+                const sliderTrack = channelDiv.querySelector('.slider-track');
+                let isDragging = false;
+                
+                const updateSlider = (clientX) => {
+                    const rect = sliderTrack.getBoundingClientRect();
+                    let percentage = (clientX - rect.left) / rect.width;
+                    percentage = Math.max(0, Math.min(1, percentage));
+                    
+                    channel.level = percentage;
+                    channelDiv.querySelector('.slider-fill').style.width = `${percentage * 100}%`;
+                    slider.style.left = `${percentage * 100}%`;
+                };
+                
+                slider.addEventListener('mousedown', () => isDragging = true);
+                document.addEventListener('mousemove', (e) => {
+                    if (isDragging) updateSlider(e.clientX);
+                });
+                document.addEventListener('mouseup', () => isDragging = false);
+                
+                // Mute button
+                channelDiv.querySelector('button').addEventListener('click', () => {
+                    channel.mute = !channel.mute;
+                    const icon = channelDiv.querySelector('i');
+                    icon.className = channel.mute ? 'fas fa-volume-mute' : 'fas fa-volume-up';
+                });
+            });
+        }
+
+        // Select camera
+        function selectCamera(cameraId) {
+            productionState.preview = cameraId;
+            document.getElementById('previewSource').textContent = 
+                productionState.cameras.find(c => c.id === cameraId).name;
+            
+            // Update camera grid highlights
+            document.querySelectorAll('.camera-source').forEach(cam => {
+                cam.classList.remove('active');
+                if (cam.dataset.cameraId === cameraId) {
+                    cam.classList.add('active');
+                }
+            });
+            
+            // Update preview monitor
+            updatePreviewMonitor();
+        }
+
+        // Select media
+        function selectMedia(media) {
+            productionState.currentMedia = media;
+            const mediaDisplay = document.getElementById('mediaDisplay');
+            
+            switch(media.type) {
+                case 'lyrics':
+                    mediaDisplay.innerHTML = `
+                        <div style="text-align: center; padding: 20px;">
+                            <h3 style="margin-bottom: 15px;">${media.name}</h3>
+                            <div style="font-size: 1.2rem; line-height: 1.8;">
+                                Amazing grace, how sweet the sound<br>
+                                That saved a wretch like me<br>
+                                I once was lost, but now am found<br>
+                                Was blind, but now I see
+                            </div>
+                        </div>
+                    `;
+                    break;
+                case 'scripture':
+                    mediaDisplay.innerHTML = `
+                        <div style="text-align: center; padding: 20px;">
+                            <h3 style="margin-bottom: 15px;">${media.name}</h3>
+                            <div style="font-size: 1.5rem; line-height: 1.6; font-weight: 600;">
+                                "For God so loved the world that he gave his one and only Son..."
+                            </div>
+                        </div>
+                    `;
+                    break;
+                case 'video':
+                    mediaDisplay.innerHTML = `
+                        <div style="text-align: center; padding: 20px;">
+                            <i class="fas fa-play-circle" style="font-size: 3rem; color: var(--program); margin-bottom: 10px;"></i>
+                            <h3>${media.name}</h3>
+                            <p style="color: var(--text-secondary);">Ready to play</p>
+                        </div>
+                    `;
+                    break;
+                default:
+                    mediaDisplay.innerHTML = `
+                        <div style="text-align: center; padding: 20px;">
+                            <i class="fas ${media.icon}" style="font-size: 3rem; color: var(--program); margin-bottom: 10px;"></i>
+                            <h3>${media.name}</h3>
+                        </div>
+                    `;
+            }
+        }
+
+        // Take transition
+        function takeTransition() {
+            const preview = productionState.preview;
+            const program = productionState.program;
+            
+            if (preview !== program) {
+                productionState.program = preview;
+                
+                // Update program monitor
+                updateProgramMonitor();
+                
+                // Update camera grid highlights
+                document.querySelectorAll('.camera-source').forEach(cam => {
+                    cam.classList.remove('live');
+                    if (cam.dataset.cameraId === preview) {
+                        cam.classList.add('live');
+                    }
+                });
+                
+                // Show transition effect
+                showTransitionEffect();
+                
+                // Log the transition
+                logActivity(`Transition: ${program} → ${preview} (${productionState.transition})`);
+            }
+        }
+
+        // Show transition effect
+        function showTransitionEffect() {
+            const programMonitor = document.getElementById('programMonitor');
+            const effect = productionState.transition;
+            
+            // Add transition class
+            programMonitor.classList.add(`transition-${effect}`);
+            
+            // Remove after duration
+            setTimeout(() => {
+                programMonitor.classList.remove(`transition-${effect}`);
+            }, productionState.transitionDuration * 1000);
+        }
+
+        // Update preview monitor
+        function updatePreviewMonitor() {
+            const previewMonitor = document.getElementById('previewMonitor');
+            const camera = productionState.cameras.find(c => c.id === productionState.preview);
+            
+            previewMonitor.innerHTML = `
+                <div style="text-align: center; padding: 20px;">
+                    <i class="fas fa-video" style="font-size: 3rem; color: ${camera.active ? 'var(--preview)' : 'var(--danger)'}; margin-bottom: 10px;"></i>
+                    <h3 style="margin-bottom: 5px;">${camera.name}</h3>
+                    <p style="color: var(--text-secondary); font-size: 0.9rem;">
+                        ${camera.active ? 'Ready for broadcast' : 'Camera offline'}
+                    </p>
+                </div>
+            `;
+        }
+
+        // Update program monitor
+        function updateProgramMonitor() {
+            const programMonitor = document.getElementById('programMonitor');
+            const camera = productionState.cameras.find(c => c.id === productionState.program);
+            
+            programMonitor.innerHTML = `
+                <div class="live-overlay">LIVE</div>
+                <div style="text-align: center; padding: 20px;">
+                    <i class="fas fa-broadcast-tower" style="font-size: 3rem; color: var(--live); margin-bottom: 10px;"></i>
+                    <h3 style="margin-bottom: 5px;">${camera.name}</h3>
+                    <p style="color: var(--text-secondary); font-size: 0.9rem;">
+                        ${productionState.isStreaming ? 'Streaming LIVE' : 'Program Output'}
+                    </p>
+                </div>
+            `;
+        }
+
+        // Start/Stop streaming
+        function toggleStreaming() {
+            productionState.isStreaming = !productionState.isStreaming;
+            
+            const startBtn = document.getElementById('startStream');
+            const stopBtn = document.getElementById('stopStream');
+            
+            if (productionState.isStreaming) {
+                startBtn.style.display = 'none';
+                stopBtn.style.display = 'block';
+                logActivity('Streaming started on all platforms');
+                simulateStreaming();
+            } else {
+                startBtn.style.display = 'block';
+                stopBtn.style.display = 'none';
+                logActivity('Streaming stopped');
+            }
+            
+            updateProgramMonitor();
+        }
+
+        // Simulate streaming data
+        function simulateStreaming() {
+            if (productionState.isStreaming) {
+                // Update bitrate
+                const bitrate = 4500 + Math.floor(Math.random() * 1000) - 500;
+                document.getElementById('bitrate').textContent = bitrate;
+                
+                // Update viewer count
+                const viewers = Math.floor(Math.random() * 100) + 1200;
+                document.getElementById('viewerCount').textContent = viewers;
+                
+                setTimeout(simulateStreaming, 3000);
+            }
+        }
+
+        // Simulate camera feeds
+        function simulateCameraFeeds() {
+            productionState.cameras.forEach(camera => {
+                if (camera.active) {
+                    const preview = document.getElementById(`preview-${camera.id}`);
+                    if (preview) {
+                        // Simulate camera feed changes
+                        setInterval(() => {
+                            const colors = ['#1a2980', '#26d0ce', '#ff416c', '#ff4b2b'];
+                            const randomColor = colors[Math.floor(Math.random() * colors.length)];
+                            preview.style.background = `linear-gradient(45deg, ${randomColor}, ${colors[Math.floor(Math.random() * colors.length)]})`;
+                        }, 5000);
+                    }
+                }
+            });
+        }
+
+        // System monitoring
+        function startSystemMonitoring() {
+            setInterval(() => {
+                // Update CPU usage
+                const cpu = 20 + Math.floor(Math.random() * 20);
+                document.getElementById('cpuUsage').textContent = cpu;
+                
+                // Update FPS
+                const fps = 55 + Math.floor(Math.random() * 10);
+                document.getElementById('fpsCounter').textContent = fps;
+                
+                // Update system status
+                const status = cpu > 70 ? 'HIGH LOAD' : 'OK';
+                document.getElementById('systemStatus').textContent = status;
+                document.getElementById('systemStatus').style.color = 
+                    cpu > 70 ? 'var(--warning)' : 'var(--success)';
+            }, 2000);
+        }
+
+        // Setup event listeners
+        function setupEventListeners() {
+            // Transition buttons
+            document.querySelectorAll('.transition-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    document.querySelectorAll('.transition-btn').forEach(b => b.classList.remove('active'));
+                    this.classList.add('active');
+                    productionState.transition = this.dataset.transition;
+                });
+            });
+            
+            // Transition duration slider
+            const durationSlider = document.getElementById('transitionSlider');
+            const durationDisplay = document.getElementById('transitionDuration');
+            durationSlider.addEventListener('input', function() {
+                productionState.transitionDuration = parseFloat(this.value);
+                durationDisplay.textContent = this.value;
+            });
+            
+            // Take button
+            document.getElementById('takeButton').addEventListener('click', takeTransition);
+            
+            // Media player controls
+            document.getElementById('playMedia').addEventListener('click', () => {
+                logActivity('Media playback started');
+            });
+            
+            document.getElementById('fullscreenMedia').addEventListener('click', () => {
+                logActivity('Media sent to fullscreen');
+                sendToProgram('media');
+            });
+            
+            // Streaming controls
+            document.getElementById('startStream').addEventListener('click', toggleStreaming);
+            document.getElementById('stopStream').addEventListener('click', toggleStreaming);
+            
+            // Platform buttons
+            document.querySelectorAll('.platform-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const platform = this.dataset.platform;
+                    this.classList.toggle('active');
+                    
+                    if (this.classList.contains('active')) {
+                        if (!productionState.streamingPlatforms.includes(platform)) {
+                            productionState.streamingPlatforms.push(platform);
+                        }
+                    } else {
+                        const index = productionState.streamingPlatforms.indexOf(platform);
+                        if (index > -1) {
+                            productionState.streamingPlatforms.splice(index, 1);
+                        }
+                    }
+                    
+                    logActivity(`${platform.charAt(0).toUpperCase() + platform.slice(1)} ${this.classList.contains('active') ? 'enabled' : 'disabled'}`);
+                });
+            });
+            
+            // Effect buttons
+            document.querySelectorAll('.effect-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const effect = this.dataset.effect;
+                    applyEffect(effect);
+                });
+            });
+        }
+
+        // Apply video effect
+        function applyEffect(effect) {
+            const programMonitor = document.getElementById('programMonitor');
+            
+            switch(effect) {
+                case 'lowerthird':
+                    programMonitor.innerHTML += `
+                        <div style="position: absolute; bottom: 20px; left: 20px; right: 20px; background: rgba(0,0,0,0.8); color: white; padding: 15px; border-radius: var(--radius);">
+                            <div style="font-size: 1.2rem; font-weight: 600;">Pastor John Doe</div>
+                            <div style="color: var(--text-secondary);">Senior Pastor, Grace Church</div>
+                        </div>
+                    `;
+                    break;
+                case 'countdown':
+                    let count = 10;
+                    const countdownDiv = document.createElement('div');
+                    countdownDiv.style.cssText = `
+                        position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+                        font-size: 6rem; font-weight: 800; color: var(--live); z-index: 100;
+                    `;
+                    countdownDiv.textContent = count;
+                    programMonitor.appendChild(countdownDiv);
+                    
+                    const interval = setInterval(() => {
+                        count--;
+                        countdownDiv.textContent = count;
+                        if (count <= 0) {
+                            clearInterval(interval);
+                            countdownDiv.remove();
+                        }
+                    }, 1000);
+                    break;
+                case 'logo':
+                    programMonitor.innerHTML += `
+                        <div style="position: absolute; top: 20px; right: 20px; background: rgba(0,0,0,0.7); padding: 10px; border-radius: var(--radius);">
+                            <i class="fas fa-church" style="font-size: 2rem; color: white;"></i>
+                        </div>
+                    `;
+                    break;
+            }
+            
+            logActivity(`Effect applied: ${effect}`);
+        }
+
+        // Scripture display
+        function showScripture() {
+            document.getElementById('scriptureModal').style.display = 'block';
+        }
+
+        function hideScripture() {
+            document.getElementById('scriptureModal').style.display = 'none';
+        }
+
+        function loadScripture() {
+            const book = document.getElementById('bibleBook').value;
+            const chapter = document.getElementById('bibleChapter').value;
+            const verse = document.getElementById('bibleVerse').value;
+            
+            document.getElementById('scriptureText').innerHTML = `
+                <div style="margin-bottom: 10px; color: var(--text-secondary); font-size: 1rem;">
+                    ${book} ${chapter}:${verse}
+                </div>
+                "For God so loved the world that he gave his one and only Son, 
+                that whoever believes in him shall not perish but have eternal life."
+            `;
+        }
+
+        function sendToProgram(type) {
+            if (type === 'scripture') {
+                const mediaDisplay = document.getElementById('mediaDisplay');
+                mediaDisplay.innerHTML = document.getElementById('scriptureText').innerHTML;
+                logActivity('Scripture sent to program');
+            }
+        }
+
+        function sendToPreview(type) {
+            if (type === 'scripture') {
+                const previewMonitor = document.getElementById('previewMonitor');
+                previewMonitor.innerHTML = `
+                    <div style="text-align: center; padding: 20px;">
+                        <i class="fas fa-bible" style="font-size: 3rem; color: var(--preview); margin-bottom: 10px;"></i>
+                        <h3>Scripture</h3>
+                        <p>Ready for broadcast</p>
+                    </div>
+                `;
+                logActivity('Scripture sent to preview');
+            }
+        }
+
+        // Settings
+        function showSettings() {
+            document.getElementById('settingsModal').style.display = 'block';
+        }
+
+        function hideSettings() {
+            document.getElementById('settingsModal').style.display = 'none';
+        }
+
+        // Add camera
+        function addCamera() {
+            const newId = `camera${productionState.cameras.length + 1}`;
+            productionState.cameras.push({
+                id: newId,
+                name: `Camera ${productionState.cameras.length + 1}`,
+                type: 'camera',
+                active: true
+            });
+            generateCameraGrid();
+            logActivity(`Camera ${productionState.cameras.length} added`);
+        }
+
+        // Detect cameras (simulated)
+        function detectCameras() {
+            alert('Camera detection would access your webcam in a real implementation.\n\nIn this demo, cameras are simulated.');
+        }
+
+        // Log activity
+        function logActivity(message) {
+            const activityList = document.querySelector('.activity-list');
+            if (activityList) {
+                const activityItem = document.createElement('div');
+                activityItem.className = 'activity-item';
+                activityItem.innerHTML = `
+                    <div class="activity-icon" style="background: var(--program)20; color: var(--program)">
+                        <i class="fas fa-info-circle"></i>
+                    </div>
+                    <div class="activity-details">
+                        <div>${message}</div>
+                        <div class="activity-time">Just now</div>
+                    </div>
+                `;
+                
+                // Add to top
+                if (activityList.firstChild) {
+                    activityList.insertBefore(activityItem, activityList.firstChild);
+                } else {
+                    activityList.appendChild(activityItem);
+                }
+                
+                // Limit to 5 items
+                while (activityList.children.length > 5) {
+                    activityList.removeChild(activityList.lastChild);
+                }
+            }
+        }
+
+        // Update status
+        function updateStatus() {
+            // Add CSS for transitions
+            const style = document.createElement('style');
+            style.textContent = `
+                .transition-fade { animation: fadeIn ${productionState.transitionDuration}s; }
+                .transition-wipe { animation: wipe ${productionState.transitionDuration}s; }
+                .transition-zoom { animation: zoom ${productionState.transitionDuration}s; }
+                .transition-slide { animation: slide ${productionState.transitionDuration}s; }
+                .transition-cube { animation: cube ${productionState.transitionDuration}s; }
+                
+                @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+                @keyframes wipe { 
+                    0% { clip-path: inset(0 100% 0 0); }
+                    100% { clip-path: inset(0 0 0 0); }
+                }
+                @keyframes zoom { 
+                    0% { transform: scale(0.8); opacity: 0; }
+                    100% { transform: scale(1); opacity: 1; }
+                }
+                @keyframes slide { 
+                    0% { transform: translateX(-100%); }
+                    100% { transform: translateX(0); }
+                }
+                @keyframes cube { 
+                    0% { transform: rotateY(90deg); opacity: 0; }
+                    100% { transform: rotateY(0); opacity: 1; }
+                }
+            `;
+            document.head.appendChild(style);
+        }
+
+        // Initialize on load
+        document.addEventListener('DOMContentLoaded', initializeProduction);
+        
+        // Keyboard shortcuts
+        document.addEventListener('keydown', (e) => {
+            // Space for take
+            if (e.code === 'Space' && !e.target.matches('input, textarea, select')) {
+                e.preventDefault();
+                takeTransition();
+            }
+            // Number keys for cameras
+            if (e.code >= 'Digit1' && e.code <= 'Digit4') {
+                const cameraIndex = parseInt(e.code[5]) - 1;
+                if (cameraIndex < productionState.cameras.length) {
+                    selectCamera(productionState.cameras[cameraIndex].id);
+                }
+            }
+            // T for transition type
+            if (e.code === 'KeyT' && e.ctrlKey) {
+                const transitions = document.querySelectorAll('.transition-btn');
+                const currentIndex = Array.from(transitions).findIndex(b => b.classList.contains('active'));
+                const nextIndex = (currentIndex + 1) % transitions.length;
+                transitions[currentIndex].classList.remove('active');
+                transitions[nextIndex].classList.add('active');
+                productionState.transition = transitions[nextIndex].dataset.transition;
+            }
+        });
+    </script>
+</body>
+</html>
